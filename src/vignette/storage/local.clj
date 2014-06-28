@@ -16,10 +16,10 @@
        real-path-object)))
 
   (put-object [this resource bucket path]
-    {:pre [(assert (instance? java.io.File resource))]}
+    {:pre [(instance? java.io.File resource)]}
     (let [real-path (resolve-local-path (:directory this) bucket path)]
-     (create-local-path real-path)
-     (transfer resource (io/file real-path))))
+      (create-local-path real-path)
+      (transfer resource (io/file real-path))))
 
   (delete-object [this bucket path])
   (list-buckets [this])
@@ -35,9 +35,11 @@
 
 (declare dirname)
 
+; fixme: make the type of these arguments consistent
 (defn create-local-path
+  ; type hint
   [path]
-  (.mkdir (io/file path)))
+  (.mkdirs (io/file (dirname path))))
 
 (defn dirname
   [path]
@@ -47,7 +49,7 @@
 
 (defn transfer
   [in out]
-  {:pre [(assert (instance? java.io.File in))
-         (assert (instance? java.io.File out))
-         (assert (.exists (io/file (.getParent out))))]}
+  {:pre [(instance? java.io.File in)
+         (instance? java.io.File out)
+         (.exists (io/file (.getParent out)))]}
   (spit out (slurp in)))

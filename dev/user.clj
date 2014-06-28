@@ -5,7 +5,7 @@
     [aws.sdk.s3 :as s3]
             [midje.repl :refer :all]
             [clojure.java.io :as io]
-            [clojure.java.shell :as sh])
+            [clojure.java.shell :refer (sh)])
   (:use [environ.core]))
 
 
