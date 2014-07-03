@@ -5,23 +5,30 @@
 
 (declare resolve-local-path)
 (declare create-local-path)
-(declare transfer)
+(declare get-parent)
+(declare transfer!)
+(declare file-exists?)
 
 (defrecord LocalImageStorage [directory]
   ImageStorageProtocol
 
  (get-object [this bucket path]
    (let [real-path-object (io/file (resolve-local-path (:directory this) bucket path))]
-     (when (.exists real-path-object)
-       real-path-object)))
+     (when (file-exists? real-path-object)
+       (slurp real-path-object))))
 
-  (put-object [this resource bucket path]
-    {:pre [(instance? java.io.File resource)]}
+ (put-object [this resource bucket path]
+   (let [real-path (resolve-local-path (:directory this) bucket path)]
+     (create-local-path (get-parent real-path))
+     (transfer! resource real-path)))
+
+  (delete-object [this bucket path]
     (let [real-path (resolve-local-path (:directory this) bucket path)]
-      (create-local-path real-path)
-      (transfer resource (io/file real-path))))
+     (let [status (io/delete-file real-path :silently true)]
+       (if (= status :silently)
+         false
+         true))))
 
-  (delete-object [this bucket path])
   (list-buckets [this])
   (list-objects [this bucket]) )
 
@@ -33,23 +40,20 @@
   [directory bucket path]
   (format "%s/%s/%s" directory bucket path))
 
-(declare dirname)
+(defn get-parent
+  [path]
+  (.getParent (io/file path)))
 
-; fixme: make the type of these arguments consistent
 (defn create-local-path
-  ; type hint
   [path]
-  (.mkdirs (io/file (dirname path))))
+  (.mkdirs (io/file path)))
 
-(defn dirname
-  [path]
-  (if-let [dir (.getParent (io/file path))]
-    dir
-    "."))
-
-(defn transfer
+(defn transfer!
   [in out]
-  {:pre [(instance? java.io.File in)
-         (instance? java.io.File out)
-         (.exists (io/file (.getParent out)))]}
-  (spit out (slurp in)))
+  (io/copy (io/file in) (io/file out))
+  (file-exists? out))
+
+
+(defn file-exists?
+  [file]
+  (.exists (io/file file)))

@@ -7,21 +7,31 @@
 
 (def local-path "/tmp/vignette-local-storage")
 
+(fact
+  (file-exists? "project.clj") => truthy)
+
 (with-state-changes
   [(before :facts (do
-                    ;(sh "rm" "-rf" local-path)
+                    (sh "rm" "-rf" local-path)
                     (sh "mkdir" "-p" local-path)))]
   (facts :transfer
-     (transfer
-       (io/file "project.clj")
-       (io/file (format "%s/tbar" local-path))) => nil)
+     (transfer! "project.clj" (format "%s/tbar" local-path)) => truthy)
 
   (facts :put
     (let [local (create-local-image-storage "/tmp/vignette-local-storage")]
       local => truthy
-      (put-object local (io/file "project.clj") "bucket", "bar") => nil))
+      (put-object local "project.clj" "bucket" "bar") => truthy))
 
   (facts :get
     (let [local (create-local-image-storage "/tmp/vignette-local-storage")]
       local => truthy
-      (get-object local "foo" "bar") => falsey)))
+      (get-object local "bucket" "bar") => falsey
+      (put-object local "project.clj" "bucket" "bar") => truthy
+      (get-object local "bucket" "bar") => string?))
+
+  (facts :delete
+    (let [local (create-local-image-storage "/tmp/vignette-local-storage")]
+      local => truthy
+      (delete-object local "bucket" "bar") => falsey
+      (put-object local "project.clj" "bucket" "bar") => truthy
+      (delete-object local "bucket" "bar") => truthy)))

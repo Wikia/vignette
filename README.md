@@ -22,7 +22,7 @@ Here is a high level overview of where I think we want to take this in no partic
 			* We should create a large (1e6) sample of request URLs and make sure we parse them in the same way
 		* Huddler thumbnailer request patters-- this one will fundamentally change because we’ll need to provide
 			the file in thu URL.
-		* 2.0 request API
+		* 2.0 request API- We should put some thought into how to make this simple yet extensible. Do we use query parameters?
 
 
 ## Usage
