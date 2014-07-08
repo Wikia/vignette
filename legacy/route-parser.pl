@@ -4,6 +4,8 @@
 # thumbnailer.
 #
 # Usage: ./legacy/route-parser.pl < request.log > parsed.json
+# Create request.log with the following on an existing thumbnailer:
+# varnishlog  -mRxURL:images.wikia.com -iRxURL | grep RxURL | cut -c22- | grep -v auth > request.log
 #
 use JSON;
 
