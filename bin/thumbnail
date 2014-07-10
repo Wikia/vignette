@@ -6,6 +6,13 @@ IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local/"}
 CONVERT=$IMAGEMAGICK_BASE/bin/convert
 IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
 
+
+# If you are running on OS X, then install the gnu-getopt. The native getopt on OS X
+# is not compatible with the options used on Centos which is where this was originally targeted.
+# $ brew install gnu-getopt
+# $ export GETOPT=/usr/local/opt/gnu-getopt/bin/getopt
+GETOPT=${GETOPT:-"/usr/bin/getopt"}
+
 # what memory, mapping, thread and time constraints do we want to put on the
 # thumbnailing process? this will help to ensure that any given thumbnail
 # doesn't overwhelm us.
@@ -13,6 +20,12 @@ IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
 # imagemagick first tries to allocate the pixels in memory. if that fails or
 # exceeds the limit, it next allocates to disks and memory maps the file. if
 # that allocation exceeds the map limit, it then goes to disk. 
+#
+# If you are running on OS X, install ImageMagick with
+# $ brew install imagemagick --with-webp --with-librsvg
+# Then 
+# $ export CONVERT_CONSTRAINTS=" "
+# The options below result in a segfault on OS X.
 CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256mb -limit map 256mb -limit disk 256mb -limit thread 2 -limit time 60 "}
 
 # dial down the quality level. this should save us some space without
@@ -51,7 +64,6 @@ EOF
 }
 
 OS=$(uname)
-GETOPT=${GETOPT:-"/usr/bin/getopt"}
 SHORTOPTS="i:o:hW:H:" 
 LONGOPTS="in:,out:,width:,height:,fuzz:,help,nofill,blackfill,still,LS,LM,ZC,LL,NS,animated,reorient"
 
