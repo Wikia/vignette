@@ -3,9 +3,11 @@
                               [local :as vlocal]
                               [s3 :as vs3])
     [aws.sdk.s3 :as s3]
-            [midje.repl :refer :all]
-            [clojure.java.io :as io]
-            [clojure.java.shell :refer (sh)])
+    [midje.repl :refer :all]
+    [clout.core :as c]
+    [ring.mock.request :refer :all]
+    [clojure.java.io :as io]
+    [clojure.java.shell :refer (sh)])
   (:use [environ.core]))
 
 

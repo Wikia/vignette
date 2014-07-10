@@ -34,7 +34,7 @@ sub create_matcher {
 	};
 }
 
-$json = JSON->new;
+$json = JSON->new->pretty;
 
 my @ordered_request_matchers = (
 	create_matcher(
