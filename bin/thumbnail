@@ -1,0 +1,286 @@
+#!/bin/bash
+# Wrapper for imagemagick that encapsulates our thumbnail logic.
+# @author Damon Snyder (damon@huddler-inc.com) 
+
+IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local/"}
+CONVERT=$IMAGEMAGICK_BASE/bin/convert
+IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
+
+# what memory, mapping, thread and time constraints do we want to put on the
+# thumbnailing process? this will help to ensure that any given thumbnail
+# doesn't overwhelm us.
+# 
+# imagemagick first tries to allocate the pixels in memory. if that fails or
+# exceeds the limit, it next allocates to disks and memory maps the file. if
+# that allocation exceeds the map limit, it then goes to disk. 
+CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256mb -limit map 256mb -limit disk 256mb -limit thread 2 -limit time 60 "}
+
+# dial down the quality level. this should save us some space without
+# sacrificing too much image quality. in the tests that were done, this
+# produced images that were closer in size to what is currently being created
+# with phpthumb
+JPEG_QUALITY_LEVEL=80
+
+
+function usage() {
+cat <<EOF
+    usage: $0
+    --in|i      FILE   the image we are thumbnailing
+    --out|o     FILE   output the thumbnail to this file
+    --height|H  INT    the height
+    --width|W   INT    the width
+
+    --still            only use the first frame of the image
+    --nofill           don't pad or fill the image to fit the dimensions
+    --blackfill        pad or fill the image to fit the dimensions with a black background
+    --animated         treat this as an animated gif
+    --reorient         output reoriented version of the photo using exif data
+
+    --fuzz      PERC   fuzz factor as percentage. give --fuzz 2% as an example
+                        colors within this distance are considered equal.
+                        currently only applied to animated gifs
+
+    --LS               use our LS flag
+    --LM               use our LM flag
+    --ZC               use our ZC flag
+    --NS               use our NS flag
+
+    --help|h           print this
+
+EOF
+}
+
+OS=$(uname)
+GETOPT=${GETOPT:-"/usr/bin/getopt"}
+SHORTOPTS="i:o:hW:H:" 
+LONGOPTS="in:,out:,width:,height:,fuzz:,help,nofill,blackfill,still,LS,LM,ZC,LL,NS,animated,reorient"
+
+ARGS=$($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@")
+
+IN=''
+OUT=''
+HEIGHT=''
+WIDTH=''
+NOFILL=0
+BLACKFILL=0
+ANIMATED=0
+STILL=0
+FLAGS='LL'
+
+THUMB_PARAMS=''
+FUZZ=''
+
+eval set -- "$ARGS" 
+
+while true; do
+	case $1 in
+		-h|--help)
+			usage
+			exit 1
+			;;
+		--animated)
+			ANIMATED=1
+			;;
+		--reorient)
+			FLAGS="OR"
+			;;
+		-i|--in)
+			shift
+			IN=$1
+			;;
+		-o|--out)
+			shift
+			OUT=$1
+			;;
+		-H|--height)
+			shift
+			HEIGHT=$1
+			;;
+		-W|--width)
+			shift
+			WIDTH=$1
+			;;
+		--fuzz)
+			shift
+			FUZZ="-fuzz $1"
+			;;
+		--ZC)
+			FLAGS="ZC"
+			;;
+		--LS)
+			FLAGS="LS"
+			;;
+		--LM)
+			FLAGS="LM"
+			;;
+		--NS)
+			FLAGS="NS"
+			;;
+		--nofill)
+			NOFILL=1
+			;;
+		--blackfill)
+			BLACKFILL=1
+			;;
+		--still)
+			STILL=1
+			;;
+		--)
+			shift
+			break
+			;;
+		*)
+			shift
+			break
+			;;
+	esac
+	shift
+done
+
+echo $IN
+if [ "$IN"X = "X" ]; then
+	echo "-i|--in required"
+	usage
+	exit 1
+fi
+
+if [ "$OUT"X = "X" ]; then
+	echo "-o|--out required"
+	usage
+	exit 1
+fi
+
+if [ "$FLAGS" != "OR" ]; then
+	if [ "$HEIGHT"X = "X" ]; then
+		echo "-H|--height required"
+		usage
+		exit 1
+	fi
+
+	if [ "$WIDTH"X = "X" ]; then
+		echo "-W|--width required"
+		usage
+		exit 1
+	fi
+fi
+
+shopt -s nocasematch
+
+function is_gif() {
+	format=$($IDENTIFY -format "%m\n" "$1" | head -1)
+	if [[ $format == "GIF" ]]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+function is_jpeg() {
+	format=$($IDENTIFY -format "%m\n" "$1" | head -1)
+	if [[ $format == "JPEG" ]]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+function thumb_params() {
+	QUALITY=''
+
+	if [ "$HEIGHT"X = "X" ]; then
+			HEIGHT=$WIDTH
+	fi
+
+	is_jpeg "$IN"
+	jpeg=$?
+
+	if [[ $jpeg -eq 1 ]]; then
+			QUALITY="-quality ${JPEG_QUALITY_LEVEL}"
+	fi
+
+	# LL no upscaling, no padding -- default
+	# LS is fixed aspect ratio, enlargment ok
+	# LM is allow output enlargement, enlargment ok
+	# ZC is zoom crop, enlargement ok-- it blows up the image then crops
+	# NS is do not scale ever
+
+	case $FLAGS in
+		"LM")
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}" 
+			;;
+		"LS")
+			if [[ $NOFILL -eq 1 ]]; then
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}> -gravity center" 
+			elif [[ $BLACKFILL -eq 1 ]]; then
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background black -extent ${WIDTH}x${HEIGHT}!" 
+			else 
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background white -extent ${WIDTH}x${HEIGHT}!" 
+			fi
+			;;
+		"ZC")
+			# the '^' means Minimum values of width and height given, aspect ratio
+			# preserved. see http://www.imagemagick.org/script/command-line-processing.php#geometry
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity center -extent ${WIDTH}x${HEIGHT}"
+			;;
+		"LL")
+			# the '>' means change as per WIDTHxHEIGHT but only if an image dimension exceeds a specified dimension.
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}>" 
+			;;
+		"NS")
+			# get height and width
+			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
+			echo "Height ${origheight} x Width ${origwidth}"
+			if [[ $origheight -gt $HEIGHT && $origwidth -gt $WIDTH ]]; then
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}+0+0^ -gravity center -crop ${WIDTH}x${HEIGHT}+0+0!"
+			elif [ $origheight -gt $HEIGHT ] || [ $origwidth -gt $WIDTH ]; then
+				THUMB_PARAMS="${QUALITY} -gravity center -crop ${WIDTH}x${HEIGHT}+0+0! -thumbnail ${WIDTH}x${HEIGHT}+0+0"
+			else
+				THUMB_PARAMS="${QUALITY}"
+			fi
+			;;
+		"OR")
+			# reorient only
+			THUMB_PARAMS="${QUALITY} -auto-orient"
+			;;
+	esac
+}
+
+function animated_thumb_params() {
+	thumb_params 
+	params=$THUMB_PARAMS
+	THUMB_PARAMS="-coalesce ${params} ${FUZZ} -layers Optimize"
+}
+
+
+function is_animated() {
+	num=$($IDENTIFY -format "%n" "$1")
+	if [[ $num -gt 1 ]]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+function thumb() {
+	is_gif "$IN"
+	gif=$?
+	is_animated "$IN"
+	animated=$?
+
+	if [[ $param_animated -eq 1 || ( $gif -eq 1 && $animated -eq 1 ) ]]; then
+		animated_thumb_params
+	else
+		thumb_params 
+	fi 
+
+	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
+		echo ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} ${OUT}
+		exec ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} ${OUT}
+	else
+		echo ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} "${OUT}"
+		exec ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} "${OUT}"
+	fi
+}
+
+thumb 
