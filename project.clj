@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [clout "1.2.0"]
                  [http-kit "2.1.16"]
+                 [cheshire "5.3.1"]
                  [ring "1.3.0"]
                  [compojure "1.1.8"]
                  [environ "0.5.0"]
