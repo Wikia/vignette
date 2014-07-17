@@ -15,10 +15,11 @@
 ; "fileext" : "PNG"
 ; }
 (def image-thumbnail
-  (route-compile "/swift/:swift-version/:wikia/:image-type/thumb/:top-dir/:middle-dir/:original/:thumbnail"
+  (route-compile "/swift/:swift-version/:wikia/:image-type/:uri-request-type/:top-dir/:middle-dir/:original/:thumbnail"
                  {:wikia #"\w+"
                   :swift-version #"\w+"
                   :image-type #"images|avatars"
+                  :uri-request-type #"\w+"
                   :top-dir #"[0-9a-f]{1}?"
                   :middle-dir #"[0-9a-f]{2}"}))
 
@@ -31,8 +32,8 @@
 (defmulti request-map-add-width :request-type)
 
 (defmethod request-map-add-width :image-thumbnail
-  "Add the :width field to a request map based on the legacy parsing methods."
   [m]
+  "Add the :width field to a request map based on the legacy parsing methods."
   (let [path (get m :thumbnail "")
         matches (re-find #"(?ix)(\d+px|\d+x\d+|\d+x\d+x\d+|)\-(.*)\.(jpg|jpeg|jpe|png|gif|webp)" path)]
      (if-let [[_ width _ _] matches]
@@ -43,15 +44,27 @@
   [m]
   (assoc m :width ""))
 
+(defn request-map->thumbpath
+  [m]
+  (format "%s/%s/%s/%s/%s/%s"
+          (:wikia m)
+          (:image-type m)
+          (:uri-request-type m)
+          (:top-dir m)
+          (:middle-dir m)
+          (:original m)))
+
+(defn request-map-add-thumbpath
+  [m]
+  (assoc m :thumbpath (request-map->thumbpath m)))
+
+;;;;;
+
 (defmulti request-map->dimensions :request-type)
 
 (defmethod request-map->dimensions :image-thumbnail
   [m])
 
-(defn route-map->legacy
-  "Converts a route map to a legacy map with the same keys for comparison
-  with the perl output."
-  [m])
 
 (defn remove-extension
   "Remove the extension from a filename."

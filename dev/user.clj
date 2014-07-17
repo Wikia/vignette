@@ -2,7 +2,8 @@
   (:require (vignette.storage [core :refer :all]
                               [local :as vlocal]
                               [s3 :as vs3])
-            (vignette.api.legacy [routes :as alr])
+            (vignette.api.legacy [routes :as alr]
+                                 [test :as t])
             [aws.sdk.s3 :as s3]
             [midje.repl :refer :all]
             [clout.core :as c]
