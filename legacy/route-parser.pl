@@ -8,6 +8,8 @@
 # varnishlog  -mRxURL:images.wikia.com -iRxURL | grep RxURL | cut -c22- | grep -v auth > request.log
 #
 use JSON;
+use Data::Dumper;
+use URI::Encode qw(uri_decode);;
 
 
 sub create_matcher {
@@ -20,6 +22,9 @@ sub create_matcher {
 		# Try and match the given $regex. If there is a hit, extract the matched values into
 		# the fields in @fields that were supplied at call time.
 		my ($path, $json) = @_;
+
+		$path = uri_decode($path);
+
 		if ($path =~ $regex) {
 			my %extracted_map;
 
@@ -41,20 +46,20 @@ my @ordered_request_matchers = (
 		# Thumbnailer.pm: 171
 		"image thumbnailer",
 		qr{ \/((?!\w\/)?(.+)\/(images|avatars)\/thumb((?!\/archive).*|\/archive)?\/\w\/\w{2}\/(.+)\.(jpg|jpeg|png|gif{1,}))\/((\d+px|\d+x\d+|\d+x\d+x\d+|)\-(.*)\.(jpg|jpeg|jpe|png|gif|webp))(\?.*)?$ }xi,
-		('thumbpath', 'dbname', 'type', 'archive', 'filename', 'fileext', 'thumbname', 'width', 'thumbext')
+		('thumbpath', 'wikia', 'type', 'archive', 'filename', 'fileext', 'thumbname', 'width', 'thumbext')
 	),
 	create_matcher(
 		# Thumbnailer.pm: 196
 		"SVG thumbnailer",
 		qr{ \/((?!\w\/)?(.+)\/images\/thumb((?!\/archive).*|\/archive)?\/\w\/\w{2}\/(.+)\.svg)\/((\d+px|\d+x\d+|\d+x\d+x\d+)\-(.+)\.(.*))$ }xi,
-		('thumbpath', 'dbname', 'archive', 'filename', 'fileext', 'width', 'thumbname'),
+		('thumbpath', 'wikia', 'archive', 'filename', 'fileext', 'width', 'thumbname'),
 		# hard codes 'fileext' => svg, 'thumbext' => 'png'
 	),
 	create_matcher(
 		# Thumbnailer.pm: 218
 		"OGG thumbnailer",
 		qr{ \/((?!\w\/)?(.+)\/images\/thumb((?!\/archive).*|\/archive)?\/\w\/\w{2}\/(.+)\.ogg)\/((\d+px|seek=\d+|mid)\-(.+)\.(jpg))$ }xi,
-		('thumbpath', 'dbname', 'type', 'filename', 'thumbname', 'width', 'junk', 'thumbext')
+		('thumbpath', 'wikia', 'type', 'filename', 'thumbname', 'width', 'junk', 'thumbext')
 		# hard codes 'fileext' => ogg
 		# custom width manipulation
 	),
@@ -62,14 +67,14 @@ my @ordered_request_matchers = (
 		# Thumbnailer.pm: 250
 		"image without extension",
 		qr{ \/((?!\w\/)?(.+)\/images\/thumb((?!\/archive).*|\/archive)?\/\w\/\w{2}\/(.+))\/((((v\,([0-9a-f]{6}\,)?)?\d+)px|\d+x\d+|\d+x\d+x\d+)\-(.+))$ }xi,
-		('thumbpath', 'dbname', 'archive', 'filename', 'fileext', 'width', 'thumbname', 'thumbext')
+		('thumbpath', 'wikia', 'archive', 'filename', 'thumbname', 'width')
 		# hard codes thumb ext to ''
 	),
 	create_matcher(
 		# Thumbnailer.pm: 276
 		"original",
 		qr{ \/((?!\w\/)?(.+)\/images((?!\/archive).*|\/archive)?\/\w\/\w{2}\/((.+)(\.[^.])?))$ }xi,
-		('thumbpath', 'dbname', 'archive', 'filename', 'junk', 'fileext', 'width', 'thumbname', 'thumbext')
+		('thumbpath', 'wikia', 'archive', 'filename', 'junk', 'fileext', 'width', 'thumbname', 'thumbext')
 		# stops after fileext
 		# hard codes width => '', thumbname => '', thumbext => '', 'original' => 1
 	),
@@ -77,7 +82,7 @@ my @ordered_request_matchers = (
 		# Thumbnailer.pm: 306
 		"interactive maps",
 		qr{ \/((intmap_(.+))\/thumb\/([^/]+)\.(jpg|jpeg|png|gif))\/((\d+px|\d+x\d+|\d+x\d+x\d+|)\-(.*)\.(jpg|jpeg|jpe|png|gif|webp)) }xi,
-		('thumbpath', 'dbname', 'junk', 'filename', 'fileext', 'thumbname', 'width', 'junk', 'thumbext')
+		('thumbpath', 'wikia', 'junk', 'filename', 'fileext', 'thumbname', 'width', 'junk', 'thumbext')
 		# hard codes type => 'images', original => 0, archive => 0
 	)
 );
