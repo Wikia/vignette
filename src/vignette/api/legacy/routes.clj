@@ -14,14 +14,39 @@
 ; "type" : "images",
 ; "fileext" : "PNG"
 ; }
-(def image-thumbnail-swift
+(def image-thumbnail
   (route-compile "/swift/:swift-version/:wikia/:image-type/thumb/:top-dir/:middle-dir/:original/:thumbnail"
-                 {:request-type :image-thumbnail-swift
-                  :wikia #"\w+"
+                 {:wikia #"\w+"
                   :swift-version #"\w+"
                   :image-type #"images|avatars"
                   :top-dir #"[0-9a-f]{1}?"
                   :middle-dir #"[0-9a-f]{2}"}))
+
+(defn add-request-type
+  [m request-type]
+  {:pre [(map? m)]
+   :post [(map? %)]}
+  (merge m {:request-type request-type}))
+
+(defmulti request-map-add-width :request-type)
+
+(defmethod request-map-add-width :image-thumbnail
+  "Add the :width field to a request map based on the legacy parsing methods."
+  [m]
+  (let [path (get m :thumbnail "")
+        matches (re-find #"(?ix)(\d+px|\d+x\d+|\d+x\d+x\d+|)\-(.*)\.(jpg|jpeg|jpe|png|gif|webp)" path)]
+     (if-let [[_ width _ _] matches]
+       (assoc m :width width)
+       m)))
+
+(defmethod request-map-add-width nil
+  [m]
+  (assoc m :width ""))
+
+(defmulti request-map->dimensions :request-type)
+
+(defmethod request-map->dimensions :image-thumbnail
+  [m])
 
 (defn route-map->legacy
   "Converts a route map to a legacy map with the same keys for comparison
