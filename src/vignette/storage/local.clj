@@ -3,14 +3,23 @@
             [clojure.java.io :as io]
             [clojure.java.shell :as sh]))
 
+
+
+(defrecord LocalImageStorage [store thumbpath-prefix original-prefix]
+  ImageStorageProtocol
+  (save-thumbnail [this resource thumb-map]
+    )
+
+  )
+
 (declare resolve-local-path)
 (declare create-local-path)
 (declare get-parent)
 (declare transfer!)
 (declare file-exists?)
 
-(defrecord LocalImageStorage [directory]
-  ImageStorageProtocol
+(defrecord LocalObjectStorage [directory]
+  ObjectStorageProtocol
 
  (get-object [this bucket path]
    (let [real-path-object (io/file (resolve-local-path (:directory this) bucket path))]
@@ -34,7 +43,7 @@
 
 (defn create-local-image-storage
   [directory]
-  (->LocalImageStorage directory))
+  (->LocalObjectStorage directory))
 
 (defn resolve-local-path
   [directory bucket path]
@@ -53,7 +62,9 @@
   (io/copy (io/file in) (io/file out))
   (file-exists? out))
 
-
 (defn file-exists?
   [file]
   (.exists (io/file file)))
+
+
+
