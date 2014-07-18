@@ -30,6 +30,10 @@ sub create_matcher {
 
 			my @values = ($hook_name, $path, $1, $2, $3, $4, $5, $6, $7, $8, $9);
 
+			#print Dumper(@values);
+			#print "\n";
+			#print Dumper(@fields);
+
 			@extracted_map{@fields} = @values;
 
 			return $json->encode(\%extracted_map);
