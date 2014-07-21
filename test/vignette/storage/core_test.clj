@@ -2,6 +2,7 @@
   (:require [vignette.storage.core :refer :all]
             [vignette.storage.protocols :refer :all]
             [vignette.storage.local :refer :all]
+            [vignette.media-types :as mt]
             [clojure.java.shell :refer (sh)]
             [clojure.java.io :as io]
             [midje.sweet :refer :all]))
@@ -22,6 +23,18 @@
                             :mode "resize"
                             :height "10"
                             :width "10"})
+
+
+(facts :local-image-storage :unit
+  (let [store (create-local-image-storage ..disk-store.. "originals" "thumbs")
+        file-name "a/bc/d.png"]
+    (save-thumbnail store ..file.. ..map..) => truthy
+
+    (provided
+      (mt/wikia ..map..) => "lotr"
+      (mt/thumbnail-path ..map..) => file-name
+      (#'put* ..disk-store.. ..file.. "lotr" "thumbs" file-name) => true)
+  ))
 
 (with-state-changes
   [(before :facts (do
