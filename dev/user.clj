@@ -14,6 +14,7 @@
             [cheshire.core :refer :all]
             [schema.core :as schema]
             [schema.macros :as sm]
+            [clojure.tools.trace :refer :all]
             [clojure.java.io :as io]
             [clojure.java.shell :refer (sh)])
   (:use [environ.core]))
@@ -33,7 +34,32 @@
                             :height "10"
                             :width "10"})
 
+(def los  (vlocal/create-local-object-storage "/tmp/vignette-local-storage"))
+(def lis  (vlocal/create-local-image-storage los "originals" "thumbs"))
+
 (def storage-creds
   {:access-key  (env :storage-access-key)
    :secret-key  (env :storage-secret-key)
    :endpoint    (env :storage-endpoint)} )
+
+(comment
+  (def S (s/run "foo")))
+
+(comment
+  "Experimentation with prismatic/schema."
+  (def MediaFile
+    {:type String
+     :original String
+     :middle-dir String
+     :top-dir String
+     :wikia String})
+
+ (def MediaThumbnailFile
+   (merge MediaFile
+          {:mode String
+           :height Long
+           :width Long}))
+
+ (sm/defn do-something :- String
+   [in :- MediaFile]
+   ( )str (:wikia in)))

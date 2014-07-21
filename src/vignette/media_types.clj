@@ -17,49 +17,49 @@
           :width String})) 
 
 
-(defn get-top-dir
+(defn top-dir
   [data]
   (:top-dir data))
 
-(defn get-middle-dir
+(defn middle-dir
   [data]
   (:middle-dir data))
 
-(defn get-original
+(defn original
   [data]
   (:original data))
 
-(defn get-original-path
+(defn original-path
   [data]
-  (clojure.string/join "/" ((juxt get-top-dir get-middle-dir get-original) data)))
+  (clojure.string/join "/" ((juxt top-dir middle-dir original) data)))
 
-(defn get-wikia
+(defn wikia
   [data]
   (:wikia data))
 
-(defn get-mode
+(defn mode
   [data]
   (:mode data))
 
-(defn get-height
+(defn height
   [data]
   (Integer. (:height data)))
 
-(defn get-width
+(defn width
   [data]
   (Integer. (:width data)))
 
-(declare get-thumbnail)
+(declare thumbnail)
 
 ; /3/35/100px-100px-resize-arwen.png
-(defn get-thumbnail-path
+(defn thumbnail-path
   [data]
   (clojure.string/join "/" 
-         ((juxt get-top-dir get-middle-dir get-thumbnail) data)))
+         ((juxt top-dir middle-dir thumbnail) data)))
 
-(defn get-thumbnail
+(defn thumbnail
   [data]
-  (format "%dpx-%dpx-%s-%s" (get-width data) (get-height data) (get-mode data) (get-original data)))
+  (format "%dpx-%dpx-%s-%s" (width data) (height data) (mode data) (original data)))
 
 (sm/defn create-thumbnail :- MediaThumbnailFile
   [data :- MediaThumbnailFile]

@@ -15,5 +15,6 @@
                  [clj-aws-s3 "0.3.9"]]
   :profiles  {:dev  {:source-paths  ["dev"]
                      :dependencies  [[midje "1.6.3"]
+                                     [org.clojure/tools.trace "0.7.8"]
                                      [ring-mock "0.1.5"]
                                      [javax.servlet/servlet-api "2.5"]]}})

@@ -1,16 +1,40 @@
 (ns vignette.storage.local
   (:require [vignette.storage.core :refer :all]
+            [vignette.media-types :as mt]
             [clojure.java.io :as io]
             [clojure.java.shell :as sh]))
 
 
+(defn- join-slash
+  [& s]
+  (clojure.string/join "/" s))
 
-(defrecord LocalImageStorage [store thumbpath-prefix original-prefix]
+(defrecord LocalImageStorage [store original-prefix thumb-prefix]
   ImageStorageProtocol
-  (save-thumbnail [this resource thumb-map]
-    )
 
-  )
+  ; ^thumb-map mt/->MediaThmubnailFile :- bool
+  (save-thumbnail [this resource thumb-map]
+    (let [path (mt/thumbnail-path thumb-map)]
+      (put-object (:store this)
+                  resource
+                  (mt/wikia thumb-map)
+                 (join-slash (:thumb-prefix this) path))))
+
+  ; ^thumb-map mt/->MediaThumbnailFile :- resource
+  (get-thumbnail [this thumb-map]
+    (let [path (mt/thumbnail-path thumb-map)]
+      (get-object (:store this)
+                  (mt/wikia thumb-map)
+                  (join-slash (:thumb-prefix this) path))))
+
+  (save-original [this resource original-map])
+  (get-original [this original-map]))
+
+
+(defn create-local-image-storage
+  [store original-prefix thumb-prefix]
+  (->LocalImageStorage store original-prefix thumb-prefix))
+
 
 (declare resolve-local-path)
 (declare create-local-path)
@@ -41,7 +65,7 @@
   (list-buckets [this])
   (list-objects [this bucket]) )
 
-(defn create-local-image-storage
+(defn create-local-object-storage
   [directory]
   (->LocalObjectStorage directory))
 
@@ -57,6 +81,8 @@
   [path]
   (.mkdirs (io/file path)))
 
+; i think this should be a multimethod that dispatches
+; based on the type
 (defn transfer!
   [in out]
   (io/copy (io/file in) (io/file out))
