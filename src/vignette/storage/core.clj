@@ -6,26 +6,49 @@
   [& s]
   (clojure.string/join "/" s))
 
+(defn- get*
+  [store bucket prefix path]
+  (get-object store
+              bucket
+              (join-slash prefix path)))
+
+(defn- put*
+  [store resource bucket prefix path]
+  (put-object store
+              resource
+              bucket
+              (join-slash prefix path)))
+
 (defrecord LocalImageStorage [store original-prefix thumb-prefix]
   ImageStorageProtocol
 
-  ; ^thumb-map mt/->MediaThmubnailFile :- bool
   (save-thumbnail [this resource thumb-map]
     (let [path (mt/thumbnail-path thumb-map)]
-      (put-object (:store this)
-                  resource
-                  (mt/wikia thumb-map)
-                 (join-slash (:thumb-prefix this) path))))
+      (put* (:store this)
+            resource
+            (mt/wikia thumb-map)
+            (:thumb-prefix this)
+            path)))
 
-  ; ^thumb-map mt/->MediaThumbnailFile :- resource
   (get-thumbnail [this thumb-map]
-    (let [path (mt/thumbnail-path thumb-map)]
-      (get-object (:store this)
-                  (mt/wikia thumb-map)
-                  (join-slash (:thumb-prefix this) path))))
+    (get* (:store this)
+          (mt/wikia thumb-map)
+          (:thumb-prefix this)
+          (mt/thumbnail-path thumb-map)))
 
-  (save-original [this resource original-map])
-  (get-original [this original-map]))
+  (save-original [this resource original-map]
+    (let [path (mt/original-path original-map)]
+      (put* (:store this)
+            resource
+            (mt/wikia original-map)
+            (:original-prefix this)
+            path)))
+
+  (get-original [this original-map]
+    (get* (:store this)
+          (mt/wikia original-map)
+          (:original-prefix this)
+          (mt/original-path original-map))))
 
 
 (defn create-local-image-storage
