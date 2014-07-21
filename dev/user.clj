@@ -1,6 +1,7 @@
 (ns user
-  (:require (vignette.storage [core :refer :all]
+  (:require (vignette.storage [core :refer (create-local-image-storage)]
                               [local :as vlocal]
+                              [protocols :refer :all]
                               [s3 :as vs3])
             (vignette.api.legacy [routes :as alr]
                                  [test :as t])
@@ -35,7 +36,7 @@
                             :width "10"})
 
 (def los  (vlocal/create-local-object-storage "/tmp/vignette-local-storage"))
-(def lis  (vlocal/create-local-image-storage los "originals" "thumbs"))
+(def lis  (create-local-image-storage los "originals" "thumbs"))
 
 (def storage-creds
   {:access-key  (env :storage-access-key)

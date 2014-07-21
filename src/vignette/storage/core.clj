@@ -1,15 +1,33 @@
-(ns vignette.storage.core)
+(ns vignette.storage.core
+  (:require [vignette.storage.protocols :refer :all]
+            [vignette.media-types :as mt]))
 
-(defprotocol ObjectStorageProtocol
-  (get-object [this bucket path])
-  (put-object [this resource bucket path])
-  (delete-object [this bucket path])
-  (list-buckets [this])
-  (list-objects [this bucket]))
+(defn- join-slash
+  [& s]
+  (clojure.string/join "/" s))
 
-(defprotocol ImageStorageProtocol
-  (save-thumbnail [this resource thumb-map])
-  (get-thumbnail [this thumb-map])
+(defrecord LocalImageStorage [store original-prefix thumb-prefix]
+  ImageStorageProtocol
 
-  (save-original  [this resource original-map])
-  (get-original  [this original-map]))
+  ; ^thumb-map mt/->MediaThmubnailFile :- bool
+  (save-thumbnail [this resource thumb-map]
+    (let [path (mt/thumbnail-path thumb-map)]
+      (put-object (:store this)
+                  resource
+                  (mt/wikia thumb-map)
+                 (join-slash (:thumb-prefix this) path))))
+
+  ; ^thumb-map mt/->MediaThumbnailFile :- resource
+  (get-thumbnail [this thumb-map]
+    (let [path (mt/thumbnail-path thumb-map)]
+      (get-object (:store this)
+                  (mt/wikia thumb-map)
+                  (join-slash (:thumb-prefix this) path))))
+
+  (save-original [this resource original-map])
+  (get-original [this original-map]))
+
+
+(defn create-local-image-storage
+  [store original-prefix thumb-prefix]
+  (->LocalImageStorage store original-prefix thumb-prefix))
