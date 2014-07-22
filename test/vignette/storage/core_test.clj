@@ -28,13 +28,30 @@
 (facts :local-image-storage :unit
   (let [store (create-local-image-storage ..disk-store.. "originals" "thumbs")
         file-name "a/bc/d.png"]
-    (save-thumbnail store ..file.. ..map..) => truthy
 
+    (save-thumbnail store ..file.. ..map..) => truthy
     (provided
       (mt/wikia ..map..) => "lotr"
       (mt/thumbnail-path ..map..) => file-name
-      (#'put* ..disk-store.. ..file.. "lotr" "thumbs" file-name) => true)
-  ))
+      (put* ..disk-store.. ..file.. "lotr" "thumbs" file-name) => true)
+
+    (get-thumbnail store ..map..) => "bytes"
+    (provided
+      (mt/wikia ..map..) => "lotr"
+      (mt/thumbnail-path ..map..) => file-name
+      (get* ..disk-store.. "lotr" "thumbs" file-name) => "bytes")
+
+    (save-original store ..file.. ..map..) => true
+    (provided
+      (mt/wikia ..map..) => "lotr"
+      (mt/original-path ..map..) => file-name
+      (put* ..disk-store.. ..file.. "lotr" "originals" file-name) => true)
+
+    (get-original store ..map..) => "bytes"
+    (provided
+      (mt/wikia ..map..) => "lotr"
+      (mt/original-path ..map..) => file-name
+      (get* ..disk-store.. "lotr" "originals" file-name) => "bytes")))
 
 (with-state-changes
   [(before :facts (do
@@ -51,7 +68,7 @@
   (facts :get-thumbnail :integration
     (let [local (create-local-object-storage "/tmp/vignette-local-storage")
           image-store (create-local-image-storage local "originals" "thumbs")]
-      ;(get-thumbnail image-store sample-thumbnail-hash) => falsey
+      (get-thumbnail image-store sample-thumbnail-hash) => falsey
       (save-thumbnail image-store (io/file "image-samples/ropes.jpg") sample-thumbnail-hash) => truthy
       (get-thumbnail image-store sample-thumbnail-hash) => truthy))
 
