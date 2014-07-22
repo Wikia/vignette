@@ -35,7 +35,7 @@
                             :height "10"
                             :width "10"})
 
-(def los  (vlocal/create-local-object-storage "/tmp/vignette-local-storage"))
+(def los  (vlocal/create-local-object-storage "/tmp/vignette-repl"))
 (def lis  (create-local-image-storage los "originals" "thumbs"))
 
 (def storage-creds

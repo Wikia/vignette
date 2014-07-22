@@ -6,13 +6,13 @@
   [& s]
   (clojure.string/join "/" s))
 
-(defn- get*
+(defn get*
   [store bucket prefix path]
   (get-object store
               bucket
               (join-slash prefix path)))
 
-(defn- put*
+(defn put*
   [store resource bucket prefix path]
   (put-object store
               resource
