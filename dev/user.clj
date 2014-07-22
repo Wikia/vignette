@@ -7,7 +7,8 @@
                                  [test :as t])
             (vignette.http [routes :as r])
             (vignette [server :as s]
-                      [media-types :as mt])
+                      [media-types :as mt]
+                      [system :refer :all])
             [aws.sdk.s3 :as s3]
             [midje.repl :refer :all]
             [clout.core :as c]
@@ -17,6 +18,7 @@
             [schema.macros :as sm]
             [clojure.tools.trace :refer :all]
             [clojure.java.io :as io]
+            [clojure.tools.namespace.repl :as nrepl]
             [clojure.java.shell :refer (sh)])
   (:use [environ.core]))
 
@@ -37,6 +39,10 @@
 
 (def los  (vlocal/create-local-object-storage "/tmp/vignette-repl"))
 (def lis  (create-local-image-storage los "originals" "thumbs"))
+
+(def S (create-system lis))
+; start the http server
+; (def http (s/run S))
 
 (def storage-creds
   {:access-key  (env :storage-access-key)
@@ -59,8 +65,4 @@
    (merge MediaFile
           {:mode String
            :height Long
-           :width Long}))
-
- (sm/defn do-something :- String
-   [in :- MediaFile]
-   ( )str (:wikia in)))
+           :width Long})))

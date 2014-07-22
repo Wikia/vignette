@@ -1,9 +1,14 @@
 (ns vignette.http.routes
-  (:require (compojure [route :refer (files not-found)]
+  (:require (vignette.storage [protocols :refer :all]
+                              [core :refer :all])
+            [vignette.system :refer :all]
+            (compojure [route :refer (files not-found)]
                        [core :refer  (routes GET ANY)])
             [clout.core :refer (route-compile route-matches)]
+            [ring.util.response :refer (response status charset header)]
             (ring.middleware [params :refer (wrap-params)])
-            [cheshire.core :refer :all]))
+            [cheshire.core :refer :all])
+  (:import java.io.FileInputStream))
 
 (def wikia-regex #"\w+")
 (def top-dir-regex #"\d")
@@ -41,8 +46,9 @@
                  (generate-string {:pretty true})))
         (GET original-route
              {route-params :route-params}
-             (-> route-params 
-                 (assoc :type :original)
-                 (generate-string {:pretty true})))
+             (let [route-params (assoc route-params :type :original)]
+               (if-let [file (get-original (store system) route-params )]
+                 (response file)
+                 (not-found " Unable to find image."))))
         (not-found "Unrecognized request path!\n"))
       (wrap-params)))

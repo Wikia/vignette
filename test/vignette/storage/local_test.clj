@@ -27,7 +27,7 @@
       local => truthy
       (get-object local "bucket" "bar") => falsey
       (put-object local "project.clj" "bucket" "bar") => truthy
-      (get-object local "bucket" "bar") => string?))
+      (get-object local "bucket" "bar") => truthy))
 
   (facts :delete-object
     (let [local (create-local-object-storage "/tmp/vignette-local-storage")]

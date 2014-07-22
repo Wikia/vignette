@@ -2,7 +2,8 @@
   (:require [vignette.storage.protocols :refer :all]
             [vignette.media-types :as mt]
             [clojure.java.io :as io]
-            [clojure.java.shell :as sh]))
+            [clojure.java.shell :as sh])
+  (:import  (java.io FileInputStream)))
 
 
 
@@ -11,14 +12,15 @@
 (declare get-parent)
 (declare transfer!)
 (declare file-exists?)
+(declare read-bytes-chunked)
 
 (defrecord LocalObjectStorage [directory]
   ObjectStorageProtocol
 
  (get-object [this bucket path]
-   (let [real-path-object (io/file (resolve-local-path (:directory this) bucket path))]
-     (when (file-exists? real-path-object)
-       (slurp real-path-object))))
+   (let [real-path-object (resolve-local-path (:directory this) bucket path)]
+     (when (file-exists? (io/file real-path-object))
+       (FileInputStream. real-path-object))))
 
  (put-object [this resource bucket path]
    (let [real-path (resolve-local-path (:directory this) bucket path)]
@@ -61,6 +63,3 @@
 (defn file-exists?
   [file]
   (.exists (io/file file)))
-
-
-

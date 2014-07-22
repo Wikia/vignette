@@ -17,5 +17,6 @@
   :profiles  {:dev  {:source-paths  ["dev"]
                      :dependencies  [[midje "1.6.3"]
                                      [org.clojure/tools.trace "0.7.8"]
+                                     [org.clojure/tools.namespace "0.2.5"]
                                      [ring-mock "0.1.5"]
                                      [javax.servlet/servlet-api "2.5"]]}})
