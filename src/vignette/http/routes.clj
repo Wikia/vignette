@@ -1,7 +1,7 @@
 (ns vignette.http.routes
   (:require (vignette.storage [protocols :refer :all]
                               [core :refer :all])
-            [vignette.system :refer :all]
+            [vignette.protocols :refer :all]
             (compojure [route :refer (files not-found)]
                        [core :refer  (routes GET ANY)])
             [clout.core :refer (route-compile route-matches)]
