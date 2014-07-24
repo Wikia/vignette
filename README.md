@@ -27,8 +27,15 @@ Here is a high level overview of where I think we want to take this in no partic
 
 # TODO
 
- * The storage object get methods will probably return binary or String. We need to make sure this can be rendered
-	as binary via the request.
+ * Packaging and deployment pipeline
+    * How do we unsure that what is being shipped to production has passed both unit and integration tests?
+       * How do we track test coverage? Do we care about coverage? 
+    * What do we ship as a package to production? A jar? A docker instance?
+       * We need to resolve the imagemagick dependency
+ * Monitoring in production
+    * Latency, rates, image sizes
+    * How do we alert?
+    * What do we alert on?
 
 ## Usage
 
