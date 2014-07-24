@@ -1,4 +1,4 @@
-(ns vignette.util
+(ns vignette.util.thumbnail
   (:require [vignette.storage.protocols :as store-prot]
             [vignette.storage.local :as store-loc]
             [vignette.protocols :refer :all]

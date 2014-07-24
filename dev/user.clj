@@ -9,8 +9,8 @@
             (vignette [server :as s]
                       [protocols :refer :all]
                       [media-types :as mt]
-                      [system :refer :all]
-                      [util :as u])
+                      [system :refer :all])
+            [vignette.util.thumbnail :as u]
             [aws.sdk.s3 :as s3]
             [midje.repl :refer :all]
             [clout.core :as c]
