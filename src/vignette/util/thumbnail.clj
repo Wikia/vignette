@@ -48,7 +48,7 @@
       (zero? (:exit sh-out)) (io/file temp-file)
       :else nil))) ; todo: add some logging here
 
-(defn get-thumbnail
+(defn get-or-generate-thumbnail
   [system thumb-map]
   (if-let [thumb (store-prot/get-thumbnail (store system) thumb-map)]
     thumb
