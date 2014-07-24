@@ -1,18 +1,10 @@
 (ns vignette.storage.local
   (:require [vignette.storage.protocols :refer :all]
             [vignette.media-types :as mt]
+            [vignette.util.filesystem :refer :all]
             [clojure.java.io :as io]
             [clojure.java.shell :as sh])
   (:import  (java.io FileInputStream)))
-
-
-
-(declare resolve-local-path)
-(declare create-local-path)
-(declare get-parent)
-(declare transfer!)
-(declare file-exists?)
-(declare read-bytes-chunked)
 
 (defrecord LocalObjectStorage [directory]
   ObjectStorageProtocol
@@ -40,26 +32,3 @@
 (defn create-local-object-storage
   [directory]
   (->LocalObjectStorage directory))
-
-(defn resolve-local-path
-  [directory bucket path]
-  (format "%s/%s/%s" directory bucket path))
-
-(defn get-parent
-  [path]
-  (.getParent (io/file path)))
-
-(defn create-local-path
-  [path]
-  (.mkdirs (io/file path)))
-
-; i think this should be a multimethod that dispatches
-; based on the type
-(defn transfer!
-  [in out]
-  (io/copy (io/file in) (io/file out))
-  (file-exists? out))
-
-(defn file-exists?
-  [file]
-  (.exists (io/file file)))

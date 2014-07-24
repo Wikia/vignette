@@ -1,6 +1,7 @@
 (ns vignette.util.thumbnail
   (:require [vignette.storage.protocols :as store-prot]
             [vignette.storage.local :as store-loc]
+            [vignette.util.filesystem :refer :all]
             [vignette.protocols :refer :all]
             [clojure.java.shell :refer (sh)]
             [clojure.java.io :as io]
@@ -8,13 +9,13 @@
 
 (defn temp-filename
   [thumb-map]
-  (let [filename (store-loc/resolve-local-path
+  (let [filename (resolve-local-path
                    "/tmp/vignette"
                    "_temp"
                    (generate-string (merge
                                       thumb-map
                                       {:ts (System/currentTimeMillis)})))]
-    (store-loc/create-local-path (store-loc/get-parent filename))
+    (create-local-path (get-parent filename))
     filename))
 
 (def options-map {:height "height"
