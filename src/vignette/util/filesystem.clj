@@ -9,7 +9,7 @@
 (declare file-exists?)
 
 (def temp-file-location (or (env :vignette-temp-file-location)
-                            "/tmp/vignette/_temp"))
+                            "/tmp/vignette"))
 
 (defn create-local-path
   [path]
