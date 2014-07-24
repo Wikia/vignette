@@ -44,7 +44,7 @@
         (GET thumbnail-route
              {route-params :route-params query-params :query-params}
              (let [route-params (mt/get-media-map (assoc route-params :type "thumbnail"))]
-               (if-let [thumb (u/get-thumbnail (store system) route-params)]
+               (if-let [thumb (u/get-thumbnail system route-params)]
                  (response (FileInputStream. thumb))
                  (not-found "Unable to create thumbnail"))))
         (GET original-route

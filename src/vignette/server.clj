@@ -1,14 +1,13 @@
 (ns vignette.server
-  (:require [vignette.http.routes :as r]
-            [org.httpkit.server :refer :all]))
+  (:require [org.httpkit.server :refer :all]))
 
 (def default-port 8080)
 
 ; http://http-kit.org/server.html#stop-server
 (defn run
-  ([system port]
+  ([app system port]
    (run-server
-     (#'r/app-routes system)
+     (app system)
      {:port port}))
-  ([system]
-   (run system default-port)))
+  ([app system]
+   (run app system default-port)))

@@ -1,14 +1,15 @@
 (ns vignette.util
   (:require [vignette.storage.protocols :as store-prot]
             [vignette.storage.local :as store-loc]
+            [vignette.protocols :refer :all]
             [clojure.java.shell :refer (sh)]
             [clojure.java.io :as io]
             [cheshire.core :refer :all]))
 
 (defn temp-filename
-  [store thumb-map]
+  [thumb-map]
   (let [filename (store-loc/resolve-local-path
-                   (:directory (:store store))
+                   "/tmp/vignette"
                    "_temp"
                    (generate-string (merge
                                       thumb-map
@@ -33,8 +34,8 @@
         :else (recur (conj acc (str "--" opt) (str val)) (rest params))))))
 
 (defn generate-thumbnail
-  [store resource thumb-map]
-  (let [temp-file (temp-filename store thumb-map)
+  [resource thumb-map]
+  (let [temp-file (temp-filename thumb-map)
         base-command ["bin/thumbnail"
                       "--in" (.getAbsolutePath resource)
                       "--out" temp-file]
@@ -46,13 +47,12 @@
       :else nil))) ; todo: add some logging here
 
 (defn get-thumbnail
-  [store thumb-map]
-  (if-let [thumb (store-prot/get-thumbnail store thumb-map)]
+  [system thumb-map]
+  (if-let [thumb (store-prot/get-thumbnail (store system) thumb-map)]
     thumb
-    (if-let [thumb (generate-thumbnail store
-                                       (store-prot/get-original store thumb-map)
+    (if-let [thumb (generate-thumbnail (store-prot/get-original (store system) thumb-map)
                                        thumb-map)]
-      (and (store-prot/save-thumbnail store thumb thumb-map)
+      (and (store-prot/save-thumbnail (store system) thumb thumb-map)
            (io/delete-file thumb)
-           (store-prot/get-thumbnail store thumb-map))
+           (store-prot/get-thumbnail (store system) thumb-map))
       nil)))

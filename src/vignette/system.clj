@@ -1,5 +1,7 @@
 (ns vignette.system
   (:require [environ.core :refer (env)]
+            [org.httpkit.server :refer :all]
+            [vignette.http.routes :refer (app-routes)]
             (vignette [server :as s]
                       [protocols :refer :all])))
 
@@ -11,7 +13,9 @@
   (start [this port]
     (swap! (:running (:state this))
            (fn [_]
-             (s/run this port))))
+             (run-server
+               (app-routes this)
+               {:port port}))))
   (stop [this]
     (@(:running (:state this)))))
 
