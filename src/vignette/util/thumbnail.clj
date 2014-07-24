@@ -28,14 +28,12 @@
 
 (defn thumbnail-options
   [thumb-map]
-  (loop [acc []
-         params thumb-map]
-    (let [[opt-key val] (first params)
-          opt (get options-map opt-key)]
-      (cond
-        (empty? params) acc
-        (nil? opt) (recur acc (rest params))
-        :else (recur (conj acc (str "--" opt) (str val)) (rest params))))))
+  (reduce (fn [running [opt-key val]]
+            (if-let [opt (get options-map opt-key)]
+              (conj running (str "--" opt) (str val))
+              running))
+          []
+          thumb-map))
 
 (defn generate-thumbnail
   [resource thumb-map]
