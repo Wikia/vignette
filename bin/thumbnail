@@ -44,7 +44,7 @@ cat <<EOF
     --width|W   INT    the width
 
     --still            only use the first frame of the image
-    --nofill           don't pad or fill the image to fit the dimensions
+    --nofill           don not pad or fill the image to fit the dimensions
     --blackfill        pad or fill the image to fit the dimensions with a black background
     --animated         treat this as an animated gif
     --reorient         output reoriented version of the photo using exif data
@@ -200,7 +200,7 @@ function thumb_params() {
 	QUALITY=''
 
 	if [ "$HEIGHT"X = "X" ]; then
-			HEIGHT=$WIDTH
+			HEIGHT=${WIDTH}
 	fi
 
 	is_jpeg "$IN"

@@ -2,6 +2,8 @@
   (:require (vignette.storage [protocols :refer :all]
                               [core :refer :all])
             [vignette.system :refer :all]
+            [vignette.util :as u]
+            [vignette.media-types :as mt]
             (compojure [route :refer (files not-found)]
                        [core :refer  (routes GET ANY)])
             [clout.core :refer (route-compile route-matches)]
@@ -41,14 +43,15 @@
   (-> (routes
         (GET thumbnail-route
              {route-params :route-params query-params :query-params}
-             (-> route-params
-                 (assoc :type :thumbnail)
-                 (generate-string {:pretty true})))
+             (let [route-params (mt/get-media-map (assoc route-params :type "thumbnail"))]
+               (if-let [thumb (u/get-thumbnail (store system) route-params)]
+                 (response (FileInputStream. thumb))
+                 (not-found "Unable to create thumbnail"))))
         (GET original-route
              {route-params :route-params}
-             (let [route-params (assoc route-params :type :original)]
+             (let [route-params (mt/get-media-map (assoc route-params :type :original))]
                (if-let [file (get-original (store system) route-params )]
-                 (response file)
+                 (response (FileInputStream. file))
                  (not-found " Unable to find image."))))
         (not-found "Unrecognized request path!\n"))
       (wrap-params)))

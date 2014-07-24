@@ -18,9 +18,9 @@
   ObjectStorageProtocol
 
  (get-object [this bucket path]
-   (let [real-path-object (resolve-local-path (:directory this) bucket path)]
-     (when (file-exists? (io/file real-path-object))
-       (FileInputStream. real-path-object))))
+   (let [real-file (io/file (resolve-local-path (:directory this) bucket path))]
+     (when (file-exists? real-file)
+       real-file)))
 
  (put-object [this resource bucket path]
    (let [real-path (resolve-local-path (:directory this) bucket path)]
