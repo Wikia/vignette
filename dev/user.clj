@@ -6,6 +6,7 @@
             (vignette.api.legacy [routes :as alr]
                                  [test :as t])
             (vignette.http [routes :as r])
+            (vignette.util [integration :is i])
             (vignette [server :as s]
                       [protocols :refer :all]
                       [media-types :as mt]
