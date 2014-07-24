@@ -4,6 +4,7 @@
             [vignette.system :refer :all]
             [vignette.util :as u]
             [vignette.media-types :as mt]
+            [vignette.protocols :refer :all]
             (compojure [route :refer (files not-found)]
                        [core :refer  (routes GET ANY)])
             [clout.core :refer (route-compile route-matches)]

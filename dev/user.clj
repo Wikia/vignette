@@ -7,6 +7,7 @@
                                  [test :as t])
             (vignette.http [routes :as r])
             (vignette [server :as s]
+                      [protocols :refer :all]
                       [media-types :as mt]
                       [system :refer :all]
                       [util :as u])
@@ -42,16 +43,14 @@
 (def lis  (create-local-image-storage los "originals" "thumbs"))
 
 (def S (create-system lis))
-; start the http server
-; (def http (s/run S))
+(comment
+  (start S 8080)
+  (stop S))
 
 (def storage-creds
   {:access-key  (env :storage-access-key)
    :secret-key  (env :storage-secret-key)
    :endpoint    (env :storage-endpoint)} )
-
-(comment
-  (def S (s/run "foo")))
 
 (comment
   "Experimentation with prismatic/schema."
