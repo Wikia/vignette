@@ -1,7 +1,6 @@
 (ns vignette.http.routes
   (:require (vignette.storage [protocols :refer :all]
                               [core :refer :all])
-            [vignette.system :refer :all]
             [vignette.util :as u]
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]

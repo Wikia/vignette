@@ -7,12 +7,12 @@
 
 (defn temp-filename
   [store thumb-map]
-  (let [filename (format "%s/%s/%s"
-                         (:directory (:store store))
-                         "_temp"
-                         (generate-string (merge
-                                            thumb-map
-                                            {:ts (System/currentTimeMillis)})))]
+  (let [filename (store-loc/resolve-local-path
+                   (:directory (:store store))
+                   "_temp"
+                   (generate-string (merge
+                                      thumb-map
+                                      {:ts (System/currentTimeMillis)})))]
     (store-loc/create-local-path (store-loc/get-parent filename))
     filename))
 
