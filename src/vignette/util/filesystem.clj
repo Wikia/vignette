@@ -20,8 +20,8 @@
   (.getParent (io/file path)))
 
 (defn resolve-local-path
-  [directory bucket path]
-  (format "%s/%s/%s" directory bucket path))
+  [& more]
+  (reduce str (interpose "/" more)))
 
 ; i think this should be a multimethod that dispatches
 ; based on the type

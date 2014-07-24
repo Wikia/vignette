@@ -10,8 +10,7 @@
 (defn temp-filename
   [thumb-map]
   (let [filename (resolve-local-path
-                   "/tmp/vignette"
-                   "_temp"
+                   "/tmp/vignette/_temp"
                    (generate-string (merge
                                       thumb-map
                                       {:ts (System/currentTimeMillis)})))]
