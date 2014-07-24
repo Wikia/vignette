@@ -5,12 +5,16 @@
             [vignette.protocols :refer :all]
             [clojure.java.shell :refer (sh)]
             [clojure.java.io :as io]
-            [cheshire.core :refer :all]))
+            [cheshire.core :refer :all])
+  (:use [environ.core]))
+
+(def thumbnail-bin (or (env :vignette-thumbnail-bin)
+                       "bin/thumbnail"))
 
 (defn temp-filename
   [thumb-map]
   (let [filename (resolve-local-path
-                   "/tmp/vignette/_temp"
+                   temp-file-location
                    (generate-string (merge
                                       thumb-map
                                       {:ts (System/currentTimeMillis)})))]
@@ -36,7 +40,7 @@
 (defn generate-thumbnail
   [resource thumb-map]
   (let [temp-file (temp-filename thumb-map)
-        base-command ["bin/thumbnail"
+        base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
                       "--out" temp-file]
         thumb-options (thumbnail-options thumb-map)
