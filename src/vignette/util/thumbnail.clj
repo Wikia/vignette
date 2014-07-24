@@ -8,8 +8,7 @@
             [cheshire.core :refer :all])
   (:use [environ.core]))
 
-(def thumbnail-bin (or (env :vignette-thumbnail-bin)
-                       "bin/thumbnail"))
+(def thumbnail-bin (env :vignette-thumbnail-bin "bin/thumbnail"))
 
 (defn temp-filename
   [thumb-map]
@@ -46,7 +45,7 @@
         sh-out (apply sh command)]
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
-      :else nil))) ; todo: add some logging here
+      :else (throw (Exception. (str "generating thumbnail failed (" (:exit sh-out) "): " (:err sh-out)))))))
 
 (defn get-or-generate-thumbnail
   [system thumb-map]

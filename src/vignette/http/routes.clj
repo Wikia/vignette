@@ -37,6 +37,14 @@
                   :width size-regex
                   :height size-regex}))
 
+(defn exception-catcher
+  [handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch Exception e
+        (status (response (str e)) 503))))) ; todo: add some logging here
+
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
   [system]
@@ -54,4 +62,5 @@
                  (response (FileInputStream. file))
                  (not-found " Unable to find image."))))
         (not-found "Unrecognized request path!\n"))
-      (wrap-params)))
+      (wrap-params)
+      (exception-catcher)))

@@ -8,8 +8,7 @@
 (declare transfer!)
 (declare file-exists?)
 
-(def temp-file-location (or (env :vignette-temp-file-location)
-                            "/tmp/vignette"))
+(def temp-file-location (env :vignette-temp-file-location "/tmp/vignette"))
 
 (defn create-local-path
   [path]
