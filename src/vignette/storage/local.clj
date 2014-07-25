@@ -12,9 +12,8 @@
 
   (get-object [this bucket path]
     (let [real-file (io/file (resolve-local-path (:directory this) bucket path))]
-      (if (file-exists? real-file)
-        real-file
-        (throw (Exception. "get-object failed")))))
+      (when (file-exists? real-file)
+        real-file)))
 
   (put-object [this resource bucket path]
     (let [real-path (resolve-local-path (:directory this) bucket path)]
