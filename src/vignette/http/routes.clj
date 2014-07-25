@@ -1,6 +1,8 @@
 (ns vignette.http.routes
   (:require (vignette.storage [protocols :refer :all]
                               [core :refer :all])
+            [vignette.util.thumbnail :as u]
+            [vignette.media-types :as mt]
             [vignette.protocols :refer :all]
             (compojure [route :refer (files not-found)]
                        [core :refer  (routes GET ANY)])
@@ -35,20 +37,37 @@
                   :width size-regex
                   :height size-regex}))
 
+(defn exception-catcher
+  [handler]
+  (fn [request]
+    (try
+      (handler request)
+      (catch Exception e
+        (status (response (str e)) 503))))) ; todo: add some logging here
+
+(defmulti image-file->response-object class)
+
+(defmethod image-file->response-object java.io.File
+  [file]
+  (FileInputStream. file))
+
+
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
   [system]
   (-> (routes
         (GET thumbnail-route
              {route-params :route-params query-params :query-params}
-             (-> route-params
-                 (assoc :type :thumbnail)
-                 (generate-string {:pretty true})))
+             (let [route-params (mt/get-media-map (assoc route-params :type :thumbnail))]
+               (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
+                 (response (image-file->response-object thumb))
+                 (not-found "Unable to create thumbnail"))))
         (GET original-route
              {route-params :route-params}
-             (let [route-params (assoc route-params :type :original)]
+             (let [route-params (mt/get-media-map (assoc route-params :type :original))]
                (if-let [file (get-original (store system) route-params )]
-                 (response file)
+                 (response (image-file->response-object file))
                  (not-found " Unable to find image."))))
         (not-found "Unrecognized request path!\n"))
-      (wrap-params)))
+      (wrap-params)
+      (exception-catcher)))

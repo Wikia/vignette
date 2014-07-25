@@ -2,6 +2,7 @@
   (:require [vignette.storage.protocols :refer :all]
             [vignette.storage.local :refer :all]
             [clojure.java.shell :refer (sh)]
+            [vignette.util.filesystem :refer :all]
             [clojure.java.io :as io]
             [midje.sweet :refer :all]))
 

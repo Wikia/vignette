@@ -1,31 +1,27 @@
 (ns vignette.storage.local
   (:require [vignette.storage.protocols :refer :all]
             [vignette.media-types :as mt]
+            [vignette.util.filesystem :refer :all]
             [clojure.java.io :as io]
             [clojure.java.shell :as sh])
   (:import  (java.io FileInputStream)))
 
-
-
-(declare resolve-local-path)
-(declare create-local-path)
-(declare get-parent)
-(declare transfer!)
-(declare file-exists?)
-(declare read-bytes-chunked)
-
+; TODO: when the logger has a closure port, we should create an exception that has context that we can log w/ exceptions
 (defrecord LocalObjectStorage [directory]
   ObjectStorageProtocol
 
- (get-object [this bucket path]
-   (let [real-path-object (resolve-local-path (:directory this) bucket path)]
-     (when (file-exists? (io/file real-path-object))
-       (FileInputStream. real-path-object))))
+  (get-object [this bucket path]
+    (let [real-file (io/file (resolve-local-path (:directory this) bucket path))]
+      (if (file-exists? real-file)
+        real-file
+        (throw (Exception. "get-object failed")))))
 
- (put-object [this resource bucket path]
-   (let [real-path (resolve-local-path (:directory this) bucket path)]
-     (create-local-path (get-parent real-path))
-     (transfer! resource real-path)))
+  (put-object [this resource bucket path]
+    (let [real-path (resolve-local-path (:directory this) bucket path)]
+      (create-local-path (get-parent real-path))
+      (if (transfer! resource real-path)
+        true
+        (throw (Exception. "put-object failed")))))
 
   (delete-object [this bucket path]
     (let [real-path (resolve-local-path (:directory this) bucket path)]
@@ -40,26 +36,3 @@
 (defn create-local-object-storage
   [directory]
   (->LocalObjectStorage directory))
-
-(defn resolve-local-path
-  [directory bucket path]
-  (format "%s/%s/%s" directory bucket path))
-
-(defn get-parent
-  [path]
-  (.getParent (io/file path)))
-
-(defn create-local-path
-  [path]
-  (.mkdirs (io/file path)))
-
-; i think this should be a multimethod that dispatches
-; based on the type
-(defn transfer!
-  [in out]
-  (io/copy (io/file in) (io/file out))
-  (file-exists? out))
-
-(defn file-exists?
-  [file]
-  (.exists (io/file file)))

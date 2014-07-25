@@ -14,7 +14,25 @@
   (merge MediaFile
          {:mode String
           :height String
-          :width String})) 
+          :width String}))
+
+(def MediaReorientFile
+  (merge MediaFile
+         {:mode String}))
+
+(defmulti get-media-map (fn [media] (:mode media)))
+(defmethod get-media-map
+           "reorient"
+           [media]
+  :pre [(schema/validate MediaReorientFile media)]
+  media)
+(defmethod get-media-map
+           "resize"
+           [media]
+  :pre [(schema/validate MediaThumbnailFile media)]
+  media)
+(defmethod get-media-map :default [_]
+  (throw (IllegalArgumentException. "Invalid media")))
 
 
 (defn top-dir
@@ -60,12 +78,3 @@
 (defn thumbnail
   [data]
   (format "%dpx-%dpx-%s-%s" (width data) (height data) (mode data) (original data)))
-
-(sm/defn create-thumbnail :- MediaThumbnailFile
-  [data :- MediaThumbnailFile]
-  data)
-
-(defn create-thumbnail-validated
-  [data]
-  (schema/with-fn-validation
-    (create-thumbnail data)))
