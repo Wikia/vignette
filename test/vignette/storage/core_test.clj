@@ -59,14 +59,14 @@
                     (sh "mkdir" "-p" local-path)))]
 
   (facts :save-thumbnail :integration
-    (let [local (create-local-object-storage "/tmp/vignette-local-storage")
+    (let [local (create-local-object-storage local-path)
           image-store (create-local-image-storage local "originals" "thumbs")]
       local => truthy
       image-store => truthy
       (save-thumbnail image-store (io/file "image-samples/ropes.jpg") sample-thumbnail-hash) => truthy))
 
   (facts :get-thumbnail :integration
-    (let [local (create-local-object-storage "/tmp/vignette-local-storage")
+    (let [local (create-local-object-storage local-path)
           image-store (create-local-image-storage local "originals" "thumbs")]
       (get-thumbnail image-store sample-thumbnail-hash) => falsey
       (save-thumbnail image-store (io/file "image-samples/ropes.jpg") sample-thumbnail-hash) => truthy
@@ -74,12 +74,12 @@
 
 
   (facts :save-original :integration
-    (let [local (create-local-object-storage "/tmp/vignette-local-storage")
+    (let [local (create-local-object-storage local-path)
           image-store (create-local-image-storage local "originals" "thumbs")]
       (save-original image-store (io/file "image-samples/ropes.jpg") sample-media-hash) => truthy))
 
   (facts :get-original :integration
-    (let [local (create-local-object-storage "/tmp/vignette-local-storage")
+    (let [local (create-local-object-storage local-path)
           image-store (create-local-image-storage local "originals" "thumbs")]
       (save-original image-store (io/file "image-samples/ropes.jpg") sample-media-hash) => truthy
       (get-original image-store sample-media-hash) => truthy)))
