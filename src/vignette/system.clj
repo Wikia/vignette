@@ -17,7 +17,8 @@
                (app-routes this)
                {:port port}))))
   (stop [this]
-    (@(:running (:state this)))))
+    (when-let [stop-fn @(:running (:state this))]
+      (stop-fn))))
 
 (defn create-system
   [store]

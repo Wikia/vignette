@@ -6,7 +6,7 @@
             (vignette.api.legacy [routes :as alr]
                                  [test :as t])
             (vignette.http [routes :as r])
-            (vignette.util [integration :is i])
+            (vignette.util [integration :as itg])
             (vignette [server :as s]
                       [protocols :refer :all]
                       [media-types :as mt]
@@ -25,28 +25,50 @@
             [clojure.java.shell :refer (sh)])
   (:use [environ.core]))
 
-(def sample-media-hash {:wikia "lotr"
-                        :top-dir "3"
-                        :middle-dir "35"
+(def sample-original-hash {:wikia "bucket"
+                        :top-dir "a"
+                        :middle-dir "ab"
                         :type "original"
-                        :original "arwen.png"})
+                        :original "ropes.jpg"})
 
-(def sample-thumbnail-hash {:wikia "lotr"
-                            :top-dir "3"
-                            :middle-dir "35"
+(def sample-thumbnail-hash {:wikia "bucket"
+                            :top-dir "a"
+                            :middle-dir "ab"
                             :type "thumbnail"
-                            :original "arwen.png"
+                            :original "ropes.jpg"
                             :mode "resize"
                             :height "10"
                             :width "10"})
 
-(def los  (vlocal/create-local-object-storage "/tmp/vignette-repl"))
-(def lis  (create-local-image-storage los "originals" "thumbs"))
+(def los  (vlocal/create-local-object-storage itg/integration-path))
+(def lis  (create-local-image-storage los))
 
 (def S (create-system lis))
+
 (comment
   (start S 8080)
   (stop S))
+
+(defn reload-repl
+  []
+  (nrepl/set-refresh-dirs "src")
+  (nrepl/refresh)
+  (clojure.core/use '[clojure.core])
+  (use '[clojure.repl])
+  ;(load-file "dev/user.clj")
+  )
+
+(defn re-init-dev
+  ([port]
+   (do
+     (stop S)
+     (nrepl/refresh)
+     (clojure.core/use '[clojure.core])
+     (use '[clojure.repl])
+     (load-file "dev/user.clj")
+     (start S port)))
+  ([]
+   (re-init-dev 8080)))
 
 (def storage-creds
   {:access-key  (env :storage-access-key)
