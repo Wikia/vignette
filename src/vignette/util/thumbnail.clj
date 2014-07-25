@@ -10,20 +10,18 @@
 
 (def thumbnail-bin (env :vignette-thumbnail-bin "bin/thumbnail"))
 
+; fixme: add more randomness
 (defn temp-filename
-  [thumb-map]
+  []
   (let [filename (resolve-local-path
                    temp-file-location
-                   (generate-string (merge
-                                      thumb-map
-                                      {:ts (System/currentTimeMillis)})))]
+                   (System/currentTimeMillis))]
     (create-local-path (get-parent filename))
     filename))
 
 (def options-map {:height "height"
                   :width "width"
-                  :mode "mode"
-                  })
+                  :mode "mode"})
 
 (defn thumbnail-options
   [thumb-map]
