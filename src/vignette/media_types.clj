@@ -4,7 +4,7 @@
 
 ; scchema structure
 (def MediaFile
-  {:type String
+  {:type clojure.lang.Keyword
    :original String
    :middle-dir String
    :top-dir String
