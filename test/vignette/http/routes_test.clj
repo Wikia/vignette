@@ -17,7 +17,13 @@
     (request :get "/lotr/3/35/Arwen_Sword.PNG")) => (contains {:wikia "lotr"
                                                                :top-dir "3"
                                                                :middle-dir "35"
-                                                               :original "Arwen_Sword.PNG"}))
+                                                               :original "Arwen_Sword.PNG"})
+  (route-matches
+    original-route
+    (request :get "/bucket/a/ab/ropes.jpg")) => (contains {:wikia "bucket"
+                                                           :top-dir "a"
+                                                           :middle-dir "ab"
+                                                           :original "ropes.jpg"}))
 
 (facts :thumbnail-route
   (route-matches thumbnail-route (request :get "something")) => falsey
@@ -28,8 +34,16 @@
                                                                                            :original "Arwen_Sword.PNG"
                                                                                            :mode "resize"
                                                                                            :width "250"
-                                                                                           :height "250"
-                                                                                           }))
+                                                                                           :height "250"})
+  (route-matches thumbnail-route
+                 (request :get "/bucket/a/ab/ropes.jpg/resize/10/10")) => (contains {:wikia "bucket"
+                                                                                     :top-dir "a"
+                                                                                     :middle-dir "ab"
+                                                                                     :original "ropes.jpg"
+                                                                                     :mode "resize"
+                                                                                     :width "10"
+                                                                                     :height "10"}))
+
 (facts :app-routes
   ((app-routes nil) (request :get "/not-a-valid-route")) => (contains {:status 404}))
 

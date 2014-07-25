@@ -13,8 +13,8 @@
   (:import java.io.FileInputStream))
 
 (def wikia-regex #"\w+")
-(def top-dir-regex #"\d")
-(def middle-dir-regex #"\d\d")
+(def top-dir-regex #"\w")
+(def middle-dir-regex #"\w\w")
 (def original-regex #"[^/]*")
 (def mode-regex #"\w+")
 (def size-regex #"\d+")
