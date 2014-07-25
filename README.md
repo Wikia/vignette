@@ -27,7 +27,6 @@ Here is a high level overview of where I think we want to take this in no partic
 
 # TODO
 
- * Revisit the storage back-and-forth in `get-or-generate-thumbnail`. 
  * Addmore randomness to util.thumbnail/temp-filename
  * Packaging and deployment pipeline
     * How do we unsure that what is being shipped to production has passed both unit and integration tests?

@@ -6,7 +6,8 @@
             [clojure.java.shell :refer (sh)]
             [clojure.java.io :as io]
             [cheshire.core :refer :all])
-  (:use [environ.core]))
+  (:use [environ.core])
+  (:import java.util.UUID))
 
 (def thumbnail-bin (env :vignette-thumbnail-bin "bin/thumbnail"))
 
@@ -15,7 +16,7 @@
   []
   (let [filename (resolve-local-path
                    temp-file-location
-                   (System/currentTimeMillis))]
+                   (UUID/randomUUID))]
     (create-local-path (get-parent filename))
     filename))
 
@@ -34,7 +35,7 @@
 
 (defn generate-thumbnail
   [resource thumb-map]
-  (let [temp-file (temp-filename thumb-map)
+  (let [temp-file (temp-filename)
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
                       "--out" temp-file]
@@ -43,7 +44,8 @@
         sh-out (apply sh command)]
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
-      :else (throw (Exception. (str "generating thumbnail failed (" (:exit sh-out) "): " (:err sh-out)))))))
+      :else (throw (Exception.
+                     (str "generating thumbnail failed (" (:exit sh-out) "): STDERR '" (:err sh-out)"' STDOUT: '" (:out sh-out "'")))))))
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
