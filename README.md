@@ -2,7 +2,6 @@
 
 A Clojure library for thumbnail generation and storage.
 
-
 # Proposed Plan of Action
 
 Here is a high level overview of where I think we want to take this in no particular order:
@@ -27,7 +26,9 @@ Here is a high level overview of where I think we want to take this in no partic
 
 # TODO
 
- * Addmore randomness to util.thumbnail/temp-filename
+ * Map the bin/thumbnail flags to more sensible mode strings (e.g. ZC -> zoomcrop)
+ * Integration tests that exercise the routes.
+ * S3 storage interface.
  * Packaging and deployment pipeline
     * How do we unsure that what is being shipped to production has passed both unit and integration tests?
        * How do we track test coverage? Do we care about coverage? 
@@ -38,13 +39,17 @@ Here is a high level overview of where I think we want to take this in no partic
     * How do we alert?
     * What do we alert on?
 
+## Testing
+
+All testing is done using [Midje](https://github.com/marick/Midje). Running `lein midje` will run all of the tests.
+
 ## Usage
 
 FIXME
 
 ## License
 
-Copyright © 2014 FIXME
+Copyright © 2014 Wikia
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
