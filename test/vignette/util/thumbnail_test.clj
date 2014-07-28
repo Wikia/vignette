@@ -36,9 +36,7 @@
          (save-thumbnail ..store.. ..thumb.. beach-map) => true)
 
        ; generate new - fail
-       (let [image-dne (mt/get-media-map (merge
-                                           beach-map
-                                           {:original "doesnotexist.jpg"}))]
+       (let [image-dne (mt/get-media-map (assoc beach-map :original "doesnotexist.jpg"))]
          (get-or-generate-thumbnail ..system.. image-dne) => nil
          (provided
            (store ..system..) => ..store..
