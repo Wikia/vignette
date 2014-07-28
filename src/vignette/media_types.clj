@@ -16,21 +16,27 @@
           :height String
           :width String}))
 
-(def MediaReorientFile
+(def MediaModeFile
   (merge MediaFile
          {:mode String}))
 
-(defmulti get-media-map (fn [media] (:mode media)))
+(defmulti get-media-map (fn [media] (:type media)))
+
 (defmethod get-media-map
-           "reorient"
+           :mode
            [media]
-  :pre [(schema/validate MediaReorientFile media)]
-  media)
+  (schema/validate MediaModeFile media))
+
 (defmethod get-media-map
-           "resize"
+           :thumbnail
            [media]
-  :pre [(schema/validate MediaThumbnailFile media)]
-  media)
+  (schema/validate MediaThumbnailFile media))
+
+(defmethod get-media-map
+           :original
+           [media]
+  (schema/validate MediaFile media))
+
 (defmethod get-media-map :default [_]
   (throw (IllegalArgumentException. "Invalid media")))
 
