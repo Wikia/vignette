@@ -29,6 +29,9 @@ Here is a high level overview of where I think we want to take this in no partic
  * Map the bin/thumbnail flags to more sensible mode strings (e.g. ZC -> zoomcrop)
  * Integration tests that exercise the routes.
  * S3 storage interface.
+ * Functional testing page with grid of images and thumbnail options.
+    * Include animated gifs http://hanky.huddler.com/t/5013/testing-animated-gifs
+ * Add ‘fill’ option support for the ‘far’ mode. Should this be a query parameter?
  * Packaging and deployment pipeline
     * How do we unsure that what is being shipped to production has passed both unit and integration tests?
        * How do we track test coverage? Do we care about coverage? 

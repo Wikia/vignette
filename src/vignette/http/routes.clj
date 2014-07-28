@@ -16,7 +16,7 @@
 (def top-dir-regex #"\w")
 (def middle-dir-regex #"\w\w")
 (def original-regex #"[^/]*")
-(def mode-regex #"\w+")
+(def mode-regex #"[\w-]+")
 (def size-regex #"\d+")
 
 
