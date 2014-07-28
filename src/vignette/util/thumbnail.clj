@@ -55,9 +55,7 @@
   [system thumb-map]
   (if-let [thumb (store-prot/get-thumbnail (store system) thumb-map)]
     thumb
-    (if-let [original (store-prot/get-original (store system) thumb-map)]
-      (if-let [thumb (generate-thumbnail original thumb-map)]
-        (do (store-prot/save-thumbnail (store system) thumb thumb-map)
-            thumb) ; TODO: cron to delete thumbs older than X)
-        nil)
-      nil)))
+    (when-let [original (store-prot/get-original (store system) thumb-map)]
+      (when-let [thumb (generate-thumbnail original thumb-map)]
+        (store-prot/save-thumbnail (store system) thumb thumb-map)
+        thumb)))) ; TODO: cron to delete thumbs older than X)
