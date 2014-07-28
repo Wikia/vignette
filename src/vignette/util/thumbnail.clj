@@ -33,6 +33,10 @@
           []
           thumb-map))
 
+(defn run-thumbnailer
+  [args]
+  (apply sh args))
+
 (defn generate-thumbnail
   [resource thumb-map]
   (let [temp-file (temp-filename)
@@ -40,8 +44,8 @@
                       "--in" (.getAbsolutePath resource)
                       "--out" temp-file]
         thumb-options (thumbnail-options thumb-map)
-        command (reduce conj base-command thumb-options)
-        sh-out (apply sh command)]
+        args (reduce conj base-command thumb-options)
+        sh-out (run-thumbnailer args)]
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
       :else (throw (Exception.

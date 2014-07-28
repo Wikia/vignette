@@ -15,6 +15,7 @@
                  [com.novemberain/pantomime "2.3.0"]
                  [clj-aws-s3 "0.3.9"]]
   :profiles  {:dev  {:source-paths  ["dev"]
+                     :plugins [[lein-midje "3.1.1"]]
                      :dependencies  [[midje "1.6.3"]
                                      [org.clojure/tools.trace "0.7.8"]
                                      [org.clojure/tools.namespace "0.2.5"]
