@@ -33,6 +33,10 @@
           []
           thumb-map))
 
+(defn run-thumbnailer
+  [args]
+  (apply sh args))
+
 (defn generate-thumbnail
   [resource thumb-map]
   (let [temp-file (temp-filename)
@@ -40,8 +44,8 @@
                       "--in" (.getAbsolutePath resource)
                       "--out" temp-file]
         thumb-options (thumbnail-options thumb-map)
-        command (reduce conj base-command thumb-options)
-        sh-out (apply sh command)]
+        args (reduce conj base-command thumb-options)
+        sh-out (run-thumbnailer args)]
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
       :else (throw (Exception.
@@ -51,9 +55,7 @@
   [system thumb-map]
   (if-let [thumb (store-prot/get-thumbnail (store system) thumb-map)]
     thumb
-    (if-let [thumb (generate-thumbnail (store-prot/get-original (store system) thumb-map)
-                                       thumb-map)]
-      (and (store-prot/save-thumbnail (store system) thumb thumb-map)
-           (io/delete-file thumb)
-           (store-prot/get-thumbnail (store system) thumb-map))
-      nil)))
+    (when-let [original (store-prot/get-original (store system) thumb-map)]
+      (when-let [thumb (generate-thumbnail original thumb-map)]
+        (store-prot/save-thumbnail (store system) thumb thumb-map)
+        thumb)))) ; TODO: cron to delete thumbs older than X)
