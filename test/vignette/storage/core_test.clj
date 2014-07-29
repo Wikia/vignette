@@ -12,13 +12,13 @@
 (def sample-media-hash {:wikia "lotr"
                         :top-dir "3"
                         :middle-dir "35"
-                        :type "original"
+                        :request-type :original
                         :original "arwen.png"})
 
 (def sample-thumbnail-hash {:wikia "lotr"
                             :top-dir "3"
                             :middle-dir "35"
-                            :type "thumbnail"
+                            :request-type :thumbnail
                             :original "arwen.png"
                             :mode "resize"
                             :height "10"
