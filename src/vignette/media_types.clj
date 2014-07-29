@@ -4,7 +4,7 @@
 
 ; scchema structure
 (def MediaFile
-  {:type clojure.lang.Keyword
+  {:request-type clojure.lang.Keyword
    :original String
    :middle-dir String
    :top-dir String
@@ -16,21 +16,27 @@
           :height String
           :width String}))
 
-(def MediaReorientFile
+(def MediaAdjustOriginalFile
   (merge MediaFile
          {:mode String}))
 
-(defmulti get-media-map (fn [media] (:mode media)))
+(defmulti get-media-map :request-type)
+
 (defmethod get-media-map
-           "reorient"
+           :adjust-original
            [media]
-  :pre [(schema/validate MediaReorientFile media)]
-  media)
+  (schema/validate MediaAdjustOriginalFile media))
+
 (defmethod get-media-map
-           "resize"
+           :thumbnail
            [media]
-  :pre [(schema/validate MediaThumbnailFile media)]
-  media)
+  (schema/validate MediaThumbnailFile media))
+
+(defmethod get-media-map
+           :original
+           [media]
+  (schema/validate MediaFile media))
+
 (defmethod get-media-map :default [_]
   (throw (IllegalArgumentException. "Invalid media")))
 

@@ -26,15 +26,15 @@
   (:use [environ.core]))
 
 (def sample-original-hash {:wikia "bucket"
-                        :top-dir "a"
-                        :middle-dir "ab"
-                        :type "original"
-                        :original "ropes.jpg"})
+                           :top-dir "a"
+                           :middle-dir "ab"
+                           :request-type :original
+                           :original "ropes.jpg"})
 
 (def sample-thumbnail-hash {:wikia "bucket"
                             :top-dir "a"
                             :middle-dir "ab"
-                            :type "thumbnail"
+                            :request-type :thumbnail
                             :original "ropes.jpg"
                             :mode "resize"
                             :height "10"
@@ -74,18 +74,3 @@
   {:access-key  (env :storage-access-key)
    :secret-key  (env :storage-secret-key)
    :endpoint    (env :storage-endpoint)} )
-
-(comment
-  "Experimentation with prismatic/schema."
-  (def MediaFile
-    {:type String
-     :original String
-     :middle-dir String
-     :top-dir String
-     :wikia String})
-
- (def MediaThumbnailFile
-   (merge MediaFile
-          {:mode String
-           :height Long
-           :width Long})))

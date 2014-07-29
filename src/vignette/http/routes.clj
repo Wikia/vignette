@@ -16,7 +16,8 @@
 (def top-dir-regex #"\w")
 (def middle-dir-regex #"\w\w")
 (def original-regex #"[^/]*")
-(def mode-regex #"\w+")
+(def adjustment-mode-regex #"\w+")
+(def thumbnail-mode-regex #"\w+")
 (def size-regex #"\d+")
 
 
@@ -27,13 +28,20 @@
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex}))
 
+(def adjust-original-route
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/:mode"
+                 {:wikia wikia-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :mode adjustment-mode-regex}))
+
 (def thumbnail-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original/:mode/:width/:height"
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/:thumbnail-mode/:width/:height"
                  {:wikia wikia-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
-                  :mode mode-regex
+                  :thumbnail-mode thumbnail-mode-regex
                   :width size-regex
                   :height size-regex}))
 
@@ -58,16 +66,23 @@
   (-> (routes
         (GET thumbnail-route
              {route-params :route-params query-params :query-params}
-             (let [route-params (mt/get-media-map (assoc route-params :type :thumbnail))]
+             (let [route-params (mt/get-media-map (assoc route-params :request-type :thumbnail))]
+               (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
+                 (response (image-file->response-object thumb))
+                 (not-found "Unable to create thumbnail"))))
+        (GET adjust-original-route
+             {route-params :route-params query-params :query-params}
+             (let [route-params (mt/get-media-map (assoc route-params :request-type :adjust-original))]
+               ; FIXME: this needs to be u/reorient-image
                (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
                  (response (image-file->response-object thumb))
                  (not-found "Unable to create thumbnail"))))
         (GET original-route
              {route-params :route-params}
-             (let [route-params (mt/get-media-map (assoc route-params :type :original))]
+             (let [route-params (mt/get-media-map (assoc route-params :request-type :original))]
                (if-let [file (get-original (store system) route-params )]
                  (response (image-file->response-object file))
-                 (not-found " Unable to find image."))))
+                 (not-found "Unable to find image."))))
         (not-found "Unrecognized request path!\n"))
       (wrap-params)
       (exception-catcher)))
