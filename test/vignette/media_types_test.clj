@@ -7,12 +7,12 @@
 
 (facts :get-media-map
   (get-media-map {}) => (throws IllegalArgumentException)
-  (get-media-map {:request-type :mode}) => (throws ExceptionInfo)
+  (get-media-map {:request-type :adjust-original}) => (throws ExceptionInfo)
   (get-media-map {:request-type :thumbnail}) => (throws ExceptionInfo)
   (get-media-map {:request-type :original}) => (throws ExceptionInfo)
   (get-media-map {:request-type "does-not-exst"}) => (throws IllegalArgumentException)
 
-  (let [success-map {:request-type :mode
+  (let [success-map {:request-type :adjust-original
                      :mode "reorient"
                      :original "ropes.jpg"
                      :top-dir "a"
@@ -34,6 +34,4 @@
     (get-media-map success-map) => success-map
     (doall
       (for [filter-key (filter #(not= :request-type %) (keys success-map))]
-        (get-media-map (dissoc success-map filter-key)) => (throws ExceptionInfo))))
-  )
-
+        (get-media-map (dissoc success-map filter-key)) => (throws ExceptionInfo)))))

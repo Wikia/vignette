@@ -16,16 +16,16 @@
           :height String
           :width String}))
 
-(def MediaModeFile
+(def MediaAdjustOriginalFile
   (merge MediaFile
          {:mode String}))
 
 (defmulti get-media-map :request-type)
 
 (defmethod get-media-map
-           :mode
+           :adjust-original
            [media]
-  (schema/validate MediaModeFile media))
+  (schema/validate MediaAdjustOriginalFile media))
 
 (defmethod get-media-map
            :thumbnail

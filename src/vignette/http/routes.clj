@@ -16,7 +16,7 @@
 (def top-dir-regex #"\w")
 (def middle-dir-regex #"\w\w")
 (def original-regex #"[^/]*")
-(def mode-regex #"\w+")
+(def adjustment-mode-regex #"\w+")
 (def thumbnail-mode-regex #"\w+")
 (def size-regex #"\d+")
 
@@ -28,12 +28,12 @@
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex}))
 
-(def mode-route
+(def adjust-original-route
   (route-compile "/:wikia/:top-dir/:middle-dir/:original/:mode"
                  {:wikia wikia-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
-                  :mode mode-regex}))
+                  :mode adjustment-mode-regex}))
 
 (def thumbnail-route
   (route-compile "/:wikia/:top-dir/:middle-dir/:original/:thumbnail-mode/:width/:height"
@@ -70,9 +70,9 @@
                (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
                  (response (image-file->response-object thumb))
                  (not-found "Unable to create thumbnail"))))
-        (GET mode-route
+        (GET adjust-original-route
              {route-params :route-params query-params :query-params}
-             (let [route-params (mt/get-media-map (assoc route-params :request-type :mode))]
+             (let [route-params (mt/get-media-map (assoc route-params :request-type :adjust-original))]
                ; FIXME: this needs to be u/reorient-image
                (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
                  (response (image-file->response-object thumb))
