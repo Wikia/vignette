@@ -34,6 +34,7 @@ CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256mb -limit map 256m
 # with phpthumb
 JPEG_QUALITY_LEVEL=80
 
+MODE_OPTIONS=("fixed-aspect-ratio" "thumbnail" "thumbnail-down" "zoom-crop" "zoom-crop-down" "reorient")
 
 function usage() {
 cat <<EOF
@@ -44,8 +45,7 @@ cat <<EOF
     --width|W   INT    the width
 
     --still            only use the first frame of the image
-    --nofill           do not pad or fill the image to fit the dimensions
-    --blackfill        pad or fill the image to fit the dimensions with a black background
+    --fill             pad or fill color for the image background. only used with --mode fixed-aspect-ratio
     --animated         treat this as an animated gif
     --reorient         output reoriented version of the photo using exif data
 
@@ -53,10 +53,7 @@ cat <<EOF
                         colors within this distance are considered equal.
                         currently only applied to animated gifs
 
-    --LS               use our LS flag
-    --LM               use our LM flag
-    --ZC               use our ZC flag
-    --NS               use our NS flag
+    --mode      MODE   The thumbnail/render mode. Supported options: ${MODE_OPTIONS[*]}
 
     --help|h           print this
 
@@ -64,8 +61,8 @@ EOF
 }
 
 OS=$(uname)
-SHORTOPTS="i:o:hW:H:" 
-LONGOPTS="in:,out:,width:,height:,fuzz:,help,nofill,blackfill,still,LS,LM,ZC,LL,NS,animated,reorient"
+SHORTOPTS="h"
+LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated,reorient"
 
 ARGS=$($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@")
 
@@ -73,11 +70,10 @@ IN=''
 OUT=''
 HEIGHT=''
 WIDTH=''
-NOFILL=0
-BLACKFILL=0
+FILL="white"
 ANIMATED=0
 STILL=0
-FLAGS='LL'
+MODE='thumbnail-down'
 
 THUMB_PARAMS=''
 FUZZ=''
@@ -94,21 +90,21 @@ while true; do
 			ANIMATED=1
 			;;
 		--reorient)
-			FLAGS="OR"
+			MODE="reorient"
 			;;
-		-i|--in)
+		--in)
 			shift
 			IN=$1
 			;;
-		-o|--out)
+		--out)
 			shift
 			OUT=$1
 			;;
-		-H|--height)
+		--height)
 			shift
 			HEIGHT=$1
 			;;
-		-W|--width)
+		--width)
 			shift
 			WIDTH=$1
 			;;
@@ -116,23 +112,13 @@ while true; do
 			shift
 			FUZZ="-fuzz $1"
 			;;
-		--ZC)
-			FLAGS="ZC"
+		--mode)
+			shift
+			MODE=$1
 			;;
-		--LS)
-			FLAGS="LS"
-			;;
-		--LM)
-			FLAGS="LM"
-			;;
-		--NS)
-			FLAGS="NS"
-			;;
-		--nofill)
-			NOFILL=1
-			;;
-		--blackfill)
-			BLACKFILL=1
+		--fill)
+			shift
+			FILL=$1 # see http://www.imagemagick.org/script/command-line-options.php#background for the supported parameters
 			;;
 		--still)
 			STILL=1
@@ -149,7 +135,6 @@ while true; do
 	shift
 done
 
-echo $IN
 if [ "$IN"X = "X" ]; then
 	echo "-i|--in required"
 	usage
@@ -162,7 +147,7 @@ if [ "$OUT"X = "X" ]; then
 	exit 1
 fi
 
-if [ "$FLAGS" != "OR" ]; then
+if [ "$MODE" != "reorient" ]; then
 	if [ "$HEIGHT"X = "X" ]; then
 		echo "-H|--height required"
 		usage
@@ -175,6 +160,21 @@ if [ "$FLAGS" != "OR" ]; then
 		exit 1
 	fi
 fi
+
+valid_mode=0
+for mode_option in "${MODE_OPTIONS[@]}"
+do
+	if [ "$mode_option" == "$MODE" ]; then
+		valid_mode=1
+	fi
+done
+
+if [ $valid_mode -ne 1 ]; then
+	echo "Valid mode options are: ${MODE_OPTIONS[*]}"
+	usage
+	exit 1
+fi
+
 
 shopt -s nocasematch
 
@@ -210,35 +210,29 @@ function thumb_params() {
 			QUALITY="-quality ${JPEG_QUALITY_LEVEL}"
 	fi
 
-	# LL no upscaling, no padding -- default
-	# LS is fixed aspect ratio, enlargment ok
-	# LM is allow output enlargement, enlargment ok
-	# ZC is zoom crop, enlargement ok-- it blows up the image then crops
-	# NS is do not scale ever
+	# fixed-aspect-ratio (was LS, read fixed-aspect-ratio): thumbnail using a fixed aspect ratio and fill to generate a thumbnail with the exact dimensions given; no upscaling.
+	# thumbnail-down (was LL): no upscaling, no padding -- default
+	# thumbnail (was LM): allow output enlargement
+	# zoom-crop (was ZC): zoom then crop; enlargement ok-- it blows up the image then crops to the exact dimensions
+	# zoom-crop-down (was NS): like zoom crop, but will not scale up
 
-	case $FLAGS in
-		"LM")
+	case $MODE in
+		"thumbnail")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}" 
 			;;
-		"LS")
-			if [[ $NOFILL -eq 1 ]]; then
-				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}> -gravity center" 
-			elif [[ $BLACKFILL -eq 1 ]]; then
-				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background black -extent ${WIDTH}x${HEIGHT}!" 
-			else 
-				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background white -extent ${WIDTH}x${HEIGHT}!" 
-			fi
+		"fixed-aspect-ratio")
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!" 
 			;;
-		"ZC")
+		"zoom-crop")
 			# the '^' means Minimum values of width and height given, aspect ratio
 			# preserved. see http://www.imagemagick.org/script/command-line-processing.php#geometry
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity center -extent ${WIDTH}x${HEIGHT}"
 			;;
-		"LL")
+		"thumbnail-down")
 			# the '>' means change as per WIDTHxHEIGHT but only if an image dimension exceeds a specified dimension.
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}>" 
 			;;
-		"NS")
+		"zoom-crop-down")
 			# get height and width
 			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
 			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
@@ -251,7 +245,7 @@ function thumb_params() {
 				THUMB_PARAMS="${QUALITY}"
 			fi
 			;;
-		"OR")
+		"reorient")
 			# reorient only
 			THUMB_PARAMS="${QUALITY} -auto-orient"
 			;;

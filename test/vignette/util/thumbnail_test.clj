@@ -6,14 +6,14 @@
             [vignette.media-types :as mt]
             [clojure.java.io :as io]))
 
-(def beach-map {:type :thumbnail
-          :original "beach.jpg"
-          :middle-dir "3"
-          :top-dir "35"
-          :wikia "lotr"
-          :mode "resize"
-          :height "100"
-          :width "100"})
+(def beach-map {:request-type :thumbnail
+                :original "beach.jpg"
+                :middle-dir "3"
+                :top-dir "35"
+                :wikia "lotr"
+                :mode "resize"
+                :height "100"
+                :width "100"})
 
 (def beach-file (io/file "images-samples/beach.jpg"))
 
@@ -22,8 +22,8 @@
        (get-or-generate-thumbnail ..system..
                                   (mt/get-media-map beach-map)) => ..file..
        (provided
-         (get-thumbnail ..store.. beach-map) => ..file..
-         (store ..system..) => ..store..)
+         (store ..system..) => ..store..
+         (get-thumbnail ..store.. beach-map) => ..file..)
 
        ; generate new - success
        (get-or-generate-thumbnail ..system..

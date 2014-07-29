@@ -1,6 +1,5 @@
 (ns vignette.util.thumbnail
-  (:require [vignette.storage.protocols :as store-prot]
-            [vignette.storage.local :as store-loc]
+  (:require [vignette.storage.protocols :refer :all]
             [vignette.util.filesystem :refer :all]
             [vignette.protocols :refer :all]
             [clojure.java.shell :refer (sh)]
@@ -53,9 +52,9 @@
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
-  (if-let [thumb (store-prot/get-thumbnail (store system) thumb-map)]
+  (if-let [thumb (get-thumbnail (store system) thumb-map)]
     thumb
-    (when-let [original (store-prot/get-original (store system) thumb-map)]
+    (when-let [original (get-original (store system) thumb-map)]
       (when-let [thumb (generate-thumbnail original thumb-map)]
-        (store-prot/save-thumbnail (store system) thumb thumb-map)
+        (save-thumbnail (store system) thumb thumb-map)
         thumb)))) ; TODO: cron to delete thumbs older than X)
