@@ -32,7 +32,7 @@
                                                                                            :top-dir "3"
                                                                                            :middle-dir "35"
                                                                                            :original "Arwen_Sword.PNG"
-                                                                                           :mode "resize"
+                                                                                           :thumbnail-mode "resize"
                                                                                            :width "250"
                                                                                            :height "250"})
   (route-matches thumbnail-route
@@ -40,7 +40,7 @@
                                                                                      :top-dir "a"
                                                                                      :middle-dir "ab"
                                                                                      :original "ropes.jpg"
-                                                                                     :mode "resize"
+                                                                                     :thumbnail-mode "resize"
                                                                                      :width "10"
                                                                                      :height "10"}))
 
@@ -48,7 +48,7 @@
   ((app-routes nil) (request :get "/not-a-valid-route")) => (contains {:status 404}))
 
 (facts :app-routes-thumbnail
-  (let [route-params {:type :thumbnail, :original "ropes.jpg", :middle-dir "35", :top-dir "3", :wikia "lotr" :mode "resize" :height "10" :width "10"}]
+  (let [route-params {:request-type :thumbnail, :original "ropes.jpg", :middle-dir "35", :top-dir "3", :wikia "lotr" :thumbnail-mode "resize" :height "10" :width "10"}]
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/resize/10/10")) => (contains {:status 200})
     (provided
      (mt/get-media-map route-params) => route-params
@@ -66,7 +66,7 @@
 
 (facts :app-routes-original
 
-  (let [route-params {:type :original, :original "ropes.jpg", :middle-dir "35", :top-dir "3", :wikia "lotr"} ]
+  (let [route-params {:request-type :original, :original "ropes.jpg", :middle-dir "35", :top-dir "3", :wikia "lotr"} ]
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg")) => (contains {:status 200})
     (provided
      (store ..system..) => ..store..

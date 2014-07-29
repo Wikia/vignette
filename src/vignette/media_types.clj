@@ -4,7 +4,7 @@
 
 ; scchema structure
 (def MediaFile
-  {:type clojure.lang.Keyword
+  {:request-type clojure.lang.Keyword
    :original String
    :middle-dir String
    :top-dir String
@@ -20,7 +20,7 @@
   (merge MediaFile
          {:mode String}))
 
-(defmulti get-media-map (fn [media] (:type media)))
+(defmulti get-media-map :request-type)
 
 (defmethod get-media-map
            :mode
