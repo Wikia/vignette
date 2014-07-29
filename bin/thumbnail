@@ -34,7 +34,7 @@ CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256mb -limit map 256m
 # with phpthumb
 JPEG_QUALITY_LEVEL=80
 
-MODE_OPTIONS=("far","thumbnail","thumbnail-down","zoom-crop","zoom-crop-down","reorient")
+MODE_OPTIONS=("far" "thumbnail" "thumbnail-down" "zoom-crop" "zoom-crop-down" "reorient")
 
 function usage() {
 cat <<EOF
@@ -53,7 +53,7 @@ cat <<EOF
                         colors within this distance are considered equal.
                         currently only applied to animated gifs
 
-    --mode      MODE   The thumbnail/render mode. Supported options: ${MODE_OPTIONS}
+    --mode      MODE   The thumbnail/render mode. Supported options: ${MODE_OPTIONS[*]}
 
     --help|h           print this
 
@@ -61,7 +61,7 @@ EOF
 }
 
 OS=$(uname)
-SHORTOPTS="i:o:hW:H:m:"
+SHORTOPTS="h"
 LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated,reorient"
 
 ARGS=$($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@")
@@ -92,19 +92,19 @@ while true; do
 		--reorient)
 			MODE="reorient"
 			;;
-		-i|--in)
+		--in)
 			shift
 			IN=$1
 			;;
-		-o|--out)
+		--out)
 			shift
 			OUT=$1
 			;;
-		-H|--height)
+		--height)
 			shift
 			HEIGHT=$1
 			;;
-		-W|--width)
+		--width)
 			shift
 			WIDTH=$1
 			;;
@@ -112,7 +112,7 @@ while true; do
 			shift
 			FUZZ="-fuzz $1"
 			;;
-		-m|--mode)
+		--mode)
 			shift
 			MODE=$1
 			;;
@@ -170,7 +170,7 @@ do
 done
 
 if [ $valid_mode -ne 1 ]; then
-	echo "Valide mode options are: ${MODE_OPTIONS}"
+	echo "Valid mode options are: ${MODE_OPTIONS[*]}"
 	usage
 	exit 1
 fi
