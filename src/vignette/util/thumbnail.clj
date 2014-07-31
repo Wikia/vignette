@@ -5,19 +5,9 @@
             [clojure.java.shell :refer (sh)]
             [clojure.java.io :as io]
             [cheshire.core :refer :all])
-  (:use [environ.core])
-  (:import java.util.UUID))
+  (:use [environ.core]))
 
 (def thumbnail-bin (env :vignette-thumbnail-bin "bin/thumbnail"))
-
-; fixme: add more randomness
-(defn temp-filename
-  []
-  (let [filename (resolve-local-path
-                   temp-file-location
-                   (UUID/randomUUID))]
-    (create-local-path (get-parent filename))
-    filename))
 
 (def options-map {:height "height"
                   :width "width"

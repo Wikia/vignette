@@ -1,6 +1,7 @@
 (ns vignette.util.filesystem
   (:require [clojure.java.io :as io])
-  (:use [environ.core]))
+  (:use [environ.core])
+  (:import java.util.UUID))
 
 (declare resolve-local-path)
 (declare create-local-path)
@@ -9,6 +10,15 @@
 (declare file-exists?)
 
 (def temp-file-location (env :vignette-temp-file-location "/tmp/vignette"))
+
+(defn temp-filename
+  []
+  (let [filename (resolve-local-path
+                   temp-file-location
+                   (UUID/randomUUID))]
+    (create-local-path (get-parent filename))
+    filename))
+
 
 (defn create-local-path
   [path]
