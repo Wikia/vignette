@@ -3,7 +3,6 @@
             [vignette.protocols :refer :all]
             [vignette.storage.protocols :refer :all]
             [midje.sweet :refer :all]
-            [vignette.media-types :as mt]
             [clojure.java.io :as io]))
 
 (def beach-map {:request-type :thumbnail
@@ -19,15 +18,13 @@
 
 (facts :get-or-generate-thumbnail
        ; get existing
-       (get-or-generate-thumbnail ..system..
-                                  (mt/get-media-map beach-map)) => ..file..
+       (get-or-generate-thumbnail ..system.. beach-map) => ..file..
        (provided
          (store ..system..) => ..store..
          (get-thumbnail ..store.. beach-map) => ..file..)
 
        ; generate new - success
-       (get-or-generate-thumbnail ..system..
-                                  (mt/get-media-map beach-map)) => ..thumb..
+       (get-or-generate-thumbnail ..system.. beach-map) => ..thumb..
        (provided
          (store ..system..) => ..store..
          (get-thumbnail ..store.. beach-map) => false
@@ -36,7 +33,7 @@
          (save-thumbnail ..store.. ..thumb.. beach-map) => true)
 
        ; generate new - fail
-       (let [image-dne (mt/get-media-map (assoc beach-map :original "doesnotexist.jpg"))]
+       (let [image-dne (assoc beach-map :original "doesnotexist.jpg")]
          (get-or-generate-thumbnail ..system.. image-dne) => nil
          (provided
            (store ..system..) => ..store..
