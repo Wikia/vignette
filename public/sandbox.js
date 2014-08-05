@@ -1,0 +1,44 @@
+$(document).ready(function() {
+	var add_history = function(url) {
+		$('#history').prepend(""+
+			"<div class='history_image'>"+
+				"<img src='"+url+"' /><br />"+
+				"<span class='history_remove'>[x]</span>"+url+
+			"</div>")
+	};
+
+	$('#history').on('click', '.history_remove', null, function() {
+		$(this).closest('.history_image').remove();
+	});
+
+	$('#sandbox-form').submit(function() {
+		var image = $('#original-image').val();
+		if (image == 0) {
+			return false;
+		}
+
+		var image_url = "/bucket/a/ab/"+image;
+		var request_type = $('#request-type').val();
+		if (request_type != 0) {
+			image_url += '/'+request_type;
+		}
+
+		$('#form-dynamics').find(':input').each(function() {
+			image_url += '/'+$(this).val();
+		});
+
+		add_history(image_url);
+		return false;
+	});
+
+	$('#request-type').change(function() {
+		var dynamics = $('#form-dynamics').html('');
+		var add_options = $('#dynamic-'+$(this).val());
+
+		if (!add_options.length) {
+			return;
+		}
+
+		dynamics.html(add_options.html());
+	});
+});
