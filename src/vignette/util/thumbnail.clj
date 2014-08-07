@@ -21,7 +21,7 @@
 
 (def options-map {:height "height"
                   :width "width"
-                  :mode "mode"})
+                  :thumbnail-mode "mode"})
 
 (defn thumbnail-options
   [thumb-map]
@@ -48,7 +48,8 @@
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
       :else (throw (Exception.
-                     (str "generating thumbnail failed (" (:exit sh-out) "): STDERR '" (:err sh-out)"' STDOUT: '" (:out sh-out "'")))))))
+                     (str (format "generating thumbnail failed (%s): %s\nSTDERR '%s' STDOUT: '%s' params: %s"
+                                  (:exit sh-out) args (:err sh-out) (:out sh-out) thumb-map)))))))
 
 (defn get-or-generate-thumbnail
   [system thumb-map]

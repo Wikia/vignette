@@ -1,17 +1,17 @@
 (ns user
-  (:require (vignette.storage [core :refer (create-local-image-storage)]
+  (:require (vignette.storage [core :refer (create-image-storage)]
                               [local :as vlocal]
                               [protocols :refer :all]
                               [s3 :as vs3])
             (vignette.api.legacy [routes :as alr]
                                  [test :as t])
             (vignette.http [routes :as r])
-            (vignette.util [integration :as itg])
+            (vignette.util [integration :as itg]
+                           [thumbnail :as u])
             (vignette [server :as s]
                       [protocols :refer :all]
                       [media-types :as mt]
                       [system :refer :all])
-            [vignette.util.thumbnail :as u]
             [aws.sdk.s3 :as s3]
             [midje.repl :refer :all]
             [clout.core :as c]
@@ -41,7 +41,7 @@
                             :width "10"})
 
 (def los  (vlocal/create-local-object-storage itg/integration-path))
-(def lis  (create-local-image-storage los))
+(def lis  (create-image-storage los))
 
 (def S (create-system lis))
 

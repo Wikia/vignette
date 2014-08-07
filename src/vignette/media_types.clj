@@ -12,7 +12,7 @@
 
 (def MediaThumbnailFile
   (merge MediaFile
-         {:mode String
+         {:thumbnail-mode String
           :height String
           :width String}))
 
