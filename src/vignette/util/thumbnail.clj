@@ -1,5 +1,6 @@
 (ns vignette.util.thumbnail
   (:require [vignette.storage.protocols :refer :all]
+            [vignette.util :as u]
             [vignette.util.filesystem :refer :all]
             [vignette.protocols :refer :all]
             [clojure.java.shell :refer (sh)]
@@ -37,8 +38,7 @@
         sh-out (run-thumbnailer args)]
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
-      :else (throw (Exception.
-                     (str "generating thumbnail failed (" (:exit sh-out) "): STDERR '" (:err sh-out)"' STDOUT: '" (:out sh-out "'")))))))
+      :else (u/log-error-and-throw "thumbnailing failed" sh-out))))
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
