@@ -53,7 +53,7 @@
       (handler request)
       (catch Exception e
         (log/warn (str e))
-        (status (response (str e)) 503))))) ; todo: add some logging here
+        (status (response (str e)) 503)))))
 
 (defmulti image-file->response-object class)
 
