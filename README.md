@@ -50,6 +50,18 @@ All testing is done using [Midje](https://github.com/marick/Midje). Running `lei
 
 FIXME
 
+## Environment Variables
+
+Below is a list of environment variables that will affect the vignette runtime.
+
+ * `LOGGER_APPLICATION`           this is primarily for wikia-commons. Set this to “vignette”.
+ * `STORAGE_ACCESS_KEY`           S3 access key
+ * `STORAGE_SECRET_KEY`           S3 secret key
+ * `STORAGE_ENDPOINT`             S3 HTTP endpoint
+ * `VIGNETTE_TEMP_FILE_LOCATION`  temporary file location. This is used for thumbnail generation. [/tmp/vignette]
+ * `VIGNETTE_THUMBNAIL_BIN`       path to the thumbnail script [/usr/local/bin/thumbnail, bin/thumbnail]
+ * `VIGNETTE_INTEGRATION_ROOT`    path to use for integration testing files [/tmp/integration]
+
 ## License
 
 Copyright © 2014 Wikia
