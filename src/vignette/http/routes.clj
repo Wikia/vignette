@@ -9,7 +9,8 @@
             [clout.core :refer (route-compile route-matches)]
             [ring.util.response :refer (response status charset header)]
             (ring.middleware [params :refer (wrap-params)])
-            [cheshire.core :refer :all])
+            [cheshire.core :refer :all]
+            [wikia.common.logger :as log])
   (:import java.io.FileInputStream))
 
 (def wikia-regex #"\w+")
@@ -51,7 +52,8 @@
     (try
       (handler request)
       (catch Exception e
-        (status (response (str e)) 503))))) ; todo: add some logging here
+        (log/warn (str e))
+        (status (response (str e)) 503)))))
 
 (defmulti image-file->response-object class)
 
