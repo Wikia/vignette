@@ -18,7 +18,7 @@
 
 (facts :get-or-generate-thumbnail
        ; get existing
-       (get-or-generate-thumbnail ..system.. beach-map) => ..file..
+       (get-or-generate-thumbnail ..system.. beach-map) => nil
        (provided
          (store ..system..) => ..store..
          (get-thumbnail ..store.. beach-map) => ..file..)
