@@ -10,7 +10,7 @@
                 :middle-dir "3"
                 :top-dir "35"
                 :wikia "lotr"
-                :mode "resize"
+                :thumbnail-mode "resize"
                 :height "100"
                 :width "100"})
 

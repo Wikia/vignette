@@ -8,11 +8,13 @@
             [cheshire.core :refer :all])
   (:use [environ.core]))
 
-(def thumbnail-bin (env :vignette-thumbnail-bin "bin/thumbnail"))
+(def thumbnail-bin (env :vignette-thumbnail-bin (if (file-exists? "/usr/local/bin/thumbnail")
+                                                  "/usr/local/bin/thumbnail"
+                                                  "bin/thumbnail")))
 
 (def options-map {:height "height"
                   :width "width"
-                  :mode "mode"})
+                  :thumbnail-mode "mode"})
 
 (defn thumbnail-options
   [thumb-map]

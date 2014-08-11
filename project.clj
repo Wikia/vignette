@@ -10,6 +10,7 @@
                  [ring "1.3.0"]
                  [compojure "1.1.8"]
                  [environ "0.5.0"]
+                 [org.clojure/tools.cli "0.3.1"]
                  [com.novemberain/pantomime "2.3.0"]
                  [clj-aws-s3 "0.3.9"]
                  [wikia/commons "0.1.0-SNAPSHOT"]]
@@ -19,4 +20,8 @@
                                      [org.clojure/tools.trace "0.7.8"]
                                      [org.clojure/tools.namespace "0.2.5"]
                                      [ring-mock "0.1.5"]
-                                     [javax.servlet/servlet-api "2.5"]]}})
+                                     [javax.servlet/servlet-api "2.5"]]}}
+  :main vignette.core
+  :aot [vignette.core]
+  :repl-options {:init-ns user}
+  :uberjar-name "vignette-standalone.jar")

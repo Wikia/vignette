@@ -48,8 +48,8 @@
           (:original-prefix this)
           (mt/original-path original-map))))
 
-(defn create-local-image-storage
+(defn create-image-storage
   ([store original-prefix thumb-prefix]
    (->LocalImageStorage store original-prefix thumb-prefix))
   ([store]
-   (create-local-image-storage store "originals" "thumbs")))
+   (create-image-storage store "originals" "thumbs")))
