@@ -1,45 +1,4 @@
-(ns vignette.media-types
-  (:require [schema.core :as schema]
-            [schema.macros :as sm] ))
-
-; scchema structure
-(def MediaFile
-  {:request-type clojure.lang.Keyword
-   :original String
-   :middle-dir String
-   :top-dir String
-   :wikia String})
-
-(def MediaThumbnailFile
-  (merge MediaFile
-         {:thumbnail-mode String
-          :height String
-          :width String}))
-
-(def MediaAdjustOriginalFile
-  (merge MediaFile
-         {:mode String}))
-
-(defmulti get-media-map :request-type)
-
-(defmethod get-media-map
-           :adjust-original
-           [media]
-  (schema/validate MediaAdjustOriginalFile media))
-
-(defmethod get-media-map
-           :thumbnail
-           [media]
-  (schema/validate MediaThumbnailFile media))
-
-(defmethod get-media-map
-           :original
-           [media]
-  (schema/validate MediaFile media))
-
-(defmethod get-media-map :default [_]
-  (throw (IllegalArgumentException. "Invalid media")))
-
+(ns vignette.media-types)
 
 (defn top-dir
   [data]

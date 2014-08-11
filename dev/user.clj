@@ -17,8 +17,6 @@
             [clout.core :as c]
             [ring.mock.request :refer :all]
             [cheshire.core :refer :all]
-            [schema.core :as schema]
-            [schema.macros :as sm]
             [clojure.tools.trace :refer :all]
             [clojure.java.io :as io]
             [clojure.tools.namespace.repl :as nrepl]
