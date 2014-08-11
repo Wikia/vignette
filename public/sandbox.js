@@ -33,12 +33,19 @@ $(document).ready(function() {
 
 	$('#request-type').change(function() {
 		var dynamics = $('#form-dynamics').html('');
-		var add_options = $('#dynamic-'+$(this).val());
+		var request_type = $(this).val();
+		var add_options = '';
+
+		$('.form-dynamic').each(function() {
+			if ($(this).data('dynamicFor').indexOf(request_type) != -1) {
+				add_options += $(this).html();
+			}
+		});
 
 		if (!add_options.length) {
 			return;
 		}
 
-		dynamics.html(add_options.html());
+		dynamics.html(add_options);
 	});
 });
