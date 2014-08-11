@@ -8,7 +8,9 @@
   (:use [environ.core])
   (:import java.util.UUID))
 
-(def thumbnail-bin (env :vignette-thumbnail-bin "bin/thumbnail"))
+(def thumbnail-bin (env :vignette-thumbnail-bin (if (file-exists? "/usr/local/bin/thumbnail")
+                                                  "/usr/local/bin/thumbnail"
+                                                  "bin/thumbnail")))
 
 ; fixme: add more randomness
 (defn temp-filename

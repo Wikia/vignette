@@ -23,5 +23,6 @@
                                      [ring-mock "0.1.5"]
                                      [javax.servlet/servlet-api "2.5"]]}}
   :main vignette.core
+  :aot [vignette.core]
   :repl-options {:init-ns user}
-  :uber-jar "vignette-standalone.jar")
+  :uberjar-name "vignette-standalone.jar")

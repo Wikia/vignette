@@ -6,7 +6,8 @@
                               [protocols :refer :all])
             (vignette [server :as s]
                       [protocols :refer :all]
-                      [system :refer :all])))
+                      [system :refer :all]))
+  (:gen-class))
 
 (def cli-specs [["-h" "--help" "Show help" :flag true :default false]
                 ["-I" "--integration" "Run in integration testing mode" :flag true :default false]
