@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/Wikia/vignette.svg?branch=master)](https://travis-ci.org/Wikia/vignette)
+
 # vignette
 
 A Clojure library for thumbnail generation and storage.
