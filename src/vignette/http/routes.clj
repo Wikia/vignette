@@ -67,24 +67,25 @@
   [system]
   (-> (routes
         (GET thumbnail-route
-             {route-params :route-params query-params :query-params}
-             (let [route-params (mt/get-media-map (assoc route-params :request-type :thumbnail))]
+             {route-params :route-params}
+             (let [route-params (assoc route-params :request-type :thumbnail)]
                (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
                  (response (image-file->response-object thumb))
                  (not-found "Unable to create thumbnail"))))
         (GET adjust-original-route
-             {route-params :route-params query-params :query-params}
-             (let [route-params (mt/get-media-map (assoc route-params :request-type :adjust-original))]
+             {route-params :route-params}
+             (let [route-params (assoc route-params :request-type :adjust-original)]
                ; FIXME: this needs to be u/reorient-image
                (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
                  (response (image-file->response-object thumb))
                  (not-found "Unable to create thumbnail"))))
         (GET original-route
              {route-params :route-params}
-             (let [route-params (mt/get-media-map (assoc route-params :request-type :original))]
+             (let [route-params (assoc route-params :request-type :original)]
                (if-let [file (get-original (store system) route-params )]
                  (response (image-file->response-object file))
                  (not-found "Unable to find image."))))
+        (files "/static/")
         (not-found "Unrecognized request path!\n"))
       (wrap-params)
       (exception-catcher)))

@@ -9,7 +9,6 @@
                  [cheshire "5.3.1"]
                  [ring "1.3.0"]
                  [compojure "1.1.8"]
-                 [prismatic/schema "0.2.4"]
                  [environ "0.5.0"]
                  [com.novemberain/pantomime "2.3.0"]
                  [clj-aws-s3 "0.3.9"]
