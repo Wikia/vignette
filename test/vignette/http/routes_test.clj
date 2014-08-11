@@ -1,6 +1,5 @@
 (ns vignette.http.routes-test
-  (:require [vignette.media-types :as mt]
-            [vignette.http.routes :refer :all]
+  (:require [vignette.http.routes :refer :all]
             [vignette.storage.protocols :refer :all]
             [vignette.protocols :refer :all]
             [vignette.util.thumbnail :as u]
@@ -59,17 +58,14 @@
   (let [route-params {:request-type :thumbnail, :original "ropes.jpg", :middle-dir "35", :top-dir "3", :wikia "lotr" :thumbnail-mode "resize" :height "10" :width "10"}]
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/resize/10/10")) => (contains {:status 200})
     (provided
-     (mt/get-media-map route-params) => route-params
      (u/get-or-generate-thumbnail ..system.. route-params) => (io/file "image-samples/ropes.jpg"))
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/resize/10/10")) => (contains {:status 404})
     (provided
-     (mt/get-media-map route-params) => route-params
      (u/get-or-generate-thumbnail ..system.. route-params) => nil)
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/resize/10/10")) => (contains {:status 503})
     (provided
-      (mt/get-media-map route-params) => route-params
       (u/get-or-generate-thumbnail ..system.. route-params) => (throws java.io.FileNotFoundException))))
 
 (facts :app-routes-original
@@ -78,17 +74,14 @@
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg")) => (contains {:status 200})
     (provided
      (store ..system..) => ..store..
-     (mt/get-media-map route-params) => route-params
      (get-original ..store.. route-params) => (io/file "image-samples/ropes.jpg"))
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg")) => (contains {:status 404})
     (provided
      (store ..system..) => ..store..
-     (mt/get-media-map route-params) => route-params
      (get-original ..store.. route-params) => nil)
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg")) => (contains {:status 503})
     (provided
       (store ..system..) => ..store..
-      (mt/get-media-map route-params) => route-params
       (get-original ..store.. route-params) => (throws java.io.FileNotFoundException))))
