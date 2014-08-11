@@ -8,7 +8,9 @@
   (:use [environ.core])
   (:import java.util.UUID))
 
-(def thumbnail-bin (env :vignette-thumbnail-bin "bin/thumbnail"))
+(def thumbnail-bin (env :vignette-thumbnail-bin (if (file-exists? "/usr/local/bin/thumbnail")
+                                                  "/usr/local/bin/thumbnail"
+                                                  "bin/thumbnail")))
 
 ; fixme: add more randomness
 (defn temp-filename
@@ -21,7 +23,7 @@
 
 (def options-map {:height "height"
                   :width "width"
-                  :mode "mode"})
+                  :thumbnail-mode "mode"})
 
 (defn thumbnail-options
   [thumb-map]
@@ -48,7 +50,8 @@
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
       :else (throw (Exception.
-                     (str "generating thumbnail failed (" (:exit sh-out) "): STDERR '" (:err sh-out)"' STDOUT: '" (:out sh-out "'")))))))
+                     (str (format "generating thumbnail failed (%s): %s\nSTDERR '%s' STDOUT: '%s' params: %s"
+                                  (:exit sh-out) args (:err sh-out) (:out sh-out) thumb-map)))))))
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
