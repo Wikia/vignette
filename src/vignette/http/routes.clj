@@ -11,7 +11,8 @@
             (ring.middleware [params :refer (wrap-params)])
             [cheshire.core :refer :all]
             [wikia.common.logger :as log])
-  (:import java.io.FileInputStream))
+  (:import java.io.FileInputStream
+           java.net.InetAddress))
 
 (def wikia-regex #"\w+")
 (def top-dir-regex #"\w")
@@ -20,6 +21,7 @@
 (def adjustment-mode-regex #"\w+")
 (def thumbnail-mode-regex #"[\w-]+")
 (def size-regex #"\d+")
+(def hostname (.getHostName (InetAddress/getLocalHost)))
 
 
 
@@ -55,6 +57,14 @@
         (log/warn (str e))
         (status (response (str e)) 503)))))
 
+(defn add-headers
+  [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (header response "X-Served-By" hostname)
+      (header response "X-Cache" "ORIGIN")
+      (header response "X-Cache-Hits" "ORIGIN"))))
+
 (defmulti image-file->response-object class)
 
 (defmethod image-file->response-object java.io.File
@@ -88,4 +98,5 @@
         (files "/static/")
         (not-found "Unrecognized request path!\n"))
       (wrap-params)
-      (exception-catcher)))
+      (exception-catcher)
+      (add-headers)))
