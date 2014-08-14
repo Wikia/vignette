@@ -22,7 +22,7 @@
 
 (defn mode
   [data]
-  (:mode data))
+  (:thumbnail-mode data))
 
 (defn height
   [data]
