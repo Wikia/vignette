@@ -58,8 +58,12 @@
 (defmulti image-file->response-object class)
 
 (defmethod image-file->response-object java.io.File
-  [file]
-  (FileInputStream. file))
+  [object]
+  (FileInputStream. object))
+
+(defmethod image-file->response-object :default
+  [object]
+  object)
 
 
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true

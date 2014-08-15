@@ -19,7 +19,7 @@
               bucket
               (join-slash prefix path)))
 
-(defrecord LocalImageStorage [store original-prefix thumb-prefix]
+(defrecord ImageStorage [store original-prefix thumb-prefix]
   ImageStorageProtocol
 
   (save-thumbnail [this resource thumb-map]
@@ -50,6 +50,6 @@
 
 (defn create-image-storage
   ([store original-prefix thumb-prefix]
-   (->LocalImageStorage store original-prefix thumb-prefix))
+   (->ImageStorage store original-prefix thumb-prefix))
   ([store]
    (create-image-storage store "originals" "thumbs")))

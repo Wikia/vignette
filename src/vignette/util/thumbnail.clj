@@ -40,10 +40,13 @@
         sh-out (run-thumbnailer args)]
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
+      ; FIXME: use slingshot here (https://github.com/scgilardi/slingshot)
       :else (u/log-error-and-throw "thumbnailing failed" sh-out))))
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
+  ; FIXME: how should we handle this when we are using S3 if we never store the
+  ; thumbnails on S3?
   (if-let [thumb (get-thumbnail (store system) thumb-map)]
     thumb
     (when-let [original (get-original (store system) thumb-map)]

@@ -1,8 +1,9 @@
-(ns vignette.util.byte-streams)
+(ns vignette.util.byte-streams
+  (:import [com.amazonaws.services.s3.model S3ObjectInputStream]))
 
-(defn read-byte-stream
+(defn read-byte-stream-core
   [resource length]
-  (with-open [stream (clojure.java.io/input-stream resource)] 
+  (with-open [stream resource]
     (let [output (byte-array length)]
       (loop [offset 0
              nbytes (.read stream output offset length)]
@@ -10,6 +11,20 @@
           output
           (recur (+ offset nbytes)
                  (.read stream output (+ offset nbytes) length)))))))
+
+(defmulti read-byte-stream (fn [resource length] (class resource)))
+
+(defmethod read-byte-stream S3ObjectInputStream
+  [resource length]
+  (read-byte-stream-core resource length))
+
+(defmethod read-byte-stream java.lang.String
+  [resource length]
+  (read-byte-stream-core (clojure.java.io/input-stream resource) length))
+
+(defmethod read-byte-stream java.io.File
+  [resource length]
+  (read-byte-stream-core (clojure.java.io/input-stream resource) length))
 
 (defn write-byte-stream
   [resource array]

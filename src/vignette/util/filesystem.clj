@@ -1,5 +1,6 @@
 (ns vignette.util.filesystem
-  (:require [clojure.java.io :as io])
+  (:require [vignette.util.byte-streams :refer :all]
+            [clojure.java.io :as io])
   (:use [environ.core])
   (:import java.util.UUID))
 
@@ -38,7 +39,22 @@
 
 ; i think this should be a multimethod that dispatches
 ; based on the type
-(defn transfer!
+(defmulti transfer! (fn [in out] (class in)))
+
+(defn transfer-file-like-object!
   [in out]
   (io/copy (io/file in) (io/file out))
+  (file-exists? out))
+
+(defmethod transfer! java.lang.String
+  [in out]
+  (transfer-file-like-object! in out))
+
+(defmethod transfer! java.io.File
+  [in out]
+  (transfer-file-like-object! in out))
+
+(defmethod transfer! (Class/forName "[B")
+  [in out]
+  (write-byte-stream (io/file out) in)
   (file-exists? out))

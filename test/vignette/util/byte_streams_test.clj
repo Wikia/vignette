@@ -1,4 +1,4 @@
-(ns vignette.util.byte_streams_test
+(ns vignette.util.byte-streams-test
   (:require (vignette.util [byte-streams :refer :all]
                            [filesystem :refer (file-exists?)])
             [midje.sweet :refer :all]
