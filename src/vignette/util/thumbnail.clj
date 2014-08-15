@@ -1,5 +1,6 @@
 (ns vignette.util.thumbnail
   (:require [vignette.storage.protocols :refer :all]
+            [vignette.media-types :refer :all]
             [vignette.util :as u]
             [vignette.util.filesystem :refer :all]
             [vignette.protocols :refer :all]
@@ -29,9 +30,9 @@
   [args]
   (apply sh args))
 
-(defn generate-thumbnail
+(defn original->thumbnail
   [resource thumb-map]
-  (let [temp-file (temp-filename)
+  (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
                       "--out" temp-file]
@@ -50,6 +51,18 @@
   (if-let [thumb (get-thumbnail (store system) thumb-map)]
     thumb
     (when-let [original (get-original (store system) thumb-map)]
-      (when-let [thumb (generate-thumbnail original thumb-map)]
+      (when-let [thumb (original->thumbnail original thumb-map)]
         (save-thumbnail (store system) thumb thumb-map)
         thumb)))) ; TODO: cron to delete thumbs older than X)
+
+(defn generate-thumbnail
+  "Generate a thumbnail from the original specified in thumb-map.
+  This function will download the original locally and thumbnail it. If
+  delete-local-original is truthy, the original will be removed after the
+  thumbnailing is completed."
+  [system thumb-map & [delete-local-original]]
+  (when-let [local-original (get-original (store system) thumb-map)]
+    (let [thumb (original->thumbnail local-original thumb-map)]
+      (when delete-local-original
+        (future (io/delete-file local-original true)))
+      thumb)))

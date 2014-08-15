@@ -10,6 +10,7 @@
             [ring.util.response :refer (response status charset header)]
             (ring.middleware [params :refer (wrap-params)])
             [cheshire.core :refer :all]
+            [clojure.java.io :as io]
             [wikia.common.logger :as log])
   (:import java.io.FileInputStream))
 
@@ -65,7 +66,6 @@
   [object]
   object)
 
-
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
   [system]
@@ -73,14 +73,17 @@
         (GET thumbnail-route
              {route-params :route-params}
              (let [route-params (assoc route-params :request-type :thumbnail)]
-               (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
+               ; FIXME: consider cleaning these up with a background find + delete for
+               ; images more than N hours old with https://github.com/overtone/at-at
+               ; something like (u/start-thumbnail-reaper!)
+               (if-let [thumb (u/generate-thumbnail system route-params true)]
                  (response (image-file->response-object thumb))
                  (not-found "Unable to create thumbnail"))))
         (GET adjust-original-route
              {route-params :route-params}
              (let [route-params (assoc route-params :request-type :adjust-original)]
                ; FIXME: this needs to be u/reorient-image
-               (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
+               (if-let [thumb (u/generate-thumbnail system route-params)]
                  (response (image-file->response-object thumb))
                  (not-found "Unable to create thumbnail"))))
         (GET original-route

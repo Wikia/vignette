@@ -11,12 +11,15 @@
 (def temp-file-location (env :vignette-temp-file-location "/tmp/vignette"))
 
 (defn temp-filename
-  []
-  (let [filename (resolve-local-path
-                   temp-file-location
-                   (UUID/randomUUID))]
-    (create-local-path (get-parent filename))
-    filename))
+  ([prefix]
+   (let [uuid (if (not (empty? prefix))
+                (str prefix "_" (UUID/randomUUID))
+                (UUID/randomUUID))
+         filename (resolve-local-path temp-file-location uuid)]
+     (create-local-path (get-parent filename))
+     filename))
+  ([]
+   (temp-filename "")))
 
 
 (defn create-local-path
