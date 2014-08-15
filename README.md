@@ -61,6 +61,8 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `VIGNETTE_TEMP_FILE_LOCATION`  temporary file location. This is used for thumbnail generation. [/tmp/vignette]
  * `VIGNETTE_THUMBNAIL_BIN`       path to the thumbnail script [/usr/local/bin/thumbnail, bin/thumbnail]
  * `VIGNETTE_INTEGRATION_ROOT`    path to use for integration testing files [/tmp/integration]
+ * `IMAGEMAGICK_BASE`             path to the root of the ImageMagick installation [/usr/local]
+
 
 ## License
 

@@ -62,7 +62,10 @@
   thumbnailing is completed."
   [system thumb-map & [delete-local-original]]
   (when-let [local-original (get-original (store system) thumb-map)]
-    (let [thumb (original->thumbnail local-original thumb-map)]
-      (when delete-local-original
-        (future (io/delete-file local-original true)))
-      thumb)))
+    (try
+      (when-let [thumb (original->thumbnail local-original thumb-map)]
+        thumb)
+      (catch Exception e (throw e))
+      (finally
+        (when delete-local-original
+          (future (io/delete-file local-original true)))))))
