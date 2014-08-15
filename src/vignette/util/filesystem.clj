@@ -7,8 +7,6 @@
 (declare resolve-local-path)
 (declare create-local-path)
 (declare get-parent)
-(declare transfer!)
-(declare file-exists?)
 
 (def temp-file-location (env :vignette-temp-file-location "/tmp/vignette"))
 
