@@ -1,4 +1,5 @@
-(ns vignette.media-types)
+(ns vignette.media-types
+  (require [vignette.util.query-options :refer :all]))
 
 (declare original)
 
@@ -65,4 +66,4 @@
 
 (defn thumbnail
   [data]
-  (format "%dpx-%dpx-%s-%s" (width data) (height data) (mode data) (original data)))
+  (format "%dpx-%dpx-%s%s-%s" (width data) (height data) (mode data) (q-opts-str data) (original data)))
