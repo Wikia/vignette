@@ -12,7 +12,9 @@
 
 (defn revision-filename
   [data]
-  (str (revision data) "!" (original data)))
+  (if-let [revision (revision data)]
+    (str revision "!" (original data))
+    (original data)))
 
 (defn top-dir
   [data]
@@ -29,11 +31,11 @@
 (defn original-path
   [data]
   (let [image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))
-        original (original data)
+        filename (revision-filename data)
         revision (revision data)]
     (if (nil? revision)
-      (clojure.string/join "/" [image-path original])
-      (clojure.string/join "/" [archive-dir image-path (revision-filename data)]))))
+      (clojure.string/join "/" [image-path filename])
+      (clojure.string/join "/" [archive-dir image-path filename]))))
 
 (defn wikia
   [data]
