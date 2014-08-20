@@ -31,9 +31,8 @@
 (defn original-path
   [data]
   (let [image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))
-        filename (revision-filename data)
-        revision (revision data)]
-    (if (nil? revision)
+        filename (revision-filename data)]
+    (if (nil? (revision data))
       (clojure.string/join "/" [image-path filename])
       (clojure.string/join "/" [archive-dir image-path filename]))))
 
@@ -59,9 +58,8 @@
 (defn thumbnail-path
   [data]
   (let [image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))
-        thumbnail (thumbnail data)
-        revision (revision data)]
-    (if (nil? revision)
+        thumbnail (thumbnail data)]
+    (if (nil? (revision data))
       (clojure.string/join "/" [image-path thumbnail])
       (clojure.string/join "/" [archive-dir image-path (revision-filename data) thumbnail]))))
 
