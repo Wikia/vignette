@@ -1,14 +1,14 @@
 (ns vignette.storage.common)
 
 (defn create-storage-object
-  [data content-type length]
-  {:data data
+  [file-stream content-type length]
+  {:file-stream file-stream
    :content-type content-type
    :length length})
 
-(defn data
+(defn file-stream
   [storage-object]
-  (get storage-object :data))
+  (get storage-object :file-stream))
 
 (defn content-type
   [storage-object]

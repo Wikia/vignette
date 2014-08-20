@@ -1,6 +1,7 @@
 (ns vignette.http.routes
   (:require (vignette.storage [protocols :refer :all]
-                              [core :refer :all])
+                              [core :refer :all]
+                              [common :refer :all])
             [vignette.util.thumbnail :as u]
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]
@@ -12,7 +13,8 @@
             [cheshire.core :refer :all]
             [clojure.java.io :as io]
             [wikia.common.logger :as log])
-  (:import java.io.FileInputStream))
+  (:import [java.io FileInputStream]
+           [java.nio ByteBuffer]))
 
 (def wikia-regex #"\w+")
 (def top-dir-regex #"\w")
@@ -56,15 +58,22 @@
         (log/warn (str e))
         (status (response (str e)) 503)))))
 
-(defmulti image-file->response-object class)
+(defmulti image-file->response-object
+  "Convert an image file object to something that http-kit can understand. The types supported
+  can be found in the httpkit::HttpUtils/bodyBuffer."
+  (comp class file-stream))
 
 (defmethod image-file->response-object java.io.File
   [object]
-  (FileInputStream. object))
+  (FileInputStream. (file-stream object)))
+
+(defmethod image-file->response-object (Class/forName "[B")
+  [object]
+  (ByteBuffer/wrap (file-stream object)))
 
 (defmethod image-file->response-object :default
   [object]
-  object)
+  (file-stream object))
 
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
@@ -76,14 +85,14 @@
                ; FIXME: consider cleaning these up with a background find + delete for
                ; images more than N hours old with https://github.com/overtone/at-at
                ; something like (u/start-thumbnail-reaper!)
-               (if-let [thumb (u/generate-thumbnail system route-params true)]
+               (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
                  (response (image-file->response-object thumb))
                  (not-found "Unable to create thumbnail"))))
         (GET adjust-original-route
              {route-params :route-params}
              (let [route-params (assoc route-params :request-type :adjust-original)]
                ; FIXME: this needs to be u/reorient-image
-               (if-let [thumb (u/generate-thumbnail system route-params)]
+               (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
                  (response (image-file->response-object thumb))
                  (not-found "Unable to create thumbnail"))))
         (GET original-route

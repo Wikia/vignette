@@ -1,5 +1,6 @@
 (ns vignette.util.thumbnail
-  (:require [vignette.storage.protocols :refer :all]
+  (:require (vignette.storage [protocols :refer :all]
+                              [common :refer :all])
             [vignette.media-types :refer :all]
             [vignette.util :as u]
             [vignette.util.filesystem :refer :all]
@@ -34,7 +35,7 @@
   [resource thumb-map]
   (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
         base-command [thumbnail-bin
-                      "--in" (.getAbsolutePath resource)
+                      "--in" (absolute-path resource)
                       "--out" temp-file]
         thumb-options (thumbnail-options thumb-map)
         args (reduce conj base-command thumb-options)
@@ -44,28 +45,49 @@
       ; FIXME: use slingshot here (https://github.com/scgilardi/slingshot)
       :else (u/log-error-and-throw "thumbnailing failed" sh-out))))
 
+(declare generate-thumbnail)
+(declare background-save-thumbnail)
+
 (defn get-or-generate-thumbnail
   [system thumb-map]
   ; FIXME: how should we handle this when we are using S3 if we never store the
   ; thumbnails on S3?
   (if-let [thumb (get-thumbnail (store system) thumb-map)]
     thumb
-    (when-let [original (get-original (store system) thumb-map)]
-      (when-let [thumb (original->thumbnail original thumb-map)]
-        (save-thumbnail (store system) thumb thumb-map)
-        thumb)))) ; TODO: cron to delete thumbs older than X)
+    (when-let [thumb (generate-thumbnail system thumb-map)]
+      (background-save-thumbnail (store system) (file-stream thumb) thumb-map)
+      thumb))) ; TODO: cron to delete thumbs older than X)
+
+(declare original->local)
+(declare background-delete-file)
 
 (defn generate-thumbnail
   "Generate a thumbnail from the original specified in thumb-map.
-  This function will download the original locally and thumbnail it. If
-  delete-local-original is truthy, the original will be removed after the
-  thumbnailing is completed."
-  [system thumb-map & [delete-local-original]]
-  (when-let [local-original (get-original (store system) thumb-map)]
-    (try
-      (when-let [thumb (original->thumbnail local-original thumb-map)]
-        thumb)
-      (catch Exception e (throw e))
-      (finally
-        (when delete-local-original
-          (future (io/delete-file local-original true)))))))
+  This function will download the original locally and thumbnail it.
+  The original will be removed after the thumbnailing is completed."
+  [system thumb-map]
+  (when-let [original (get-original (store system) thumb-map)]
+    (when-let [local-original (original->local (file-stream original) thumb-map)]
+      (try
+        (when-let [thumb (original->thumbnail local-original thumb-map)]
+          ; if we support changing to a different type we need to change the content-type lookup here
+          (create-storage-object thumb (content-type original) (file-length thumb)))
+        (catch Exception e (throw e))
+        (finally
+          (background-delete-file local-original))))))
+
+(defn original->local
+  "Take the original and make it local."
+  [original thumb-map]
+  (let [temp-file (io/file (temp-filename (str (wikia thumb-map) "_original")))]
+    (when (transfer! original temp-file)
+      temp-file)))
+
+(defn background-save-thumbnail
+  "Save the thumbnail in the background. This should not delay the rendering."
+  [store stream thumb-map]
+  (future (save-thumbnail store stream thumb-map)))
+
+(defn background-delete-file
+  [file]
+  (future (io/delete-file file true)))

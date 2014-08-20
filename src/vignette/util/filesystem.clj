@@ -34,6 +34,14 @@
   [path]
   (.getParent (io/file path)))
 
+(defn file-length
+  [file]
+  (.length file))
+
+(defn absolute-path
+  [file]
+  (.getAbsolutePath file))
+
 (defn resolve-local-path
   [& more]
   (reduce str (interpose "/" more)))
