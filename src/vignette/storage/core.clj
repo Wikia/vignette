@@ -52,4 +52,4 @@
   ([store original-prefix thumb-prefix]
    (->LocalImageStorage store original-prefix thumb-prefix))
   ([store]
-   (create-image-storage store "originals" "thumbs")))
+   (create-image-storage store "images" "images/thumb")))

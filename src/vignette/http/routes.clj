@@ -14,6 +14,7 @@
   (:import java.io.FileInputStream
            java.net.InetAddress))
 
+(def revision-regex #"\d+|latest")
 (def wikia-regex #"\w+")
 (def top-dir-regex #"\w")
 (def middle-dir-regex #"\w\w")
@@ -26,24 +27,27 @@
 
 
 (def original-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original"
-                 {:wikia wikia-regex
-                  :top-dir top-dir-regex
-                  :middle-dir middle-dir-regex}))
-
-(def adjust-original-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original/:mode"
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision"
                  {:wikia wikia-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
+                  :revision revision-regex}))
+
+(def adjust-original-route
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/:mode"
+                 {:wikia wikia-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :revision revision-regex
                   :mode adjustment-mode-regex}))
 
 (def thumbnail-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original/:thumbnail-mode/:width/:height"
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/height/:height"
                  {:wikia wikia-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
+                  :revision revision-regex
                   :thumbnail-mode thumbnail-mode-regex
                   :width size-regex
                   :height size-regex}))
