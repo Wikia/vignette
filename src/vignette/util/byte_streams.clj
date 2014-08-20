@@ -1,6 +1,9 @@
 (ns vignette.util.byte-streams
   (:import [com.amazonaws.services.s3.model S3ObjectInputStream]))
 
+
+; See also https://github.com/http-kit/http-kit/blob/3fbeda1b31d90efb0ff4c208a61328ee0cf5b305/src/java/org/httpkit/HttpUtils.java#L88
+; for dealing with streams.
 (defn read-byte-stream-core
   [resource length]
   (with-open [stream resource]

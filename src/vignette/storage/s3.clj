@@ -1,14 +1,12 @@
 (ns vignette.storage.s3
   (:require [aws.sdk.s3 :as s3]
-            [vignette.storage.protocols :refer :all]
-            [vignette.storage.local :refer (create-local-object-storage)]
+            (vignette.storage [protocols :refer :all]
+                              [common :refer :all])
             (vignette.util [filesystem :refer :all]
                            [byte-streams :refer :all])
             [clojure.java.io :as io])
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
-
-(def local-cache-directory (env :local-cache-directory "/tmp/vignette/_cache"))
 
 (defn valid-s3-get?
   [response]
@@ -16,13 +14,6 @@
        (contains? response :content)
        (contains? response :metadata)
        (contains? (:metadata response) :content-length)))
-
-(defn stream->temp-file
-  "Writes the byte array to a temporary file and returns it."
-  [ba prefix]
-  (let [tempfile (io/file (temp-filename prefix))]
-    (transfer! ba tempfile)
-    tempfile))
 
 (defn safe-get-object
   [creds bucket path]
@@ -33,7 +24,7 @@
         nil
         (throw e)))))
 
-(defrecord S3ObjectStorage [creds local-cache]
+(defrecord S3ObjectStorage [creds]
   ObjectStorageProtocol
   (get-object [this bucket path]
     (when-let [object (safe-get-object (:creds this) bucket path)]
@@ -41,8 +32,8 @@
         (let [stream (:content object)
               meta-data (:metadata object)
               length (:content-length meta-data)
-              ba (read-byte-stream stream length)]
-          (stream->temp-file ba bucket)))))
+              content-type (:content-type meta-data)]
+          (create-storage-object (read-byte-stream stream length) content-type length)))))
   (put-object [this resource bucket path]
     (when-let [response (s3/put-object (:creds this) bucket path resource)]
       response))
@@ -51,7 +42,5 @@
   (list-objects [this bucket]))
 
 (defn create-s3-object-storage
-  ([creds cache-directory]
-   (->S3ObjectStorage creds (create-local-object-storage cache-directory)))
-  ([creds]
-   (create-s3-object-storage creds local-cache-directory)))
+  [creds]
+  (->S3ObjectStorage creds))
