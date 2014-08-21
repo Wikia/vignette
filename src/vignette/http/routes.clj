@@ -66,9 +66,11 @@
   [handler]
   (fn [request]
     (let [response (handler request)]
-      (header response "X-Served-By" hostname)
-      (header response "X-Cache" "ORIGIN")
-      (header response "X-Cache-Hits" "ORIGIN"))))
+      (reduce (fn [response [h v]]
+                (header response h v))
+              response {"X-Served-By" hostname
+                        "X-Cache" "ORIGIN"
+                        "X-Cache-Hits" "ORIGIN"}))))
 
 (defmulti image-file->response-object class)
 
