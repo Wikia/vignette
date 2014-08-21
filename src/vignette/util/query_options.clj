@@ -1,28 +1,28 @@
 (ns vignette.util.query-options)
 
-(def q-opts-map {:fill "fill"})
+(def query-opts-map {:fill "fill"})
 
-(defn request-options
+(defn extract-query-opts
   [request]
   (reduce (fn [running [key val]]
-            (if (contains? q-opts-map (keyword key))
+            (if (contains? query-opts-map (keyword key))
               (assoc running (keyword key) val)
               running))
           {} (:query-params request)))
 
-(defn q-opts
+(defn query-opts
   [data]
   (if (empty? (:options data))
     nil
     (:options data)))
 
-(defn q-opt
+(defn query-opt
   [data opt]
-  (get (q-opts data) opt))
+  (get (query-opts data) opt))
 
-(defn q-opts-str
+(defn query-opts-str
   [data]
-  (if-let [options (q-opts data)]
+  (if-let [options (query-opts data)]
     (str "["
          (clojure.string/join "," (sort (map (fn [[k v]]
                                                (str (name k) "=" v))
@@ -30,17 +30,17 @@
          "]")
     ""))
 
-(defn query->thumb-options
+(defn query-opts->thumb-args
   [data]
   (reduce (fn [running [opt-key val]]
-            (if-let [opt (get q-opts-map opt-key)]
+            (if-let [opt (get query-opts-map opt-key)]
               (conj running (str "--" opt) (str val))
               running))
           []
-          (q-opts data)))
+          (query-opts data)))
 
 (defn modify-temp-file
   [data filename]
   (cond
-    (= (q-opt data :fill) "transparent") (str "png:" filename)
+    (= (query-opt data :fill) "transparent") (str "png:" filename)
     :else filename))

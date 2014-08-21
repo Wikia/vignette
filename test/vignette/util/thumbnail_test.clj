@@ -52,5 +52,5 @@
          (run-thumbnailer anything) => {:exit 1 :err 256 :out "testing failure"}))
 
 (facts :thumbnail-options
-       (route->thumb-options beach-map) => (contains ["--height" "100" "--width" "100"
+       (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
                                                       "--mode" "resize"] :in-any-order))

@@ -81,7 +81,7 @@
 (defn image-params
   [request request-type]
   (let [route-params (assoc (:route-params request) :request-type request-type)
-        options (request-options request)]
+        options (extract-query-opts request)]
     (assoc route-params :options options)))
 
 

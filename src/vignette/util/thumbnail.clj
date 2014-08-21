@@ -26,7 +26,7 @@
                   :width "width"
                   :thumbnail-mode "mode"})
 
-(defn route->thumb-options
+(defn route-map->thumb-args
   [thumb-map]
   (reduce (fn [running [opt-key val]]
             (if-let [opt (get options-map opt-key)]
@@ -45,8 +45,8 @@
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
                       "--out" (q/modify-temp-file thumb-map temp-file)]
-        route-options (route->thumb-options thumb-map)
-        query-options (q/query->thumb-options thumb-map)
+        route-options (route-map->thumb-args thumb-map)
+        query-options (q/query-opts->thumb-args thumb-map)
         thumb-options (reduce conj route-options query-options)
         args (reduce conj base-command thumb-options)
         sh-out (run-thumbnailer args)]

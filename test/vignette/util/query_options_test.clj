@@ -15,19 +15,19 @@
 (def thumb-option-map (assoc thumb-map :options {:fill "purple"}))
 
 (facts :request-options
-       (request-options {:query-params {"fill" "blue"
+       (extract-query-opts {:query-params {"fill" "blue"
                                         "unused" "foo"
                                         "unused2" "bar"}}) => {:fill "blue"})
 
 (facts :q-opts
-       (q-opts thumb-option-map) => {:fill "purple"}
-       (q-opts thumb-map) => nil)
+       (query-opts thumb-option-map) => {:fill "purple"}
+       (query-opts thumb-map) => nil)
 
 (facts :q-opt
-       (q-opt thumb-map :foo) => nil
-       (q-opt thumb-option-map :fill) => "purple"
-       (q-opt thumb-option-map :foo) => nil)
+       (query-opt thumb-map :foo) => nil
+       (query-opt thumb-option-map :fill) => "purple"
+       (query-opt thumb-option-map :foo) => nil)
 
 (facts :q-opts-str
-       (q-opts-str thumb-map) => ""
-       (q-opts-str thumb-option-map) "[fill=purple]")
+       (query-opts-str thumb-map) => ""
+       (query-opts-str thumb-option-map) "[fill=purple]")

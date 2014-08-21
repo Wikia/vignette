@@ -66,4 +66,4 @@
 
 (defn thumbnail
   [data]
-  (format "%dpx-%dpx-%s%s-%s" (width data) (height data) (mode data) (q-opts-str data) (original data)))
+  (format "%dpx-%dpx-%s%s-%s" (width data) (height data) (mode data) (query-opts-str data) (original data)))
