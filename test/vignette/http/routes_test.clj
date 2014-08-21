@@ -79,7 +79,8 @@
                       :wikia "lotr"
                       :thumbnail-mode "resize"
                       :height "10"
-                      :width "10"}]
+                      :width "10"
+                      :options {}}]
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 200})
     (provided
      (u/get-or-generate-thumbnail ..system.. route-params) => (io/file "image-samples/ropes.jpg"))
