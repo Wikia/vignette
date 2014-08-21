@@ -2,6 +2,7 @@
   (:require [vignette.storage.protocols :refer :all]
             [vignette.util.filesystem :refer :all]
             [vignette.protocols :refer :all]
+            [vignette.util.query-options :as q]
             [clojure.java.shell :refer (sh)]
             [clojure.java.io :as io]
             [cheshire.core :refer :all])
@@ -25,7 +26,7 @@
                   :width "width"
                   :thumbnail-mode "mode"})
 
-(defn thumbnail-options
+(defn route-map->thumb-args
   [thumb-map]
   (reduce (fn [running [opt-key val]]
             (if-let [opt (get options-map opt-key)]
@@ -43,8 +44,10 @@
   (let [temp-file (temp-filename)
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
-                      "--out" temp-file]
-        thumb-options (thumbnail-options thumb-map)
+                      "--out" (q/modify-temp-file thumb-map temp-file)]
+        route-options (route-map->thumb-args thumb-map)
+        query-options (q/query-opts->thumb-args thumb-map)
+        thumb-options (reduce conj route-options query-options)
         args (reduce conj base-command thumb-options)
         sh-out (run-thumbnailer args)]
     (cond

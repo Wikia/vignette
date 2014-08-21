@@ -17,7 +17,7 @@ $(document).ready(function() {
 			return false;
 		}
 
-		var image_url = "/bucket/a/ab/"+image;
+		var image_url = "/bucket/a/ab/"+image+"/revision/latest";
 		var request_type = $('#request-type').val();
 		if (request_type != 0) {
 			image_url += '/'+request_type;
@@ -26,6 +26,11 @@ $(document).ready(function() {
 		$('#form-dynamics').find(':input').each(function() {
 			image_url += '/'+$(this).val();
 		});
+
+		var query = $('#query').val();
+		if (query != "") {
+			image_url += '?'+query;
+		}
 
 		add_history(image_url);
 		return false;
