@@ -27,6 +27,11 @@ $(document).ready(function() {
 			image_url += '/'+$(this).val();
 		});
 
+		var query = $('#query').val();
+		if (query != "") {
+			image_url += '?'+query;
+		}
+
 		add_history(image_url);
 		return false;
 	});
