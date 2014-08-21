@@ -24,9 +24,9 @@
   [data]
   (if-let [options (q-opts data)]
     (str "["
-         (clojure.string/join "," (map (fn [[k v]]
-                                         (str (name k) "=" v))
-                                       options))
+         (clojure.string/join "," (sort (map (fn [[k v]]
+                                               (str (name k) "=" v))
+                                             options)))
          "]")
     ""))
 
@@ -42,4 +42,5 @@
 (defn modify-temp-file
   [data filename]
   (cond
-    (= (q-opt data :fill) "transparent") (str "png:" filename)))
+    (= (q-opt data :fill) "transparent") (str "png:" filename)
+    :else filename))
