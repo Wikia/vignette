@@ -31,3 +31,7 @@
 (facts :q-opts-str
        (query-opts-str thumb-map) => ""
        (query-opts-str thumb-option-map) "[fill=purple]")
+
+(facts :query-opts->thumb-args
+       (query-opts->thumb-args thumb-map) => []
+       (query-opts->thumb-args thumb-option-map) => ["--fill" "purple"])
