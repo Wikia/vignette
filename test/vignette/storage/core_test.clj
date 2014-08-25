@@ -25,7 +25,7 @@
                             :width "10"})
 
 
-(facts :local-image-storage :unit
+(facts :local-image-storage
   (let [store (create-image-storage ..disk-store.. "originals" "thumbs")
         file-name "a/bc/d.png"]
 

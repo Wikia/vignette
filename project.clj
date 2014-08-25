@@ -13,6 +13,7 @@
                  [org.clojure/tools.cli "0.3.1"]
                  [com.novemberain/pantomime "2.3.0"]
                  [clj-aws-s3 "0.3.9"]
+                 [slingshot "0.10.3"]
                  [wikia/commons "0.1.0-SNAPSHOT"]]
   :profiles  {:dev  {:source-paths  ["dev"]
                      :plugins [[lein-midje "3.1.1"]]

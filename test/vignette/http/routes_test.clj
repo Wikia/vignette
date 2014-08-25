@@ -89,9 +89,9 @@
     (provided
      (u/get-or-generate-thumbnail ..system.. route-params) => nil)
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 503})
+    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 500})
     (provided
-      (u/get-or-generate-thumbnail ..system.. route-params) => (throws java.io.FileNotFoundException))))
+      (u/get-or-generate-thumbnail ..system.. route-params) =throws=> (NullPointerException.))))
 
 (facts :app-routes-original
 
@@ -111,7 +111,7 @@
      (store ..system..) => ..store..
      (get-original ..store.. route-params) => nil)
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 503})
+    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 500})
     (provided
       (store ..system..) => ..store..
-      (get-original ..store.. route-params) => (throws java.io.FileNotFoundException))))
+      (get-original ..store.. route-params) =throws=> (NullPointerException.))))

@@ -1,9 +1,11 @@
 (ns vignette.storage.local
-  (:require [vignette.storage.protocols :refer :all]
+  (:require (vignette.storage [protocols :refer :all]
+                              [common :refer :all])
             [vignette.media-types :as mt]
             [vignette.util.filesystem :refer :all]
             [clojure.java.io :as io]
-            [clojure.java.shell :as sh])
+            [clojure.java.shell :as sh]
+            [pantomime.mime :refer (mime-type-of)])
   (:import  (java.io FileInputStream)))
 
 ; TODO: when the logger has a closure port, we should create an exception that has context that we can log w/ exceptions
@@ -13,7 +15,7 @@
   (get-object [this bucket path]
     (let [real-file (io/file (resolve-local-path (:directory this) bucket path))]
       (when (file-exists? real-file)
-        real-file)))
+        (create-storage-object real-file (mime-type-of real-file) (file-length real-file)))))
 
   (put-object [this resource bucket path]
     (let [real-path (resolve-local-path (:directory this) bucket path)]
