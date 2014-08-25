@@ -50,12 +50,12 @@
 (def los  (vlocal/create-local-object-storage itg/integration-path))
 (def lis  (create-image-storage los))
 
-(def S (create-system lis))
+(def system-local (create-system lis))
 
 (def s3os  (vs3/create-s3-object-storage storage-creds))
 (def s3s   (create-image-storage s3os "images" "images/thumb"))
 
-(def Ss (create-system s3s))
+(def system-s3 (create-system s3s))
 
 (comment
   (start S 8080)
