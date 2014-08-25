@@ -56,7 +56,7 @@
     (try+
       (handler request)
       (catch [:type :vignette.util.thumbnail/convert-error] {:keys [exit out err]}
-        (log/warn (str "thumbnailing failed with code " exit " out: " out " and err: " err))
+        (log/warn "thumbnailing failed" {:code exit :out out :err err})
         (status (response "thumbnailing error") 500))
       (catch Exception e
         (log/warn (str e))

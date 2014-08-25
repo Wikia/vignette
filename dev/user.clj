@@ -73,11 +73,11 @@
 (defn re-init-dev
   ([port]
    (do
-     (stop S)
+     (stop system-s3)
      (nrepl/refresh)
      (clojure.core/use '[clojure.core])
      (use '[clojure.repl])
      (load-file "dev/user.clj")
-     (start S port)))
+     (start system-s3 port)))
   ([]
    (re-init-dev 8080)))
