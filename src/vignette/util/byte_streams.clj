@@ -21,11 +21,7 @@
   [resource length]
   (read-byte-stream-core resource length))
 
-(defmethod read-byte-stream java.lang.String
-  [resource length]
-  (read-byte-stream-core (clojure.java.io/input-stream resource) length))
-
-(defmethod read-byte-stream java.io.File
+(defmethod read-byte-stream :default
   [resource length]
   (read-byte-stream-core (clojure.java.io/input-stream resource) length))
 
