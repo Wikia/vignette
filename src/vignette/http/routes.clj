@@ -75,6 +75,11 @@
   [object]
   (file-stream object))
 
+(defn create-image-response
+  [image]
+  (-> (response (image-file->response-object image))
+      (header "Content-Type" (content-type image))))
+
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
   [system]
@@ -82,24 +87,21 @@
         (GET thumbnail-route
              {route-params :route-params}
              (let [route-params (assoc route-params :request-type :thumbnail)]
-               ; FIXME: consider cleaning these up with a background find + delete for
-               ; images more than N hours old with https://github.com/overtone/at-at
-               ; something like (u/start-thumbnail-reaper!)
                (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
-                 (response (image-file->response-object thumb))
+                 (create-image-response thumb)
                  (not-found "Unable to create thumbnail"))))
         (GET adjust-original-route
              {route-params :route-params}
              (let [route-params (assoc route-params :request-type :adjust-original)]
                ; FIXME: this needs to be u/reorient-image
-               (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
-                 (response (image-file->response-object thumb))
+               (if-let [image (u/get-or-generate-thumbnail system route-params)]
+                 (create-image-response image)
                  (not-found "Unable to create thumbnail"))))
         (GET original-route
              {route-params :route-params}
              (let [route-params (assoc route-params :request-type :original)]
                (if-let [file (get-original (store system) route-params )]
-                 (response (image-file->response-object file))
+                 (create-image-response file)
                  (not-found "Unable to find image."))))
         (files "/static/")
         (not-found "Unrecognized request path!\n"))

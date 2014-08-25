@@ -4,6 +4,7 @@
                               [common :refer :all])
             (vignette.util [filesystem :refer :all]
                            [byte-streams :refer :all])
+            [pantomime.mime :refer (mime-type-of)]
             [clojure.java.io :as io])
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
@@ -35,8 +36,9 @@
               content-type (:content-type meta-data)]
           (create-storage-object (read-byte-stream stream length) content-type length)))))
   (put-object [this resource bucket path]
-    (when-let [response (s3/put-object (:creds this) bucket path resource)]
-      response))
+    (let [mime-type (mime-type-of resource)]
+      (when-let [response (s3/put-object (:creds this) bucket path resource {:content-type mime-type})]
+        response)))
   (delete-object [this bucket path])
   (list-buckets [this])
   (list-objects [this bucket]))

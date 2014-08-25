@@ -3,6 +3,7 @@
                               [s3 :refer :all]
                               [common :as sc])
             (vignette.util [byte-streams :refer :all])
+            [pantomime.mime :refer (mime-type-of)]
             [aws.sdk.s3 :as s3]
             [midje.sweet :refer :all]
             [clojure.java.io :as io]))
@@ -22,9 +23,11 @@
 (facts :s3 :put-object
   (put-object (create-s3-object-storage ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => ..response..
   (provided
-    (s3/put-object ..creds.. "bucket" "a/ab/image.jpg" ..resource..) => ..response..)
+    (mime-type-of ..resource..) => ..content-type..
+    (s3/put-object ..creds.. "bucket" "a/ab/image.jpg" ..resource.. {:content-type ..content-type..}) => ..response..)
 
   ; this may not be realistic. we'll probably get an error before we get nil
   (put-object (create-s3-object-storage ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => nil
   (provided
-    (s3/put-object ..creds.. "bucket" "a/ab/image.jpg" ..resource..) => nil))
+    (mime-type-of ..resource..) => ..content-type..
+    (s3/put-object ..creds.. "bucket" "a/ab/image.jpg" ..resource.. {:content-type ..content-type..}) => nil))

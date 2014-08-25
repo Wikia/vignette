@@ -14,6 +14,7 @@
                       [protocols :refer :all]
                       [media-types :as mt]
                       [system :refer :all])
+            [wikia.common.logger :as log]
             [aws.sdk.s3 :as s3]
             [midje.repl :refer :all]
             [clout.core :as c]
@@ -49,10 +50,10 @@
 (def los  (vlocal/create-local-object-storage itg/integration-path))
 (def lis  (create-image-storage los))
 
+(def S (create-system lis))
+
 (def s3os  (vs3/create-s3-object-storage storage-creds))
 (def s3s   (create-image-storage s3os "images" "images/thumb"))
-
-(def S (create-system lis))
 
 (def Ss (create-system s3s))
 

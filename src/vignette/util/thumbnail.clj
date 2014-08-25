@@ -7,6 +7,7 @@
             [vignette.protocols :refer :all]
             [clojure.java.shell :refer (sh)]
             [clojure.java.io :as io]
+            [wikia.common.logger :as log]
             [cheshire.core :refer :all])
   (:use [environ.core]))
 
@@ -50,8 +51,6 @@
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
-  ; FIXME: how should we handle this when we are using S3 if we never store the
-  ; thumbnails on S3?
   (if-let [thumb (get-thumbnail (store system) thumb-map)]
     thumb
     (when-let [thumb (generate-thumbnail system thumb-map)]
@@ -66,7 +65,7 @@
   This function will download the original locally and thumbnail it.
   The original will be removed after the thumbnailing is completed."
   [system thumb-map]
-  (when-let [original (get-original (store system) thumb-map)]
+  (if-let [original (get-original (store system) thumb-map)]
     (when-let [local-original (original->local (file-stream original) thumb-map)]
       (try
         (when-let [thumb (original->thumbnail local-original thumb-map)]
@@ -74,7 +73,8 @@
           (create-storage-object thumb (content-type original) (file-length thumb)))
         (catch Exception e (throw e))
         (finally
-          (background-delete-file local-original))))))
+          (background-delete-file local-original))))
+    (log/warn (str "unable to get original for thumbnailing from " thumb-map))))
 
 (defn original->local
   "Take the original and make it local."
