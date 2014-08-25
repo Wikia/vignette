@@ -64,7 +64,7 @@
     (provided
      (u/get-or-generate-thumbnail ..system.. route-params) => nil)
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/resize/10/10")) => (contains {:status 503})
+    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/resize/10/10")) => (contains {:status 500})
     (provided
       (u/get-or-generate-thumbnail ..system.. route-params) =throws=> (NullPointerException.))))
 
@@ -81,7 +81,7 @@
      (store ..system..) => ..store..
      (get-original ..store.. route-params) => nil)
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg")) => (contains {:status 503})
+    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg")) => (contains {:status 500})
     (provided
       (store ..system..) => ..store..
       (get-original ..store.. route-params) =throws=> (NullPointerException.))))

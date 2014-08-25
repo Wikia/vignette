@@ -2,13 +2,13 @@
   (:require (vignette.storage [protocols :refer :all]
                               [common :refer :all])
             [vignette.media-types :refer :all]
-            [vignette.util :as u]
             [vignette.util.filesystem :refer :all]
             [vignette.protocols :refer :all]
             [clojure.java.shell :refer (sh)]
             [clojure.java.io :as io]
             [wikia.common.logger :as log]
-            [cheshire.core :refer :all])
+            [cheshire.core :refer :all]
+            [slingshot.slingshot :refer (try+ throw+)])
   (:use [environ.core]))
 
 (def thumbnail-bin (env :vignette-thumbnail-bin (if (file-exists? "/usr/local/bin/thumbnail")
@@ -43,8 +43,7 @@
         sh-out (run-thumbnailer args)]
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
-      ; FIXME: use slingshot here (https://github.com/scgilardi/slingshot)
-      :else (u/log-error-and-throw "thumbnailing failed" sh-out))))
+      :else (throw+ {:type ::convert-error :exit (:exit sh-out) :out (:out sh-out) :err (:err sh-out)}))))
 
 (declare generate-thumbnail)
 (declare background-save-thumbnail)
@@ -67,11 +66,11 @@
   [system thumb-map]
   (if-let [original (get-original (store system) thumb-map)]
     (when-let [local-original (original->local (file-stream original) thumb-map)]
-      (try
+      (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
           ; if we support changing to a different type we need to change the content-type lookup here
           (create-storage-object thumb (content-type original) (file-length thumb)))
-        (catch Exception e (throw e))
+        (catch Object _ (throw+))
         (finally
           (background-delete-file local-original))))
     (log/warn (str "unable to get original for thumbnailing from " thumb-map))))

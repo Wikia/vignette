@@ -11,8 +11,9 @@
             [ring.util.response :refer (response status charset header)]
             (ring.middleware [params :refer (wrap-params)])
             [cheshire.core :refer :all]
-            [clojure.java.io :as io]
-            [wikia.common.logger :as log])
+            [slingshot.slingshot :refer (try+ throw+)]
+            [wikia.common.logger :as log]
+            [clojure.java.io :as io])
   (:import [java.io FileInputStream]
            [java.nio ByteBuffer]))
 
@@ -52,11 +53,14 @@
 (defn exception-catcher
   [handler]
   (fn [request]
-    (try
+    (try+
       (handler request)
+      (catch [:type :vignette.util.thumbnail/convert-error] {:keys [exit out err]}
+        (log/warn (str "thumbnailing failed with code " exit " out: " out " and err: " err))
+        (status (response "thumbnailing error") 500))
       (catch Exception e
         (log/warn (str e))
-        (status (response (str e)) 503)))))
+        (status (response "Internal Error. Check the logs.") 500)))))
 
 (defmulti image-file->response-object
   "Convert an image file object to something that http-kit can understand. The types supported

@@ -6,7 +6,8 @@
             [pantomime.mime :refer (mime-type-of)]
             [aws.sdk.s3 :as s3]
             [midje.sweet :refer :all]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io])
+  (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
 
 (facts :s3 :get-object
   (get-object (create-s3-object-storage ..creds..) "bucket" "a/ab/image.jpg") => ..object..
@@ -18,7 +19,13 @@
 
   (get-object (create-s3-object-storage ..creds..) "bucket" "a/ab/image.jpg") => falsey
   (provided
-    (s3/get-object ..creds.. "bucket" "a/ab/image.jpg") => {}))
+    (s3/get-object ..creds.. "bucket" "a/ab/image.jpg") => {})
+
+  (get-object (create-s3-object-storage ..creds..) "bucket" "d/do/does-not-exist.jpg") => falsey
+  (provided
+    (s3/get-object ..creds.. "bucket" "d/do/does-not-exist.jpg") =throws=> (let [e (AmazonS3Exception. "foo")]
+                                                                             (.setStatusCode e 404)
+                                                                             e)))
 
 (facts :s3 :put-object
   (put-object (create-s3-object-storage ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => ..response..
