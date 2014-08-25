@@ -80,6 +80,6 @@
            (get-thumbnail ..store.. image-dne) => false
            (get-original ..store.. image-dne) => false)))
 
-(facts :thumbnail-options
-       (thumbnail-options beach-map) => (contains ["--height" "100" "--width" "100"
-                                                   "--mode" "thumbnail"] :in-any-order))
+(facts :route-map->thumb-args
+       (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
+                                                      "--mode" "thumbnail"] :in-any-order))

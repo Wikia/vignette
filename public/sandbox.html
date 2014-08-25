@@ -12,6 +12,11 @@
       margin-bottom: 10px;
     }
 
+    .history_image img {
+      border: 2px dashed red;
+      background: gray repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.5) 35px, rgba(255,255,255,.5) 70px);
+    }
+
     .history_remove {
       margin-right: 25px;
       cursor: pointer;
@@ -54,6 +59,9 @@
 
   <div id="form-dynamics" style="float: left; margin-right: 5px;"></div>
 
+  <label for="query">Query</label>
+  <input name="query" id="query" />
+
   <input type="submit" value="Preview" />
 </form>
 
@@ -64,9 +72,11 @@
 
 
 <div class="form-dynamic hidden" data-dynamic-for='["reorient", "thumbnail", "thumbnail-down", "zoom-crop", "zoom-crop-down", "fixed-aspect-ratio"]'>
+  <input type="hidden" name="thumbnail-width-url" value="width" />
   <label for="thumbnail-width">Width</label>
   <input type="text" style="width: 50px;" id="thumbnail-width" name="thumbnail-width" />
 
+  <input type="hidden" name="thumbnail-height-url" value="height" />
   <label for="thumbnail-height">Height</label>
   <input type="text" style="width: 50px;" id="thumbnail-height" name="thumbnail-height" />
 </div>

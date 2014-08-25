@@ -5,6 +5,7 @@
             [vignette.util.thumbnail :as u]
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]
+            [vignette.util.query-options :refer :all]
             (compojure [route :refer (files not-found)]
                        [core :refer  (routes GET ANY)])
             [clout.core :refer (route-compile route-matches)]
@@ -14,9 +15,11 @@
             [slingshot.slingshot :refer (try+ throw+)]
             [wikia.common.logger :as log]
             [clojure.java.io :as io])
-  (:import [java.io FileInputStream]
-           [java.nio ByteBuffer]))
+  (:import [java.io FileInputStream FileInputStream]
+           [java.nio ByteBuffer]
+           [java.net InetAddress]))
 
+(def revision-regex #"\d+|latest")
 (def wikia-regex #"\w+")
 (def top-dir-regex #"\w")
 (def middle-dir-regex #"\w\w")
@@ -24,28 +27,32 @@
 (def adjustment-mode-regex #"\w+")
 (def thumbnail-mode-regex #"[\w-]+")
 (def size-regex #"\d+")
+(def hostname (.getHostName (InetAddress/getLocalHost)))
 
 
 
 (def original-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original"
-                 {:wikia wikia-regex
-                  :top-dir top-dir-regex
-                  :middle-dir middle-dir-regex}))
-
-(def adjust-original-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original/:mode"
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision"
                  {:wikia wikia-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
+                  :revision revision-regex}))
+
+(def adjust-original-route
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/:mode"
+                 {:wikia wikia-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :revision revision-regex
                   :mode adjustment-mode-regex}))
 
 (def thumbnail-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original/:thumbnail-mode/:width/:height"
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/height/:height"
                  {:wikia wikia-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
+                  :revision revision-regex
                   :thumbnail-mode thumbnail-mode-regex
                   :width size-regex
                   :height size-regex}))
@@ -61,6 +68,16 @@
       (catch Exception e
         (log/warn (str e))
         (status (response "Internal Error. Check the logs.") 500)))))
+
+(defn add-headers
+  [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (reduce (fn [response [h v]]
+                (header response h v))
+              response {"X-Served-By" hostname
+                        "X-Cache" "ORIGIN"
+                        "X-Cache-Hits" "ORIGIN"}))))
 
 (defmulti image-file->response-object
   "Convert an image file object to something that http-kit can understand. The types supported
@@ -84,14 +101,20 @@
   (-> (response (image-file->response-object image))
       (header "Content-Type" (content-type image))))
 
+(defn image-params
+  [request request-type]
+  (let [route-params (assoc (:route-params request) :request-type request-type)
+        options (extract-query-opts request)]
+    (assoc route-params :options options)))
+
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
   [system]
   (-> (routes
         (GET thumbnail-route
-             {route-params :route-params}
-             (let [route-params (assoc route-params :request-type :thumbnail)]
-               (if-let [thumb (u/get-or-generate-thumbnail system route-params)]
+             request
+             (let [image-params (image-params request :thumbnail)]
+               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                  (create-image-response thumb)
                  (not-found "Unable to create thumbnail"))))
         (GET adjust-original-route
@@ -110,4 +133,5 @@
         (files "/static/")
         (not-found "Unrecognized request path!\n"))
       (wrap-params)
-      (exception-catcher)))
+      (exception-catcher)
+      (add-headers)))
