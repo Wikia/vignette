@@ -14,7 +14,7 @@
     (swap! (:running (:state this))
            (fn [_]
              (run-server
-               (app-routes this)
+               (#'app-routes this)
                {:port port}))))
   (stop [this]
     (when-let [stop-fn @(:running (:state this))]
