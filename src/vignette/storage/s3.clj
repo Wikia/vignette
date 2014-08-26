@@ -9,6 +9,10 @@
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
 
+(def storage-creds {:access-key  (env :storage-access-key)
+                    :secret-key  (env :storage-secret-key)
+                    :endpoint    (env :storage-endpoint)})
+
 (defn valid-s3-get?
   [response]
   (and (map? response)

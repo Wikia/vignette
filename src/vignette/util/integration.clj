@@ -25,7 +25,7 @@
 (defn create-integration-env
   ([path]
    (let [local-store (create-local-object-storage path)
-        image-store (create-image-storage local-store)]
+         image-store (create-image-storage local-store)]
     (every? true? (map #(save-original image-store (:file-on-disk %) %)
                        (get-sample-image-maps)))))
   ([]
