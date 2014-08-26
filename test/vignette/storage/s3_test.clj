@@ -14,8 +14,7 @@
   (provided
     (safe-get-object ..creds.. "bucket" "a/ab/image.jpg") => {:content ..stream..
                                                               :metadata {:content-length ..length.. :content-type ..content-type..}}
-    (read-byte-stream ..stream.. ..length..) => ..bytes..
-    (sc/create-storage-object ..bytes.. ..content-type.. ..length..) => ..object..)
+    (sc/create-storage-object ..stream.. ..content-type.. ..length..) => ..object..)
 
   (get-object (create-s3-object-storage ..creds..) "bucket" "a/ab/image.jpg") => falsey
   (provided
