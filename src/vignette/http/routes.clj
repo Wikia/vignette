@@ -99,7 +99,8 @@
 (defn create-image-response
   [image]
   (-> (response (image-file->response-object image))
-      (header "Content-Type" (content-type image))))
+      (header "Content-Type" (content-type image))
+      (header "Content-Length" (length image))))
 
 (defn image-params
   [request request-type]

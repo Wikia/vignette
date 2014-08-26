@@ -5,7 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [clout "1.2.0"]
-                 [http-kit "2.1.16"]
+                 [http-kit "2.1.18"]
                  [cheshire "5.3.1"]
                  [ring "1.3.0"]
                  [compojure "1.1.8"]
@@ -25,4 +25,5 @@
   :main vignette.core
   :aot [vignette.core vignette.protocols]
   :repl-options {:init-ns user}
-  :uberjar-name "vignette-standalone.jar")
+  :uberjar-name "vignette-standalone.jar"
+  :jvm-opts ["-server"])
