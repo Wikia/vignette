@@ -38,7 +38,7 @@
               meta-data (:metadata object)
               length (:content-length meta-data)
               content-type (:content-type meta-data)]
-          (create-storage-object (read-byte-stream stream length) content-type length)))))
+          (create-storage-object stream content-type length)))))
   (put-object [this resource bucket path]
     (let [mime-type (mime-type-of resource)]
       (when-let [response (s3/put-object (:creds this) bucket path resource {:content-type mime-type})]

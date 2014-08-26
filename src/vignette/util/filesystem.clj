@@ -2,7 +2,8 @@
   (:require [vignette.util.byte-streams :refer :all]
             [clojure.java.io :as io])
   (:use [environ.core])
-  (:import java.util.UUID))
+  (:import java.util.UUID
+           com.amazonaws.services.s3.model.S3ObjectInputStream))
 
 (declare resolve-local-path)
 (declare create-local-path)
@@ -66,4 +67,11 @@
 (defmethod transfer! (Class/forName "[B")
   [in out]
   (write-byte-stream (io/file out) in)
+  (file-exists? out))
+
+(defmethod transfer! S3ObjectInputStream
+  [in out]
+  (with-open [in-stream (clojure.java.io/input-stream in)
+              out-stream (clojure.java.io/output-stream out)]
+    (io/copy in-stream out-stream))
   (file-exists? out))
