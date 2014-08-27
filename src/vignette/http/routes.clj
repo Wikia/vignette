@@ -20,7 +20,7 @@
            [java.net InetAddress]))
 
 (def revision-regex #"\d+|latest")
-(def wikia-regex #"\w+")
+(def wikia-regex #"[\w-]+")
 (def top-dir-regex #"\w")
 (def middle-dir-regex #"\w\w")
 (def original-regex #"[^/]*")
