@@ -38,6 +38,8 @@ MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"thumbnail"
 	"thumbnail-down"
+	"top-crop"
+	"top-crop-down"
 	"zoom-crop"
 	"zoom-crop-down"
 )
@@ -217,20 +219,36 @@ function thumb_params() {
 	# zoom-crop-down (was NS): like zoom crop, but will not scale up
 
 	case $MODE in
-		"thumbnail")
-			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}" 
-			;;
 		"fixed-aspect-ratio")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!" 
+			;;
+		"thumbnail")
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}"
+			;;
+		"thumbnail-down")
+			# the '>' means change as per WIDTHxHEIGHT but only if an image dimension exceeds a specified dimension.
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}>" 
+			;;
+		"top-crop")
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity north -extent ${WIDTH}x${HEIGHT}"
+			;;
+		"top-crop-down")
+			# get height and width
+			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
+			echo "Height ${origheight} x Width ${origwidth}"
+			if [[ $origheight -gt $HEIGHT && $origwidth -gt $WIDTH ]]; then
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}+0+0^ -gravity north -crop ${WIDTH}x${HEIGHT}+0+0!"
+			elif [ $origheight -gt $HEIGHT ] || [ $origwidth -gt $WIDTH ]; then
+				THUMB_PARAMS="${QUALITY} -gravity north -crop ${WIDTH}x${HEIGHT}+0+0! -thumbnail ${WIDTH}x${HEIGHT}+0+0"
+			else
+				THUMB_PARAMS="${QUALITY}"
+			fi
 			;;
 		"zoom-crop")
 			# the '^' means Minimum values of width and height given, aspect ratio
 			# preserved. see http://www.imagemagick.org/script/command-line-processing.php#geometry
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity center -extent ${WIDTH}x${HEIGHT}"
-			;;
-		"thumbnail-down")
-			# the '>' means change as per WIDTHxHEIGHT but only if an image dimension exceeds a specified dimension.
-			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}>" 
 			;;
 		"zoom-crop-down")
 			# get height and width
