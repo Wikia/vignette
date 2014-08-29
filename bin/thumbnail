@@ -34,7 +34,13 @@ CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256MB -limit map 256M
 # with phpthumb
 JPEG_QUALITY_LEVEL=80
 
-MODE_OPTIONS=("fixed-aspect-ratio" "thumbnail" "thumbnail-down" "zoom-crop" "zoom-crop-down" "reorient")
+MODE_OPTIONS=(
+	"fixed-aspect-ratio"
+	"thumbnail"
+	"thumbnail-down"
+	"zoom-crop"
+	"zoom-crop-down"
+)
 
 function usage() {
 cat <<EOF
@@ -47,7 +53,6 @@ cat <<EOF
     --still            only use the first frame of the image
     --fill             pad or fill color for the image background. only used with --mode fixed-aspect-ratio
     --animated         treat this as an animated gif
-    --reorient         output reoriented version of the photo using exif data
 
     --fuzz      PERC   fuzz factor as percentage. give --fuzz 2% as an example
                         colors within this distance are considered equal.
@@ -62,7 +67,7 @@ EOF
 
 OS=$(uname)
 SHORTOPTS="h"
-LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated,reorient"
+LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated"
 
 ARGS=$($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@")
 
@@ -88,9 +93,6 @@ while true; do
 			;;
 		--animated)
 			ANIMATED=1
-			;;
-		--reorient)
-			MODE="reorient"
 			;;
 		--in)
 			shift
@@ -147,18 +149,16 @@ if [ "$OUT"X = "X" ]; then
 	exit 1
 fi
 
-if [ "$MODE" != "reorient" ]; then
-	if [ "$HEIGHT"X = "X" ]; then
-		echo "-H|--height required"
-		usage
-		exit 1
-	fi
+if [ "$HEIGHT"X = "X" ]; then
+	echo "-H|--height required"
+	usage
+	exit 1
+fi
 
-	if [ "$WIDTH"X = "X" ]; then
-		echo "-W|--width required"
-		usage
-		exit 1
-	fi
+if [ "$WIDTH"X = "X" ]; then
+	echo "-W|--width required"
+	usage
+	exit 1
 fi
 
 valid_mode=0
@@ -245,10 +245,6 @@ function thumb_params() {
 				THUMB_PARAMS="${QUALITY}"
 			fi
 			;;
-		"reorient")
-			# reorient only
-			THUMB_PARAMS="${QUALITY} -auto-orient"
-			;;
 	esac
 }
 
@@ -281,11 +277,11 @@ function thumb() {
 	fi 
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
-		echo ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} ${OUT}
-		exec ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} ${OUT}
+		echo ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}
+		exec ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}
 	else
-		echo ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} "${OUT}"
-		exec ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} "${OUT}"
+		echo ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}"
+		exec ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}"
 	fi
 }
 
