@@ -37,16 +37,21 @@
       <option value="/leagueoflegends/3/35/Thresh_ChampionshipSkin.jpg">Thresh Championship Skin</option>
       <option value="/leagueoflegends/9/90/Lee_Sin_PoolPartyLoading.jpg">Pool Party Lee Sin</option>
       <option value="/hearthstone/3/31/LeeroyJenkins.png">Leeroy Jenkins</option>
+      <option value="-1">CUSTOM</option>
     </select>
+
+    <label for="custom-path" class="custom-path hidden">Path</label>
+    <input name="custom-path" id="custom-path" class="custom-path hidden" />
 
     <label for="request-type">Request Type</label>
     <select id="request-type" name="request-type">
       <option value="0">Original</option>
-      <option value="adjust-original">Adjust Original</option>
       <option value="fixed-aspect-ratio">Fixed Aspect Ratio</option>
-      <option value="reorient">Reorient</option>
+      <option value="fixed-aspect-ratio-down">Fixed Aspect Ratio Down</option>
       <option value="thumbnail">Thumbnail</option>
       <option value="thumbnail-down">Thumbnail Down</option>
+      <option value="top-crop">Top Crop</option>
+      <option value="top-crop-down">Top Crop Down</option>
       <option value="zoom-crop">Zoom Crop</option>
       <option value="zoom-crop-down">Zoom Crop Down</option>
     </select>
@@ -66,7 +71,7 @@
 </div>
 
 
-<div class="form-dynamic hidden" data-dynamic-for='["reorient", "thumbnail", "thumbnail-down", "zoom-crop", "zoom-crop-down", "fixed-aspect-ratio"]'>
+<div class="form-dynamic hidden" data-dynamic-for='["thumbnail", "thumbnail-down", "top-crop", "top-crop-down", "zoom-crop", "zoom-crop-down", "fixed-aspect-ratio", "fixed-aspect-ratio-down"]'>
   <input type="hidden" name="thumbnail-width-url" value="width" />
   <label for="thumbnail-width">Width</label>
   <input type="text" style="width: 50px;" id="thumbnail-width" name="thumbnail-width" />

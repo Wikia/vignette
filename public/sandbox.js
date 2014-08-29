@@ -7,6 +7,15 @@ $(document).ready(function() {
 			"</div>")
 	};
 
+	$('#original-image').change(function() {
+		if ($(this).val() != '-1') {
+			$('.custom-path').hide();
+			return;
+		}
+
+		$('.custom-path').show();
+	});
+
 	$('#history').on('click', '.history_remove', null, function() {
 		$(this).closest('.history_image').remove();
 	});
@@ -15,6 +24,8 @@ $(document).ready(function() {
 		var image = $('#original-image').val();
 		if (image == 0) {
 			return false;
+		} else if (image == -1) {
+			image = $('#custom-path').val();
 		}
 
 		var image_url = image+"/revision/latest";
