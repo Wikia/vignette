@@ -30,7 +30,7 @@
 
 (facts :thumbnail-path
        (thumbnail-path archive-map) => "archive/a/ab/12345!boat.jpg/200px-300px-thumbnail-boat.jpg"
-       (thumbnail-path latest-map) => "a/ab/200px-300px-thumbnail-boat.jpg")
+       (thumbnail-path latest-map) => "a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg")
 
 (facts :thumbnail-path-filled
-       (thumbnail-path filled-map) => "a/ab/200px-300px-thumbnail[fill=green]-boat.jpg")
+       (thumbnail-path filled-map) => "a/ab/boat.jpg/200px-300px-thumbnail[fill=green]-boat.jpg")
