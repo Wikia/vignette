@@ -36,6 +36,7 @@ JPEG_QUALITY_LEVEL=80
 
 MODE_OPTIONS=(
 	"fixed-aspect-ratio"
+	"fixed-aspect-ratio-down"
 	"thumbnail"
 	"thumbnail-down"
 	"top-crop"
@@ -220,7 +221,18 @@ function thumb_params() {
 
 	case $MODE in
 		"fixed-aspect-ratio")
-			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!" 
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
+			;;
+		"fixed-aspect-ratio-down")
+			# get height and width
+			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
+
+			if [[ $HEIGHT -gt $origheight && $WIDTH -gt $origwidth ]]; then # requested is bigger on both sides
+				THUMB_PARAMS="${QUALITY} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
+			else # original is bigger on at least side, so we can proceed just like --fixed-aspect-ratio
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
+			fi
 			;;
 		"thumbnail")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}"
