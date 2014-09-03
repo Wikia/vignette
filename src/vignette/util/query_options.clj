@@ -1,6 +1,7 @@
 (ns vignette.util.query-options)
 
-(def query-opts-map {:fill "fill"})
+(def query-opts-map {:fill "fill"
+                     :format "format"})
 
 (defn extract-query-opts
   [request]
@@ -42,5 +43,6 @@
 (defn modify-temp-file
   [data filename]
   (cond
+    (query-opt data :format) (str (query-opt data :format) ":" filename)
     (= (query-opt data :fill) "transparent") (str "png:" filename)
     :else filename))
