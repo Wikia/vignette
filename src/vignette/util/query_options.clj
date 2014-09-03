@@ -1,12 +1,14 @@
 (ns vignette.util.query-options)
 
-(def query-opts-map {:fill "fill"
-                     :format "format"})
+; regex of valid inputs for query args
+(def query-opts-map {:fill #"^#[a-g0-9]+$|^\w+$"
+                     :format #"^\w+$"})
 
 (defn extract-query-opts
   [request]
   (reduce (fn [running [key val]]
-            (if (contains? query-opts-map (keyword key))
+            (if (and (contains? query-opts-map (keyword key))
+                     (re-matches ((keyword key) query-opts-map) val))
               (assoc running (keyword key) val)
               running))
           {} (:query-params request)))
@@ -34,7 +36,7 @@
 (defn query-opts->thumb-args
   [data]
   (reduce (fn [running [opt-key val]]
-            (if-let [opt (get query-opts-map opt-key)]
+            (if-let [opt (name opt-key)]
               (conj running (str "--" opt) (str val))
               running))
           []

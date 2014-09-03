@@ -16,19 +16,21 @@
 
 (facts :request-options
        (extract-query-opts {:query-params {"fill" "blue"
-                                        "unused" "foo"
-                                        "unused2" "bar"}}) => {:fill "blue"})
+                                           "unused" "foo"
+                                           "unused2" "bar"}}) => {:fill "blue"}
+       (extract-query-opts {:query-params {"fill" ";rm -rf *;"}}) => {}
+       (extract-query-opts {:query-params {"format" "ls -l"}}) => {})
 
-(facts :q-opts
+(facts :query-opts
        (query-opts thumb-option-map) => {:fill "purple"}
        (query-opts thumb-map) => nil)
 
-(facts :q-opt
+(facts :query-opt
        (query-opt thumb-map :foo) => nil
        (query-opt thumb-option-map :fill) => "purple"
        (query-opt thumb-option-map :foo) => nil)
 
-(facts :q-opts-str
+(facts :query-opts-str
        (query-opts-str thumb-map) => ""
        (query-opts-str thumb-option-map) "[fill=purple]")
 
