@@ -34,7 +34,16 @@ CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256MB -limit map 256M
 # with phpthumb
 JPEG_QUALITY_LEVEL=80
 
-MODE_OPTIONS=("fixed-aspect-ratio" "thumbnail" "thumbnail-down" "zoom-crop" "zoom-crop-down" "reorient")
+MODE_OPTIONS=(
+	"fixed-aspect-ratio"
+	"fixed-aspect-ratio-down"
+	"thumbnail"
+	"thumbnail-down"
+	"top-crop"
+	"top-crop-down"
+	"zoom-crop"
+	"zoom-crop-down"
+)
 
 function usage() {
 cat <<EOF
@@ -47,7 +56,6 @@ cat <<EOF
     --still            only use the first frame of the image
     --fill             pad or fill color for the image background. only used with --mode fixed-aspect-ratio
     --animated         treat this as an animated gif
-    --reorient         output reoriented version of the photo using exif data
 
     --fuzz      PERC   fuzz factor as percentage. give --fuzz 2% as an example
                         colors within this distance are considered equal.
@@ -62,7 +70,7 @@ EOF
 
 OS=$(uname)
 SHORTOPTS="h"
-LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated,reorient"
+LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated"
 
 ARGS=$($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@")
 
@@ -88,9 +96,6 @@ while true; do
 			;;
 		--animated)
 			ANIMATED=1
-			;;
-		--reorient)
-			MODE="reorient"
 			;;
 		--in)
 			shift
@@ -147,18 +152,16 @@ if [ "$OUT"X = "X" ]; then
 	exit 1
 fi
 
-if [ "$MODE" != "reorient" ]; then
-	if [ "$HEIGHT"X = "X" ]; then
-		echo "-H|--height required"
-		usage
-		exit 1
-	fi
+if [ "$HEIGHT"X = "X" ]; then
+	echo "-H|--height required"
+	usage
+	exit 1
+fi
 
-	if [ "$WIDTH"X = "X" ]; then
-		echo "-W|--width required"
-		usage
-		exit 1
-	fi
+if [ "$WIDTH"X = "X" ]; then
+	echo "-W|--width required"
+	usage
+	exit 1
 fi
 
 valid_mode=0
@@ -217,20 +220,47 @@ function thumb_params() {
 	# zoom-crop-down (was NS): like zoom crop, but will not scale up
 
 	case $MODE in
-		"thumbnail")
-			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}" 
-			;;
 		"fixed-aspect-ratio")
-			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!" 
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
+			;;
+		"fixed-aspect-ratio-down")
+			# get height and width
+			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
+
+			if [[ $HEIGHT -gt $origheight && $WIDTH -gt $origwidth ]]; then # requested is bigger on both sides
+				THUMB_PARAMS="${QUALITY} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
+			else # original is bigger on at least side, so we can proceed just like --fixed-aspect-ratio
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
+			fi
+			;;
+		"thumbnail")
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}"
+			;;
+		"thumbnail-down")
+			# the '>' means change as per WIDTHxHEIGHT but only if an image dimension exceeds a specified dimension.
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}>" 
+			;;
+		"top-crop")
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity north -extent ${WIDTH}x${HEIGHT}"
+			;;
+		"top-crop-down")
+			# get height and width
+			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
+			echo "Height ${origheight} x Width ${origwidth}"
+			if [[ $origheight -gt $HEIGHT && $origwidth -gt $WIDTH ]]; then
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}+0+0^ -gravity north -crop ${WIDTH}x${HEIGHT}+0+0!"
+			elif [ $origheight -gt $HEIGHT ] || [ $origwidth -gt $WIDTH ]; then
+				THUMB_PARAMS="${QUALITY} -gravity north -crop ${WIDTH}x${HEIGHT}+0+0! -thumbnail ${WIDTH}x${HEIGHT}+0+0"
+			else
+				THUMB_PARAMS="${QUALITY}"
+			fi
 			;;
 		"zoom-crop")
 			# the '^' means Minimum values of width and height given, aspect ratio
 			# preserved. see http://www.imagemagick.org/script/command-line-processing.php#geometry
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity center -extent ${WIDTH}x${HEIGHT}"
-			;;
-		"thumbnail-down")
-			# the '>' means change as per WIDTHxHEIGHT but only if an image dimension exceeds a specified dimension.
-			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}>" 
 			;;
 		"zoom-crop-down")
 			# get height and width
@@ -244,10 +274,6 @@ function thumb_params() {
 			else
 				THUMB_PARAMS="${QUALITY}"
 			fi
-			;;
-		"reorient")
-			# reorient only
-			THUMB_PARAMS="${QUALITY} -auto-orient"
 			;;
 	esac
 }
@@ -281,11 +307,11 @@ function thumb() {
 	fi 
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
-		echo ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} ${OUT}
-		exec ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} ${OUT}
+		echo ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}
+		exec ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}
 	else
-		echo ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} "${OUT}"
-		exec ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} ${THUMB_PARAMS} "${OUT}"
+		echo ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}"
+		exec ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}"
 	fi
 }
 

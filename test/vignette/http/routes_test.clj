@@ -57,16 +57,6 @@
                                             :width "10"
                                             :height "10"}))
 
-(facts :adjust-original-route
-  (route-matches adjust-original-route (request :get "foobar")) => falsey
-  (route-matches adjust-original-route (request :get "/bucket/a/ab/ropes.jpg/revision/latest/reorient")) =>
-                                                       (contains {:wikia "bucket"
-                                                                  :top-dir "a"
-                                                                  :middle-dir "ab"
-                                                                  :original "ropes.jpg"
-                                                                  :revision "latest"
-                                                                  :mode "reorient"}))
-
 (facts :app-routes
   ((app-routes nil) (request :get "/not-a-valid-route")) => (contains {:status 404}))
 

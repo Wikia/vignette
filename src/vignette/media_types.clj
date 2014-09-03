@@ -55,7 +55,6 @@
 
 (declare thumbnail)
 
-; /3/35/100px-100px-resize-arwen.png
 (defn thumbnail-path
   [data]
   (let [image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))
@@ -66,4 +65,6 @@
 
 (defn thumbnail
   [data]
-  (format "%dpx-%dpx-%s%s-%s" (width data) (height data) (mode data) (query-opts-str data) (original data)))
+  (if (nil? (revision data))
+    (format "%s/%dpx-%dpx-%s%s-%s" (original data) (width data) (height data) (mode data) (query-opts-str data) (original data))
+    (format "%dpx-%dpx-%s%s-%s" (width data) (height data) (mode data) (query-opts-str data) (original data))))
