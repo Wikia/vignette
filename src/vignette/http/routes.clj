@@ -67,7 +67,8 @@
     (let [response (handler request)]
       (reduce (fn [response [h v]]
                 (header response h v))
-              response {"X-Served-By" hostname
+              response {"Varnish-Logs" "vignette"
+                        "X-Served-By" hostname
                         "X-Cache" "ORIGIN"
                         "X-Cache-Hits" "ORIGIN"}))))
 
