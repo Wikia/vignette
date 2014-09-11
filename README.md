@@ -60,6 +60,8 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `STORAGE_ACCESS_KEY`           S3 access key
  * `STORAGE_SECRET_KEY`           S3 secret key
  * `STORAGE_ENDPOINT`             S3 HTTP endpoint
+ * `STORAGE_PROXY`                S3 Proxy
+ * `STORAGE_PROXY_PORT`           S3 Proxy port
  * `VIGNETTE_TEMP_FILE_LOCATION`  temporary file location. This is used for thumbnail generation. [/tmp/vignette]
  * `VIGNETTE_THUMBNAIL_BIN`       path to the thumbnail script [/usr/local/bin/thumbnail, bin/thumbnail]
  * `VIGNETTE_INTEGRATION_ROOT`    path to use for integration testing files [/tmp/integration]
