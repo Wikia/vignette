@@ -1,6 +1,7 @@
 (ns vignette.storage.core
   (:require [vignette.storage.protocols :refer :all]
-            [vignette.media-types :as mt]))
+            [vignette.media-types :as mt]
+            [vignette.util.query-options :as q]))
 
 (defn- join-slash
   [& s]
@@ -26,26 +27,26 @@
     (put* (:store this)
           resource
           (mt/wikia thumb-map)
-          (:thumb-prefix this)
+          (q/query-opts->image-prefix thumb-map (:thumb-prefix this))
           (mt/thumbnail-path thumb-map)))
 
   (get-thumbnail [this thumb-map]
     (get* (:store this)
           (mt/wikia thumb-map)
-          (:thumb-prefix this)
+          (q/query-opts->image-prefix thumb-map (:thumb-prefix this))
           (mt/thumbnail-path thumb-map)))
 
   (save-original [this resource original-map]
     (put* (:store this)
           resource
           (mt/wikia original-map)
-          (:original-prefix this)
+          (q/query-opts->image-prefix original-map (:original-prefix this))
           (mt/original-path original-map)))
 
   (get-original [this original-map]
     (get* (:store this)
           (mt/wikia original-map)
-          (:original-prefix this)
+          (q/query-opts->image-prefix original-map (:original-prefix this))
           (mt/original-path original-map))))
 
 (defn create-image-storage
