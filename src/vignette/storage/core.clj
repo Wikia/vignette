@@ -1,23 +1,26 @@
 (ns vignette.storage.core
   (:require [vignette.storage.protocols :refer :all]
-            [vignette.media-types :as mt]))
+            [vignette.media-types :as mt]
+            [vignette.util.query-options :as q]))
 
 (defn- join-slash
   [& s]
   (clojure.string/join "/" s))
 
 (defn get*
-  [store bucket prefix path]
+  [store object-map prefix get-path]
   (get-object store
-              bucket
-              (join-slash prefix path)))
+              (mt/wikia object-map)
+              (join-slash (q/query-opts->image-prefix object-map prefix)
+                          (get-path object-map))))
 
 (defn put*
-  [store resource bucket prefix path]
+  [store resource object-map prefix get-path]
   (put-object store
               resource
-              bucket
-              (join-slash prefix path)))
+              (mt/wikia object-map)
+              (join-slash (q/query-opts->image-prefix object-map prefix)
+                          (get-path object-map))))
 
 (defrecord ImageStorage [store original-prefix thumb-prefix]
   ImageStorageProtocol
@@ -25,28 +28,28 @@
   (save-thumbnail [this resource thumb-map]
     (put* (:store this)
           resource
-          (mt/wikia thumb-map)
+          thumb-map
           (:thumb-prefix this)
-          (mt/thumbnail-path thumb-map)))
+          mt/thumbnail-path))
 
   (get-thumbnail [this thumb-map]
     (get* (:store this)
-          (mt/wikia thumb-map)
+          thumb-map
           (:thumb-prefix this)
-          (mt/thumbnail-path thumb-map)))
+          mt/thumbnail-path))
 
   (save-original [this resource original-map]
     (put* (:store this)
           resource
-          (mt/wikia original-map)
+          original-map
           (:original-prefix this)
-          (mt/original-path original-map)))
+          mt/original-path))
 
   (get-original [this original-map]
     (get* (:store this)
-          (mt/wikia original-map)
+          original-map
           (:original-prefix this)
-          (mt/original-path original-map))))
+          mt/original-path)))
 
 (defn create-image-storage
   ([store original-prefix thumb-prefix]

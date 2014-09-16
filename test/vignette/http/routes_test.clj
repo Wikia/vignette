@@ -90,7 +90,8 @@
                       :middle-dir "35"
                       :top-dir "3"
                       :revision "12345"
-                      :wikia "lotr"} ]
+                      :wikia "lotr"
+                      :options {}} ]
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 200})
     (provided
      (store ..system..) => ..store..

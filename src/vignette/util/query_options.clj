@@ -2,7 +2,8 @@
 
 ; regex of valid inputs for query args
 (def query-opts-map {:fill #"^#[a-g0-9]+$|^\w+$"
-                     :format #"^\w+$"})
+                     :format #"^\w+$"
+                     :lang #"^\w+$"})
 
 (defn extract-query-opts
   [request]
@@ -41,6 +42,12 @@
               running))
           []
           (query-opts data)))
+
+(defn query-opts->image-prefix
+  [data prefix]
+  (if-let [lang (query-opt data :lang)]
+    (str lang "/" prefix)
+    prefix))
 
 (defn modify-temp-file
   [data filename]

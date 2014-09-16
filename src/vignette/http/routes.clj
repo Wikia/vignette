@@ -112,9 +112,9 @@
                  (create-image-response thumb)
                  (not-found "Unable to create thumbnail"))))
         (GET original-route
-             {route-params :route-params}
-             (let [route-params (assoc route-params :request-type :original)]
-               (if-let [file (get-original (store system) route-params )]
+             request
+             (let [image-params (image-params request :original)]
+               (if-let [file (get-original (store system) image-params)]
                  (create-image-response file)
                  (not-found "Unable to find image."))))
         (files "/static/")

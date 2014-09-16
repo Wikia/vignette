@@ -31,27 +31,19 @@
 
     (save-thumbnail store ..file.. ..map..) => truthy
     (provided
-      (mt/wikia ..map..) => "lotr"
-      (mt/thumbnail-path ..map..) => file-name
-      (put* ..disk-store.. ..file.. "lotr" "thumbs" file-name) => true)
+      (put* ..disk-store.. ..file.. ..map.. "thumbs" mt/thumbnail-path) => true)
 
     (get-thumbnail store ..map..) => "bytes"
     (provided
-      (mt/wikia ..map..) => "lotr"
-      (mt/thumbnail-path ..map..) => file-name
-      (get* ..disk-store.. "lotr" "thumbs" file-name) => "bytes")
+      (get* ..disk-store.. ..map.. "thumbs" mt/thumbnail-path) => "bytes")
 
     (save-original store ..file.. ..map..) => true
     (provided
-      (mt/wikia ..map..) => "lotr"
-      (mt/original-path ..map..) => file-name
-      (put* ..disk-store.. ..file.. "lotr" "originals" file-name) => true)
+      (put* ..disk-store.. ..file.. ..map.. "originals" mt/original-path) => true)
 
     (get-original store ..map..) => "bytes"
     (provided
-      (mt/wikia ..map..) => "lotr"
-      (mt/original-path ..map..) => file-name
-      (get* ..disk-store.. "lotr" "originals" file-name) => "bytes")))
+      (get* ..disk-store.. ..map.. "originals" mt/original-path) => "bytes")))
 
 (with-state-changes
   [(before :facts (do
