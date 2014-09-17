@@ -281,6 +281,7 @@ function thumb_params() {
 function animated_thumb_params() {
 	thumb_params 
 	params=$THUMB_PARAMS
+	OUT=${OUT#*:}
 	THUMB_PARAMS="-coalesce ${params} ${FUZZ} -layers Optimize"
 }
 

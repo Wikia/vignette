@@ -57,7 +57,7 @@
     thumb
     (when-let [thumb (generate-thumbnail system thumb-map)]
       (background-save-thumbnail (store system) (file-stream thumb) thumb-map)
-      thumb))) ; TODO: cron to delete thumbs older than X)
+      thumb)))
 
 (declare original->local)
 (declare background-delete-file)
