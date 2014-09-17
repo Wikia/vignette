@@ -54,11 +54,11 @@
   (fn [request]
     (try+
       (handler request)
-      (catch [:type :vignette.util.thumbnail/convert-error] {:keys [exit out err]}
-        (log/warn "thumbnailing failed" {:code exit :out out :err err})
+      (catch [:type :vignette.util.thumbnail/convert-error] {:keys [exit err]}
+        (log/warn "thumbnailing error" {:path (:uri request) :code exit :err err})
         (status (response "thumbnailing error") 500))
       (catch Exception e
-        (log/warn (str e))
+        (log/warn (str e) {:path (:uri request)})
         (status (response "Internal Error. Check the logs.") 500)))))
 
 (defn add-headers

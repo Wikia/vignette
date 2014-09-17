@@ -76,7 +76,7 @@
         (catch Object _ (throw+))
         (finally
           (background-delete-file local-original))))
-    (log/warn (str "unable to get original for thumbnailing from " thumb-map))))
+    (log/warn "unable to get original for thumbnailing" thumb-map)))
 
 (defn original->local
   "Take the original and make it local."
