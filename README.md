@@ -8,9 +8,11 @@ A Clojure library for thumbnail generation and storage.
 To run in development:
 
 1. Install [leiningen](http://leiningen.org/)
-2. Set environment variables (see below)
-3. from the command line, run ```lein repl```
-4. in the REPL, run ```(start system-s3 8080)``` to run using your defined s3 backend,
+2. Install [ImageMagick](http://imagemagick.org/)
+	* on OSX, with [homebrew](http://brew.sh/): brew install imagemagick --with-webp
+3. Set environment variables (see below)
+4. from the command line, run ```lein repl```
+5. in the REPL, run ```(start system-s3 8080)``` to run using your defined s3 backend,
 or ```(start system-local 8080)``` to run using your defined local backend
 
 Vignette should now be running on localhost:8080
