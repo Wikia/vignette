@@ -301,18 +301,28 @@ function thumb() {
 	is_animated "$IN"
 	animated=$?
 
-	if [[ $param_animated -eq 1 || ( $gif -eq 1 && $animated -eq 1 ) ]]; then
+	if [[ $gif -eq 1 && $animated -eq 1 ]]; then
 		animated_thumb_params
 	else
 		thumb_params 
-	fi 
+	fi
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
-		echo ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}
-		exec ${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}
+		magick="${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
+		echo ${magick}
+		exec ${magick}
 	else
-		echo ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}"
-		exec ${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}"
+		magick="${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
+
+		if eval ${magick}; then
+			echo ${magick}
+			exit 0
+		elif [[ $animated -eq 1 ]]; then
+			# on a failed thumb due to a (probably) corrupted animated gif, try thumbnailing the first frame
+			magick="${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
+			echo ${magick}
+			exec ${magick}
+		fi
 	fi
 }
 
