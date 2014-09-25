@@ -118,12 +118,20 @@
                (if-let [file (get-original (store system) image-params)]
                  (create-image-response file)
                  (not-found "Unable to find image."))))
-        (GET legacy/image-thumbnail
+
+        ; legacy routes
+        (GET legacy/thumbnail-route
              {route-params :route-params}
-             (let [image-params (legacy/route->thumb-map route-params :thumbnail)]
+             (let [image-params (legacy/route->thumb-map route-params)]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                  (create-image-response thumb)
                  (not-found "Unable to create thumbnail"))))
+        (GET legacy/original-route
+             {route-params :route-params}
+             (let [image-params (legacy/route->original-map route-params)]
+               (if-let [file (get-original (store system) image-params)]
+                 (create-image-response file)
+                 (not-found "Unable to find image."))))
         (files "/static/")
         (not-found "Unrecognized request path!\n"))
       (wrap-params)

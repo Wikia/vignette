@@ -37,7 +37,7 @@
 (defn match
   [url]
   ; when we implement others we need to chain them in here in order
-  (when-let [m (route-matches image-thumbnail (request :get url))]
+  (when-let [m (route-matches thumbnail-route (request :get url))]
     (-> m
         (add-request-type :image-thumbnail)
         (request-map-add-thumbpath)
