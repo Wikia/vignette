@@ -35,10 +35,16 @@
     (:thumbname matched) => "479px-6x01-Phoebe.jpg"
     (:format (:options matched)) => "jpg"))
 
-;(facts :original-route
-;       [map (routes/route->original-map
-;              (route-matches routes/original-route
-;                             (request :get "/happywheels/images/b/bb/SuperMario64_20.png")))])
+(facts :original-route
+       (let [map (routes/route->original-map
+                   (route-matches routes/original-route
+                                  (request :get "/happywheels/images/b/bb/SuperMario64_20.png")))]
+         (:request-type map) => :original
+         (:wikia map) => "happywheels"
+         (:top-dir map) => "b"
+         (:middle-dir map) => "bb"
+         (:original map) => "SuperMario64_20.png"
+         (:revision map) => "latest"))
 
 ;(facts :image-thumbnail-width
 ;  (let [rt (routes/add-request-type {} :image-thumbnail)]

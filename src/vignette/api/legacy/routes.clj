@@ -89,8 +89,8 @@
                     :thumbnail-mode "fixed-aspect-ratio"})
         (if-let [[_ width height _] (re-find #"^(\d+)x(\d+)x(\d+)-" thumb-name)]
           (merge route {:width width
-                    :height height
-                    :thumbnail-mode "fixed-aspect-ratio"})
+                        :height height
+                        :thumbnail-mode "zoom-crop"})
           route)))
     route))
 
