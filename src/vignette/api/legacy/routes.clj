@@ -22,8 +22,9 @@
 ;41 }
 ; qr{ \/((?!\w\/)?(.+)\/(images|avatars)\/thumb((?!\/archive).*|\/archive)?\/\w\/\w{2}\/(.+)\.(jpg|jpeg|png|gif{1,}))\/((\d+px|\d+x\d+|\d+x\d+x\d+|)\-(.*)\.(jpg|jpeg|jpe|png|gif|webp))(\?.*)?$ }xi,
 (def thumbnail-route
-  (route-compile "/:wikia/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:thumbname"
+  (route-compile "/:wikia:lang/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:thumbname"
                  {:wikia #"[\w-]+"
+                  :lang #".*"
                   :image-type #"images|avatars"
                   :archive #"(?!\/archive).*|\/archive"
                   :top-dir #"\w"
@@ -32,8 +33,9 @@
                   :thumbname #".*"}))
 
 (def original-route
-  (route-compile "/:wikia/images:archive/:top-dir/:middle-dir/:original"
+  (route-compile "/:wikia:lang/images:archive/:top-dir/:middle-dir/:original"
                  {:wikia #"[\w-]+"
+                  :lang #".*"
                   :archive #"(?!\/archive).*|\/archive"
                   :top-dir #"\w"
                   :middle-dir #"\w\w"
@@ -53,7 +55,8 @@
   [route-params]
   (let [map (-> route-params
                 (add-request-type :original)
-                (route->revision))]
+                (route->revision)
+                (route->options))]
     map))
 
 (defn add-request-type
@@ -71,8 +74,10 @@
 
 (defn route->options
   [map]
-  (let [[_ format] (re-find #"\.([a-z]+)$" (:thumbname map))]
-    (assoc map :options {:format format})))
+  (let [[_ format] (re-find #"\.([a-z]+)$" (get map :thumbname ""))
+        [_ lang] (re-find #"^/([a-z]+)$" (get map :lang ""))]
+    (assoc map :options {:format format
+                         :lang lang})))
 
 (defmulti route->dimensions :request-type)
 

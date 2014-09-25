@@ -33,7 +33,19 @@
     (:width matched) => "479"
     (:revision matched) => "20101213101955"
     (:thumbname matched) => "479px-6x01-Phoebe.jpg"
-    (:format (:options matched)) => "jpg"))
+    (:format (:options matched)) => "jpg")
+
+  (let [map (routes/route->thumb-map
+              (route-matches routes/thumbnail-route
+                             (request :get "/aigles-et-lys/fr/images/thumb/b/b7/Flag_of_Europe.svg/120px-Flag_of_Europe.svg.png")))]
+    (:request-type map) => :thumbnail
+    (:wikia map) => "aigles-et-lys"
+    (:top-dir map) => "b"
+    (:middle-dir map) => "b7"
+    (:original map) => "Flag_of_Europe.svg"
+    (:revision map) => "latest"
+    (:thumbname map) => "120px-Flag_of_Europe.svg.png"
+    (:lang (:options map)) => "fr"))
 
 (facts :original-route
        (let [map (routes/route->original-map
@@ -44,7 +56,18 @@
          (:top-dir map) => "b"
          (:middle-dir map) => "bb"
          (:original map) => "SuperMario64_20.png"
-         (:revision map) => "latest"))
+         (:revision map) => "latest")
+
+       (let [map (routes/route->original-map
+                   (route-matches routes/original-route
+                                  (request :get "/aigles-et-lys/fr/images/b/b7/Flag_of_Europe.svg")))]
+         (:request-type map) => :original
+         (:wikia map) => "aigles-et-lys"
+         (:top-dir map) => "b"
+         (:middle-dir map) => "b7"
+         (:original map) => "Flag_of_Europe.svg"
+         (:revision map) => "latest"
+         (:lang (:options map)) => "fr"))
 
 ;(facts :image-thumbnail-width
 ;  (let [rt (routes/add-request-type {} :image-thumbnail)]
