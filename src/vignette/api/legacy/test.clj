@@ -41,5 +41,5 @@
     (-> m
         (add-request-type :image-thumbnail)
         (request-map-add-thumbpath)
-        (request-map-add-width))))
+        (route->dimensions))))
 

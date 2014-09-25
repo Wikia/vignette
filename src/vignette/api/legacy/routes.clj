@@ -1,27 +1,45 @@
 (ns vignette.api.legacy.routes
   (:require [clout.core :refer (route-compile route-matches)]))
 
-;{
-; "width" : "130px",
-; "archive" : "",
-; "input" : "/swift/v1/herofactory/images/thumb/7/7f/Brain_Attack.PNG/130px-102%2C382%2C0%2C247-Brain_Attack.PNG",
-; "dbname" : "swift/v1/herofactory",
-; "hook_name" : "image thumbnailer",
-; "thumbpath" : "swift/v1/herofactory/images/thumb/7/7f/Brain_Attack.PNG",
-; "thumbname" : "130px-102%2C382%2C0%2C247-Brain_Attack.PNG",
-; "filename" : "Brain_Attack",
-; "thumbext" : "102%2C382%2C0%2C247-Brain_Attack",
-; "type" : "images",
-; "fileext" : "PNG"
-; }
+(declare route->revision
+         route->dimensions
+         route->thumb-mode
+         route->options
+         add-request-type)
+
+;29 {
+;30    "width" : "185px",
+;31    "archive" : "",
+;32    "wikia" : "happywheels",
+;33    "input" : "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.webp",
+;34    "hook_name" : "image thumbnailer",
+;35    "thumbpath" : "happywheels/images/thumb/b/bb/SuperMario64_20.png",
+;36    "thumbname" : "185px-SuperMario64_20.webp",
+;37    "filename" : "SuperMario64_20",
+;38    "thumbext" : "SuperMario64_20",
+;39    "type" : "images",
+;40    "fileext" : "png"
+;41 }
+; qr{ \/((?!\w\/)?(.+)\/(images|avatars)\/thumb((?!\/archive).*|\/archive)?\/\w\/\w{2}\/(.+)\.(jpg|jpeg|png|gif{1,}))\/((\d+px|\d+x\d+|\d+x\d+x\d+|)\-(.*)\.(jpg|jpeg|jpe|png|gif|webp))(\?.*)?$ }xi,
 (def image-thumbnail
-  (route-compile "/swift/:swift-version/:wikia/:image-type/:uri-request-type/:top-dir/:middle-dir/:original/:thumbnail"
-                 {:wikia #"\w+"
-                  :swift-version #"\w+"
+  (route-compile "/:wikia/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:thumbname"
+                 {:wikia #"[\w-]+"
                   :image-type #"images|avatars"
-                  :uri-request-type #"\w+"
-                  :top-dir #"[0-9a-f]{1}?"
-                  :middle-dir #"[0-9a-f]{2}"}))
+                  :archive #"(?!\/archive).*|\/archive"
+                  :top-dir #"\w"
+                  :middle-dir #"\w\w"
+                  :original #"[^/]*"
+                  :thumbname #".*"}))
+
+(defn route->thumb-map
+  [route-params request-type]
+  (let [map (-> route-params
+                (add-request-type request-type)
+                (assoc :thumbnail-mode "thumbnail")
+                (route->dimensions)
+                (route->revision)
+                (route->options))]
+    map))
 
 (defn add-request-type
   [m request-type]
@@ -29,20 +47,41 @@
    :post [(map? %)]}
   (merge m {:request-type request-type}))
 
-(defmulti request-map-add-width :request-type)
+(defn route->revision
+  [map]
+  (let [revision (if (re-matches #"^\d+!.*" (:original map))
+                   (re-find #"^\d+" (:original map))
+                   "latest")]
+    (merge map {:revision revision})))
 
-(defmethod request-map-add-width :image-thumbnail
-  [m]
+(defn route->options
+  [map]
+  (let [format (:thumbextension map)]
+    (assoc map :options {:format format})))
+
+(defmulti route->dimensions :request-type)
+
+(defmethod route->dimensions :thumbnail
+  [route]
   "Add the :width field to a request map based on the legacy parsing methods."
-  (let [path (get m :thumbnail "")
-        matches (re-find #"(?ix)(\d+px|\d+x\d+|\d+x\d+x\d+|)\-(.*)\.(jpg|jpeg|jpe|png|gif|webp)" path)]
-     (if-let [[_ width _ _] matches]
-       (assoc m :width width)
-       m)))
+  (if-let [thumb-name (:thumbname route)]
+    (if-let [[_ dimension] (re-find #"^(\d+)px-" thumb-name)]
+      (merge route {:width dimension
+                    :height dimension})
+      (if-let [[_ width height] (re-find #"^(\d+)x(\d+)-" thumb-name)]
+        (merge route {:width width
+                    :height height
+                    :thumbnail-mode "fixed-aspect-ratio"})
+        (if-let [[_ width height _] (re-find #"^(\d+)x(\d+)x(\d+)-" thumb-name)]
+          (merge route {:width width
+                    :height height
+                    :thumbnail-mode "fixed-aspect-ratio"})
+          route)))
+    route))
 
-(defmethod request-map-add-width nil
-  [m]
-  (assoc m :width ""))
+(defmethod route->dimensions nil
+  [map]
+  map)
 
 (defn request-map->thumbpath
   [m]

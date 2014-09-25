@@ -11,3 +11,4 @@ pom.xml.asc
 /tmp
 *.iml
 /logs
+/legacy/*.log
