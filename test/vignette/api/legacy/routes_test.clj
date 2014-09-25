@@ -29,7 +29,7 @@
     (:archive matched) => "/archive"
     (:top-dir matched) => "b"
     (:middle-dir matched) => "b6"
-    (:original matched) => "20101213101955!6x01-Phoebe.jpg"
+    (:original matched) => "6x01-Phoebe.jpg"
     (:width matched) => "479"
     (:revision matched) => "20101213101955"
     (:thumbname matched) => "479px-6x01-Phoebe.jpg"

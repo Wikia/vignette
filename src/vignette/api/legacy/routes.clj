@@ -69,8 +69,11 @@
   [map]
   (let [revision (if (re-matches #"^\d+!.*" (:original map))
                    (re-find #"^\d+" (:original map))
-                   "latest")]
-    (merge map {:revision revision})))
+                   "latest")
+        map (assoc map :revision revision)]
+    (if (= revision "latest")
+      map
+      (assoc map :original (clojure.string/replace (:original map) #"^\d+!" "")))))
 
 (defn route->options
   [map]
