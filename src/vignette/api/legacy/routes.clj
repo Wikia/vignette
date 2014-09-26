@@ -67,7 +67,8 @@
 
 (defn route->revision
   [map]
-  (let [revision (if (re-matches #"^\d+!.*" (:original map))
+  (let [revision (if (and (not= (:archive map) "")
+                          (re-matches #"^\d+!.*" (:original map)))
                    (re-find #"^\d+" (:original map))
                    "latest")
         map (assoc map :revision revision)]
