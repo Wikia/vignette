@@ -108,7 +108,7 @@ while ($path = <STDIN>) {
 		}
 	}
 	if (!$result) {
-		print "404 $path";
+		print "\"404 $path\"";
 	}
 	$first = 0;
 }

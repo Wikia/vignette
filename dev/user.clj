@@ -74,3 +74,14 @@
      (start system-s3 port)))
   ([]
    (re-init-dev 8080)))
+
+(defn parse-request-log
+  [request-log]
+  (with-open [reader (clojure.java.io/reader request-log)]
+    (loop [lines (line-seq reader)]
+      (when-let [line (first lines)]
+        (if-not (cond
+                  (re-find #"/thumb/" line) (c/route-matches alr/thumbnail-route (request :get line))
+                  :else (c/route-matches alr/original-route (request :get line)))
+          (println line))
+      (recur (rest lines))))))

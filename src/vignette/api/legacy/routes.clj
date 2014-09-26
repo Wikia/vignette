@@ -8,7 +8,7 @@
 
 (def thumbnail-route
   (route-compile "/:wikia:lang/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:thumbname"
-                 {:wikia #"[\w-]+"
+                 {:wikia #"[\w-\.]+"
                   :lang #".*"
                   :image-type #"images|avatars"
                   :archive #"(?!\/archive).*|\/archive"
@@ -19,7 +19,7 @@
 
 (def original-route
   (route-compile "/:wikia:lang/images:archive/:top-dir/:middle-dir/:original"
-                 {:wikia #"[\w-]+"
+                 {:wikia #"[\w-\.]+"
                   :lang #".*"
                   :archive #"(?!\/archive).*|\/archive"
                   :top-dir #"\w"
