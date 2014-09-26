@@ -3,8 +3,7 @@
                               [local :as vlocal]
                               [protocols :refer :all]
                               [s3 :as vs3])
-            (vignette.api.legacy [routes :as alr]
-                                 [test :as t])
+            [vignette.api.legacy.routes :as alr]
             (vignette.http [routes :as r])
             (vignette.util [integration :as itg]
                            [thumbnail :as u]
