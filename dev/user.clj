@@ -75,6 +75,7 @@
   ([]
    (re-init-dev 8080)))
 
+; parses legacy request log, spitting out URLs we don't understand
 (defn parse-request-log
   [request-log]
   (with-open [reader (clojure.java.io/reader request-log)]
