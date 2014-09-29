@@ -1,30 +1,34 @@
 (ns vignette.api.legacy.routes
-  (:require [clout.core :refer (route-compile route-matches)]))
+  (:require [vignette.util.regex :refer :all]
+            [clout.core :refer (route-compile route-matches)]))
 
 (declare route->revision
          route->dimensions
          route->thumb-mode
          route->options)
 
+(def archive-regex #"(?!\/archive).*|\/archive")
+(def lang-regex #"\/\w\w|")
+
 (def thumbnail-route
   (route-compile "/:wikia:lang/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:thumbname"
-                 {:wikia #"[\w-\.]+"
-                  :lang #".*"
+                 {:wikia wikia-regex
+                  :lang lang-regex
                   :image-type #"images|avatars"
-                  :archive #"(?!\/archive).*|\/archive"
-                  :top-dir #"\w"
-                  :middle-dir #"\w\w"
-                  :original #"[^/]*"
-                  :thumbname #".*"}))
+                  :archive archive-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :thumbname original-regex}))
 
 (def original-route
   (route-compile "/:wikia:lang/images:archive/:top-dir/:middle-dir/:original"
-                 {:wikia #"[\w-\.]+"
-                  :lang #".*"
-                  :archive #"(?!\/archive).*|\/archive"
-                  :top-dir #"\w"
-                  :middle-dir #"\w\w"
-                  :original #".*"}))
+                 {:wikia wikia-regex
+                  :lang lang-regex
+                  :archive archive-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex}))
 
 (defn route->thumb-map
   [route-params]
