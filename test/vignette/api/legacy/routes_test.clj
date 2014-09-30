@@ -31,8 +31,26 @@
     (:middle-dir matched) => "b6"
     (:original matched) => "6x01-Phoebe.jpg"
     (:width matched) => "479"
+    (:height matched) => "479"
     (:revision matched) => "20101213101955"
     (:thumbname matched) => "479px-6x01-Phoebe.jpg"
+    (:format (:options matched)) => "jpg")
+
+  (let [matched (routes/route->thumb-map
+                  (route-matches routes/thumbnail-route
+                                 (request :get "/charmed/images/thumb/archive/b/b6/20101213101955!6x01-Phoebe.jpg/100x200x300-6x01-Phoebe.jpg")))]
+    (:request-type matched) => :thumbnail
+    (:wikia matched) => "charmed"
+    (:image-type matched) => "images"
+    (:archive matched) => "/archive"
+    (:top-dir matched) => "b"
+    (:middle-dir matched) => "b6"
+    (:original matched) => "6x01-Phoebe.jpg"
+    (:width matched) => "100"
+    (:height matched) => "200"
+    (:thumbnail-mode matched) => "zoom-crop"
+    (:revision matched) => "20101213101955"
+    (:thumbname matched) => "100x200x300-6x01-Phoebe.jpg"
     (:format (:options matched)) => "jpg")
 
   (let [map (routes/route->thumb-map

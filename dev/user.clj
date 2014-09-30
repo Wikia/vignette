@@ -22,7 +22,8 @@
             [clojure.tools.trace :refer :all]
             [clojure.java.io :as io]
             [clojure.tools.namespace.repl :as nrepl]
-            [clojure.java.shell :refer (sh)])
+            [clojure.java.shell :refer (sh)]
+            [useful.experimental :refer (cond-let)])
   (:use [environ.core]))
 
 (def sample-original-hash {:wikia "bucket"

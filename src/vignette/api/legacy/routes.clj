@@ -1,6 +1,7 @@
 (ns vignette.api.legacy.routes
   (:require [vignette.util.regex :refer :all]
-            [clout.core :refer (route-compile route-matches)]))
+            [clout.core :refer (route-compile route-matches)]
+            [useful.experimental :refer (cond-let)]))
 
 (declare route->revision
          route->dimensions
@@ -70,16 +71,14 @@
   [route]
   "Add the :width field to a request map based on the legacy parsing methods."
   (if-let [thumb-name (:thumbname route)]
-    (if-let [[_ dimension] (re-find #"^(\d+)px-" thumb-name)]
-      (merge route {:width dimension
-                    :height dimension})
-      (if-let [[_ width height] (re-find #"^(\d+)x(\d+)-" thumb-name)]
-        (merge route {:width width
-                    :height height
-                    :thumbnail-mode "fixed-aspect-ratio"})
-        (if-let [[_ width height _] (re-find #"^(\d+)x(\d+)x(\d+)-" thumb-name)]
-          (merge route {:width width
-                        :height height
-                        :thumbnail-mode "zoom-crop"})
-          route)))
+    (cond-let
+      [[_ dimension] (re-find #"^(\d+)px-" thumb-name)] (merge route {:width dimension
+                                                                      :height dimension})
+      [[_ width height] (re-find #"^(\d+)x(\d+)-" thumb-name)] (merge route {:width width
+                                                                             :height height
+                                                                             :thumbnail-mode "fixed-aspect-ratio"})
+      [[_ width height _] (re-find #"^(\d+)x(\d+)x(\d+)-" thumb-name)] (merge route {:width width
+                                                                                     :height height
+                                                                                     :thumbnail-mode "zoom-crop"})
+      :else route)
     route))
