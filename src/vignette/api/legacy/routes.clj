@@ -9,7 +9,7 @@
          route->options)
 
 (def archive-regex #"(?!\/archive).*|\/archive")
-(def lang-regex #"\/[a-z-]+|.*")
+(def lang-regex #"\/[a-z-]+|")
 
 (def thumbnail-route
   (route-compile "/:wikia:lang/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:thumbname"
