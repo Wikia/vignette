@@ -8,7 +8,7 @@
          route->thumb-mode
          route->options)
 
-(def archive-regex #"(?!\/archive).*|\/archive")
+(def archive-regex #"\/archive|")
 (def lang-regex #"\/[a-z-]+|")
 
 (def thumbnail-route
