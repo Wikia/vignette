@@ -37,8 +37,6 @@
     (file-stream ..original..) => ..stream..
     (original->local ..stream.. beach-map) => ..local..
     (original->thumbnail ..local.. beach-map) => ..thumb..
-    (content-type ..original..) => ..content-type..
-    (file-length ..thumb..) => ..length..
     (background-delete-file ..local..) => true
     (create-storage-object ..thumb..) => ..object..)
   

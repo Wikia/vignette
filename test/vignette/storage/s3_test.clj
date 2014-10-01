@@ -13,8 +13,10 @@
   (get-object (create-s3-object-storage ..creds..) "bucket" "a/ab/image.jpg") => ..object..
   (provided
     (safe-get-object ..creds.. "bucket" "a/ab/image.jpg") => {:content ..stream..
-                                                              :metadata {:content-length ..length.. :content-type ..content-type..}}
-    (sc/create-storage-object ..stream.. ..meta-data..) => ..object..)
+                                                              :metadata {:content-length ..length..
+                                                                         :content-type ..content-type..}}
+    (sc/create-storage-object ..stream.. {:content-length ..length..
+                                          :content-type ..content-type..}) => ..object..)
 
   (get-object (create-s3-object-storage ..creds..) "bucket" "a/ab/image.jpg") => falsey
   (provided
