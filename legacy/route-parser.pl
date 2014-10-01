@@ -91,20 +91,26 @@ my @ordered_request_matchers = (
 	)
 );
 
+$first = 1;
+print "[";
 while ($path = <STDIN>) {
 	chomp($path);
 	$path =~ s@^http://.*?/@/@g;
 	$result = null;
+	if (!$first) {
+		print ", ";
+	}
 	foreach my $path_test (@ordered_request_matchers) {
 		$result = $path_test->($path, $json);
 		if ($result)  {
 			print $result;
-			print "\n";
 			last;
 		}
 	}
 	if (!$result) {
-		print "404 $path\n";
+		print "\"404 $path\"";
 	}
+	$first = 0;
 }
+print "]";
 

@@ -3,8 +3,7 @@
                               [local :as vlocal]
                               [protocols :refer :all]
                               [s3 :as vs3])
-            (vignette.api.legacy [routes :as alr]
-                                 [test :as t])
+            [vignette.api.legacy.routes :as alr]
             (vignette.http [routes :as r])
             (vignette.util [integration :as itg]
                            [thumbnail :as u]
@@ -23,7 +22,8 @@
             [clojure.tools.trace :refer :all]
             [clojure.java.io :as io]
             [clojure.tools.namespace.repl :as nrepl]
-            [clojure.java.shell :refer (sh)])
+            [clojure.java.shell :refer (sh)]
+            [useful.experimental :refer (cond-let)])
   (:use [environ.core]))
 
 (def sample-original-hash {:wikia "bucket"

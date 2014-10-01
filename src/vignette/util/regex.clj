@@ -1,0 +1,10 @@
+(ns vignette.util.regex)
+
+(def revision-regex #"\d+|latest")
+(def wikia-regex #"[\w-\.]+")
+(def top-dir-regex #"\w")
+(def middle-dir-regex #"\w\w")
+(def original-regex #"[^/]*")
+(def adjustment-mode-regex #"\w+")
+(def thumbnail-mode-regex #"[\w-]+")
+(def size-regex #"\d+")

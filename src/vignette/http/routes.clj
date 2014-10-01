@@ -6,6 +6,8 @@
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]
             [vignette.util.query-options :refer :all]
+            [vignette.api.legacy.routes :as legacy]
+            [vignette.util.regex :refer :all]
             (compojure [route :refer (files not-found)]
                        [core :refer  (routes GET ANY)])
             [clout.core :refer (route-compile route-matches)]
@@ -19,17 +21,7 @@
            [java.nio ByteBuffer]
            [java.net InetAddress]))
 
-(def revision-regex #"\d+|latest")
-(def wikia-regex #"[\w-]+")
-(def top-dir-regex #"\w")
-(def middle-dir-regex #"\w\w")
-(def original-regex #"[^/]*")
-(def adjustment-mode-regex #"\w+")
-(def thumbnail-mode-regex #"[\w-]+")
-(def size-regex #"\d+")
 (def hostname (.getHostName (InetAddress/getLocalHost)))
-
-
 
 (def original-route
   (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision"
@@ -114,6 +106,20 @@
         (GET original-route
              request
              (let [image-params (image-params request :original)]
+               (if-let [file (get-original (store system) image-params)]
+                 (create-image-response file)
+                 (not-found "Unable to find image."))))
+
+        ; legacy routes
+        (GET legacy/thumbnail-route
+             {route-params :route-params}
+             (let [image-params (legacy/route->thumb-map route-params)]
+               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+                 (create-image-response thumb)
+                 (not-found "Unable to create thumbnail"))))
+        (GET legacy/original-route
+             {route-params :route-params}
+             (let [image-params (legacy/route->original-map route-params)]
                (if-let [file (get-original (store system) image-params)]
                  (create-image-response file)
                  (not-found "Unable to find image."))))
