@@ -39,10 +39,8 @@
     (when-let [object (safe-get-object (:creds this) bucket path)]
       (when (valid-s3-get? object)
         (let [stream (:content object)
-              meta-data (:metadata object)
-              length (:content-length meta-data)
-              content-type (:content-type meta-data)]
-          (create-storage-object stream content-type length)))))
+              meta-data (:metadata object)]
+          (create-storage-object stream meta-data)))))
   (put-object [this resource bucket path]
     (let [mime-type (mime-type-of resource)]
       (when-let [response (s3/put-object (:creds this) bucket path resource {:content-type mime-type})]

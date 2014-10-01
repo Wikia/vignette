@@ -40,7 +40,7 @@
     (content-type ..original..) => ..content-type..
     (file-length ..thumb..) => ..length..
     (background-delete-file ..local..) => true
-    (create-storage-object ..thumb.. ..content-type.. ..length..) => ..object..)
+    (create-storage-object ..thumb..) => ..object..)
   
   (generate-thumbnail ..system.. beach-map) => falsey
   (provided

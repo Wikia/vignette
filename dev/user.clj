@@ -23,7 +23,8 @@
             [clojure.tools.trace :refer :all]
             [clojure.java.io :as io]
             [clojure.tools.namespace.repl :as nrepl]
-            [clojure.java.shell :refer (sh)])
+            [clojure.java.shell :refer (sh)]
+            [pantomime.mime :refer [mime-type-of]])
   (:use [environ.core]))
 
 (def sample-original-hash {:wikia "bucket"
@@ -75,3 +76,21 @@
      (start system-s3 port)))
   ([]
    (re-init-dev 8080)))
+
+(defn mime-stats [path]
+  (defn benchmark [file]
+    (let [start (System/nanoTime)]
+      (mime-type-of file)
+      (- (System/nanoTime) start)))
+  (when-let [dir (clojure.java.io/file path)]
+    (loop [files (file-seq dir)
+           time-total 0
+           mime-count 0]
+      (if-let [file (first files)]
+        (if (not (.isDirectory file))
+          (recur (rest files) (+ (benchmark file) time-total) (inc mime-count))
+          (recur (rest files) time-total mime-count))
+        (println (clojure.string/join "\n" [(str "file count: " mime-count)
+                                            (str "total time (ns): " time-total)
+                                            (str "average (ns): " (float (/ time-total mime-count)))
+                                            (str "average (ms): " (* 0.000001 (/ time-total mime-count)))]))))))
