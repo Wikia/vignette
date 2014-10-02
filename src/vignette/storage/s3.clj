@@ -1,13 +1,14 @@
 (ns vignette.storage.s3
   (:require [aws.sdk.s3 :as s3]
-            (vignette.storage [protocols :refer :all]
-                              [common :refer :all])
+            [vignette.storage.protocols :refer :all]
             (vignette.util [filesystem :refer :all]
                            [byte-streams :refer :all])
             [pantomime.mime :refer (mime-type-of)]
             [clojure.java.io :as io])
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
+
+(declare create-s3-image-response)
 
 (def storage-creds (let [creds {:access-key  (env :storage-access-key)
                                 :secret-key  (env :storage-secret-key)
@@ -40,7 +41,7 @@
       (when (valid-s3-get? object)
         (let [stream (:content object)
               meta-data (:metadata object)]
-          (create-storage-object stream meta-data)))))
+          (create-s3-image-response stream meta-data)))))
   (put-object [this resource bucket path]
     (let [mime-type (mime-type-of resource)]
       (when-let [response (s3/put-object (:creds this) bucket path resource {:content-type mime-type})]
@@ -49,6 +50,19 @@
   (list-buckets [this])
   (list-objects [this bucket]))
 
+(defrecord S3ImageResponse [stream meta-data]
+  ImageResponseProtocol
+  (file-stream [this]
+    (:stream this))
+  (content-length [this]
+    (:content-length (:meta-data this)))
+  (content-type [this]
+    (:content-type (:meta-data this))))
+
 (defn create-s3-object-storage
   [creds]
   (->S3ObjectStorage creds))
+
+(defn create-s3-image-response
+  [stream meta-data]
+  (->S3ImageResponse stream meta-data))

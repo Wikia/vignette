@@ -13,3 +13,8 @@
 
   (save-original  [this resource original-map])
   (get-original  [this original-map]))
+
+(defprotocol ImageResponseProtocol
+  (file-stream [this])
+  (content-length [this])
+  (content-type [this]))

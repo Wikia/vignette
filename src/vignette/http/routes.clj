@@ -1,7 +1,6 @@
 (ns vignette.http.routes
   (:require (vignette.storage [protocols :refer :all]
-                              [core :refer :all]
-                              [common :refer :all])
+                              [core :refer :all])
             [vignette.util.thumbnail :as u]
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]
@@ -93,7 +92,7 @@
   [image]
   (-> (response (image-file->response-object image))
       (header "Content-Type" (content-type image))
-      (header "Content-Length" (length image))))
+      (header "Content-Length" (content-length image))))
 
 (defn image-params
   [request request-type]

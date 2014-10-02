@@ -2,8 +2,8 @@
   (:require (vignette.util [thumbnail :refer :all]
                            [filesystem :refer :all])
             [vignette.protocols :refer :all]
-            (vignette.storage [protocols :refer :all]
-                              [common :refer :all])
+            [vignette.storage.protocols :refer :all]
+            [vignette.storage.local :refer [create-local-image-response]]
             [midje.sweet :refer :all]
             [clojure.java.io :as io]))
 
@@ -38,7 +38,7 @@
     (original->local ..stream.. beach-map) => ..local..
     (original->thumbnail ..local.. beach-map) => ..thumb..
     (background-delete-file ..local..) => true
-    (create-storage-object ..thumb..) => ..object..)
+    (create-local-image-response ..thumb..) => ..object..)
   
   (generate-thumbnail ..system.. beach-map) => falsey
   (provided

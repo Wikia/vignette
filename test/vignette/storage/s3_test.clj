@@ -1,7 +1,6 @@
 (ns vignette.storage.s3-test
   (:require (vignette.storage [protocols :refer :all]
-                              [s3 :refer :all]
-                              [common :as sc])
+                              [s3 :refer :all])
             (vignette.util [byte-streams :refer :all])
             [pantomime.mime :refer (mime-type-of)]
             [aws.sdk.s3 :as s3]
@@ -15,7 +14,7 @@
     (safe-get-object ..creds.. "bucket" "a/ab/image.jpg") => {:content ..stream..
                                                               :metadata {:content-length ..length..
                                                                          :content-type ..content-type..}}
-    (sc/create-storage-object ..stream.. {:content-length ..length..
+    (create-s3-image-response ..stream.. {:content-length ..length..
                                           :content-type ..content-type..}) => ..object..)
 
   (get-object (create-s3-object-storage ..creds..) "bucket" "a/ab/image.jpg") => falsey

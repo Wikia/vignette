@@ -1,8 +1,7 @@
 (ns user
   (:require (vignette.storage [core :refer (create-image-storage)]
-                              [local :as vlocal]
-                              [protocols :refer :all]
-                              [s3 :as vs3])
+                              [local :refer [create-local-object-storage]]
+                              [s3 :refer [create-s3-object-storage storage-creds]])
             (vignette.api.legacy [routes :as alr]
                                  [test :as t])
             (vignette.http [routes :as r])
@@ -42,12 +41,12 @@
                             :height "10"
                             :width "10"})
 
-(def los  (vlocal/create-local-object-storage itg/integration-path))
+(def los  (create-local-object-storage itg/integration-path))
 (def lis  (create-image-storage los))
 
 (def system-local (create-system lis))
 
-(def s3os  (vs3/create-s3-object-storage vs3/storage-creds))
+(def s3os  (create-s3-object-storage storage-creds))
 (def s3s   (create-image-storage s3os "images" "images/thumb"))
 
 (def system-s3 (create-system s3s))
