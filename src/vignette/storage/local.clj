@@ -10,8 +10,8 @@
 (declare create-stored-object)
 
 ; TODO: when the logger has a closure port, we should create an exception that has context that we can log w/ exceptions
-(defrecord LocalObjectStorage [directory]
-  ObjectStorageProtocol
+(defrecord LocalStorageSystem [directory]
+  StorageSystemProtocol
 
   (get-object [this bucket path]
     (let [real-file (io/file (resolve-local-path (:directory this) bucket path))]
@@ -46,7 +46,7 @@
 
 (defn create-local-object-storage
   [directory]
-  (->LocalObjectStorage directory))
+  (->LocalStorageSystem directory))
 
 (defn create-stored-object
   [file]

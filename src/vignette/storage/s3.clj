@@ -34,8 +34,8 @@
         nil
         (throw e)))))
 
-(defrecord S3ObjectStorage [creds]
-  ObjectStorageProtocol
+(defrecord S3StorageSystem [creds]
+  StorageSystemProtocol
   (get-object [this bucket path]
     (when-let [object (safe-get-object (:creds this) bucket path)]
       (when (valid-s3-get? object)
@@ -61,7 +61,7 @@
 
 (defn create-s3-object-storage
   [creds]
-  (->S3ObjectStorage creds))
+  (->S3StorageSystem creds))
 
 (defn create-stored-object
   [stream meta-data]
