@@ -2,8 +2,7 @@
   (:require (vignette.storage [core :refer (create-image-storage)]
                               [local :refer [create-local-storage-system]]
                               [s3 :refer [create-s3-storage-system storage-creds]])
-            (vignette.api.legacy [routes :as alr]
-                                 [test :as t])
+            [vignette.api.legacy.routes :as alr]
             (vignette.http [routes :as r])
             (vignette.util [integration :as itg]
                            [thumbnail :as u]
