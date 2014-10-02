@@ -18,7 +18,6 @@
             [vignette.storage.local :refer [create-local-storage-system]]
             [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
             [vignette.system :refer :all]
-            [vignette.util.byte-streams :as bs]
             [vignette.util.filesystem :as fs]
             [vignette.util.integration :as itg]
             [vignette.util.thumbnail :as u]

@@ -3,7 +3,6 @@
             [clojure.java.io :as io]
             [pantomime.mime :refer [mime-type-of]]
             [vignette.storage.protocols :refer :all]
-            [vignette.util.byte-streams :refer :all]
             [vignette.util.filesystem :refer :all])
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))

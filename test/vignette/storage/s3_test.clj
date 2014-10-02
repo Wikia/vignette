@@ -1,7 +1,6 @@
 (ns vignette.storage.s3-test
   (:require (vignette.storage [protocols :refer :all]
                               [s3 :refer :all])
-            (vignette.util [byte-streams :refer :all])
             [pantomime.mime :refer (mime-type-of)]
             [aws.sdk.s3 :as s3]
             [midje.sweet :refer :all]

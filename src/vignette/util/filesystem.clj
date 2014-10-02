@@ -1,6 +1,5 @@
 (ns vignette.util.filesystem
-  (:require [clojure.java.io :as io]
-            [vignette.util.byte-streams :refer :all])
+  (:require [clojure.java.io :as io])
   (:use [environ.core])
   (:import java.util.UUID
            com.amazonaws.services.s3.model.S3ObjectInputStream))
