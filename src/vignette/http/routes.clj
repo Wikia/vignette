@@ -105,6 +105,7 @@
                (if-let [file (get-original (store system) image-params)]
                  (create-image-response file)
                  (not-found "Unable to find image."))))
+        (GET "/ping" [] "pong")
         (files "/static/")
         (not-found "Unrecognized request path!\n"))
       (wrap-params)
