@@ -23,7 +23,8 @@
             [clojure.java.io :as io]
             [clojure.tools.namespace.repl :as nrepl]
             [clojure.java.shell :refer (sh)]
-            [pantomime.mime :refer [mime-type-of]])
+            [pantomime.mime :refer [mime-type-of]]
+            [useful.experimental :refer (cond-let)])
   (:use [environ.core]))
 
 (def sample-original-hash {:wikia "bucket"
