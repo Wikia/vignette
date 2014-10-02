@@ -123,7 +123,7 @@ while true; do
 			;;
 		--fill)
 			shift
-			FILL=$1 # see http://www.imagemagick.org/script/command-line-options.php#background for the supported parameters
+			FILL="'$1'" # see http://www.imagemagick.org/script/command-line-options.php#background for the supported parameters
 			;;
 		--still)
 			STILL=1
