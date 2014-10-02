@@ -1,10 +1,9 @@
 (ns vignette.system
-  (:require [environ.core :refer (env)]
+  (:require [environ.core :refer [env]]
             [org.httpkit.server :refer :all]
-            [vignette.http.routes :refer (app-routes)]
-            (vignette [server :as s]
-                      [protocols :refer :all])))
-
+            [vignette.http.routes :refer [app-routes]]
+            [vignette.protocols :refer :all]
+            [vignette.server :as s]))
 
 (defrecord VignetteSystem [state]
   SystemAPI

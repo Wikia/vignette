@@ -1,24 +1,26 @@
 (ns vignette.http.routes
   (:require (vignette.storage [protocols :refer :all]
                               [core :refer :all])
-            [vignette.util.thumbnail :as u]
+            [cheshire.core :refer :all]
+            [clojure.java.io :as io]
+            [clout.core :refer [route-compile route-matches]]
+            [compojure.core :refer [routes GET ANY]]
+            [compojure.route :refer [files not-found]]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.util.response :refer [response status charset header]]
+            [slingshot.slingshot :refer (try+ throw+)]
+            [vignette.api.legacy.routes :as legacy]
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]
+            [vignette.storage.core :refer :all]
+            [vignette.storage.protocols :refer :all]
             [vignette.util.query-options :refer :all]
-            [vignette.api.legacy.routes :as legacy]
             [vignette.util.regex :refer :all]
-            (compojure [route :refer (files not-found)]
-                       [core :refer  (routes GET ANY)])
-            [clout.core :refer (route-compile route-matches)]
-            [ring.util.response :refer (response status charset header)]
-            (ring.middleware [params :refer (wrap-params)])
-            [cheshire.core :refer :all]
-            [slingshot.slingshot :refer (try+ throw+)]
-            [wikia.common.logger :as log]
-            [clojure.java.io :as io])
+            [vignette.util.thumbnail :as u]
+            [wikia.common.logger :as log])
   (:import [java.io FileInputStream FileInputStream]
-           [java.nio ByteBuffer]
-           [java.net InetAddress]))
+           [java.net InetAddress]
+           [java.nio ByteBuffer]))
 
 (def hostname (.getHostName (InetAddress/getLocalHost)))
 

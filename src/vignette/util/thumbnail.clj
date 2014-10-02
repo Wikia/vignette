@@ -1,15 +1,15 @@
 (ns vignette.util.thumbnail
-  (:require [vignette.storage.protocols :refer :all]
-            [vignette.storage.local :as local-storage]
-            [vignette.media-types :refer :all]
-            [vignette.util.filesystem :refer :all]
-            [vignette.protocols :refer :all]
-            [vignette.util.query-options :as q]
-            [clojure.java.shell :refer (sh)]
+  (:require [cheshire.core :refer :all]
             [clojure.java.io :as io]
-            [wikia.common.logger :as log]
-            [cheshire.core :refer :all]
-            [slingshot.slingshot :refer (try+ throw+)])
+            [clojure.java.shell :refer [sh]]
+            [slingshot.slingshot :refer [try+ throw+]]
+            [vignette.media-types :refer :all]
+            [vignette.protocols :refer :all]
+            [vignette.storage.local :as local-storage]
+            [vignette.storage.protocols :refer :all]
+            [vignette.util.filesystem :refer :all]
+            [vignette.util.query-options :as q]
+            [wikia.common.logger :as log])
   (:use [environ.core]))
 
 (def thumbnail-bin (env :vignette-thumbnail-bin (if (file-exists? "/usr/local/bin/thumbnail")

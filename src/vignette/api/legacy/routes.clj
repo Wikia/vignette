@@ -1,7 +1,7 @@
 (ns vignette.api.legacy.routes
-  (:require [vignette.util.regex :refer :all]
-            [clout.core :refer (route-compile route-matches)]
-            [useful.experimental :refer (cond-let)]))
+  (:require [clout.core :refer [route-compile route-matches]]
+            [useful.experimental :refer [cond-let]]
+            [vignette.util.regex :refer :all]))
 
 (declare route->revision
          route->dimensions

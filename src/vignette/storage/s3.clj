@@ -1,10 +1,10 @@
 (ns vignette.storage.s3
   (:require [aws.sdk.s3 :as s3]
+            [clojure.java.io :as io]
+            [pantomime.mime :refer [mime-type-of]]
             [vignette.storage.protocols :refer :all]
-            (vignette.util [filesystem :refer :all]
-                           [byte-streams :refer :all])
-            [pantomime.mime :refer (mime-type-of)]
-            [clojure.java.io :as io])
+            [vignette.util.byte-streams :refer :all]
+            [vignette.util.filesystem :refer :all])
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
 
