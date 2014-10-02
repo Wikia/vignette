@@ -46,7 +46,9 @@
   (transfer! [this to]
     (io/copy (file-stream this)
              (io/file to))
-    (file-exists? to)))
+    (file-exists? to))
+  (->response-object [this]
+    (FileInputStream. (file-stream this))))
 
 (defn create-local-storage-system
   [directory]

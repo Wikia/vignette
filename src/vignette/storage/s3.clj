@@ -63,7 +63,9 @@
     (with-open [in-stream (io/input-stream (file-stream this))
                 out-stream (io/output-stream to)]
       (io/copy in-stream out-stream))
-    (file-exists? to)))
+    (file-exists? to))
+  (->response-object [this]
+    (file-stream this)))
 
 (defn create-s3-storage-system
   [creds]

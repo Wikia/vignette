@@ -63,26 +63,9 @@
                         "X-Cache" "ORIGIN"
                         "X-Cache-Hits" "ORIGIN"}))))
 
-(defmulti image-file->response-object
-  "Convert an image file object to something that http-kit can understand. The types supported
-  can be found in the httpkit::HttpUtils/bodyBuffer."
-  (comp class file-stream))
-
-(defmethod image-file->response-object java.io.File
-  [object]
-  (FileInputStream. (file-stream object)))
-
-(defmethod image-file->response-object (Class/forName "[B")
-  [object]
-  (ByteBuffer/wrap (file-stream object)))
-
-(defmethod image-file->response-object :default
-  [object]
-  (file-stream object))
-
 (defn create-image-response
   [image]
-  (-> (response (image-file->response-object image))
+  (-> (response (->response-object image))
       (header "Content-Type" (content-type image))
       (header "Content-Length" (content-length image))))
 

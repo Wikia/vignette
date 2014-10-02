@@ -18,4 +18,5 @@
   (file-stream [this])
   (content-length [this])
   (content-type [this])
-  (transfer! [this to]))
+  (transfer! [this to])
+  (->response-object [this]))
