@@ -1,6 +1,6 @@
 (ns vignette.util.thumbnail
   (:require [vignette.storage.protocols :refer :all]
-            [vignette.storage.local :refer [create-local-image-response]]
+            [vignette.storage.local :as local-storage]
             [vignette.media-types :refer :all]
             [vignette.util.filesystem :refer :all]
             [vignette.protocols :refer :all]
@@ -71,7 +71,7 @@
     (when-let [local-original (original->local (file-stream original) thumb-map)]
       (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
-          (create-local-image-response thumb))
+          (local-storage/create-stored-object thumb))
         (catch Object _ (throw+))
         (finally
           (background-delete-file local-original))))

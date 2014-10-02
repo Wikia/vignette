@@ -8,7 +8,7 @@
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
 
-(declare create-s3-image-response)
+(declare create-stored-object)
 
 (def storage-creds (let [creds {:access-key  (env :storage-access-key)
                                 :secret-key  (env :storage-secret-key)
@@ -41,7 +41,7 @@
       (when (valid-s3-get? object)
         (let [stream (:content object)
               meta-data (:metadata object)]
-          (create-s3-image-response stream meta-data)))))
+          (create-stored-object stream meta-data)))))
   (put-object [this resource bucket path]
     (let [mime-type (mime-type-of resource)]
       (when-let [response (s3/put-object (:creds this) bucket path resource {:content-type mime-type})]
@@ -50,8 +50,8 @@
   (list-buckets [this])
   (list-objects [this bucket]))
 
-(defrecord S3ImageResponse [stream meta-data]
-  ImageResponseProtocol
+(defrecord S3StoredObject [stream meta-data]
+  StoredObjectProtocol
   (file-stream [this]
     (:stream this))
   (content-length [this]
@@ -63,6 +63,6 @@
   [creds]
   (->S3ObjectStorage creds))
 
-(defn create-s3-image-response
+(defn create-stored-object
   [stream meta-data]
-  (->S3ImageResponse stream meta-data))
+  (->S3StoredObject stream meta-data))

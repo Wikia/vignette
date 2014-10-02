@@ -3,7 +3,7 @@
                            [filesystem :refer :all])
             [vignette.protocols :refer :all]
             [vignette.storage.protocols :refer :all]
-            [vignette.storage.local :refer [create-local-image-response]]
+            [vignette.storage.local :refer [create-stored-object]]
             [midje.sweet :refer :all]
             [clojure.java.io :as io]))
 
@@ -38,7 +38,7 @@
     (original->local ..stream.. beach-map) => ..local..
     (original->thumbnail ..local.. beach-map) => ..thumb..
     (background-delete-file ..local..) => true
-    (create-local-image-response ..thumb..) => ..object..)
+    (create-stored-object ..thumb..) => ..object..)
   
   (generate-thumbnail ..system.. beach-map) => falsey
   (provided

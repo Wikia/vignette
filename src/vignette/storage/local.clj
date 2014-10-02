@@ -7,7 +7,7 @@
             [vignette.util.filesystem :refer :all])
   (:import  (java.io FileInputStream)))
 
-(declare create-local-image-response)
+(declare create-stored-object)
 
 ; TODO: when the logger has a closure port, we should create an exception that has context that we can log w/ exceptions
 (defrecord LocalObjectStorage [directory]
@@ -16,7 +16,7 @@
   (get-object [this bucket path]
     (let [real-file (io/file (resolve-local-path (:directory this) bucket path))]
       (when (file-exists? real-file)
-        (create-local-image-response real-file))))
+        (create-stored-object real-file))))
 
   (put-object [this resource bucket path]
     (let [real-path (resolve-local-path (:directory this) bucket path)]
@@ -35,8 +35,8 @@
   (list-buckets [this])
   (list-objects [this bucket]))
 
-(defrecord LocalImageResponse [file]
-  ImageResponseProtocol
+(defrecord LocalStoredObject [file]
+  StoredObjectProtocol
   (file-stream [this]
     (:file this))
   (content-length [this]
@@ -48,6 +48,6 @@
   [directory]
   (->LocalObjectStorage directory))
 
-(defn create-local-image-response
+(defn create-stored-object
   [file]
-  (->LocalImageResponse file))
+  (->LocalStoredObject file))
