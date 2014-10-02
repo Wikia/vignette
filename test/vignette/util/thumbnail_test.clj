@@ -2,8 +2,8 @@
   (:require (vignette.util [thumbnail :refer :all]
                            [filesystem :refer :all])
             [vignette.protocols :refer :all]
-            (vignette.storage [protocols :refer :all]
-                              [common :refer :all])
+            [vignette.storage.protocols :refer :all]
+            [vignette.storage.local :refer [create-stored-object]]
             [midje.sweet :refer :all]
             [clojure.java.io :as io]))
 
@@ -34,13 +34,10 @@
   (provided
     (store ..system..) => ..store..
     (get-original ..store.. beach-map) => ..original..
-    (file-stream ..original..) => ..stream..
-    (original->local ..stream.. beach-map) => ..local..
+    (original->local ..original.. beach-map) => ..local..
     (original->thumbnail ..local.. beach-map) => ..thumb..
-    (content-type ..original..) => ..content-type..
-    (file-length ..thumb..) => ..length..
     (background-delete-file ..local..) => true
-    (create-storage-object ..thumb.. ..content-type.. ..length..) => ..object..)
+    (create-stored-object ..thumb..) => ..object..)
   
   (generate-thumbnail ..system.. beach-map) => falsey
   (provided
@@ -51,8 +48,7 @@
   (provided
     (store ..system..) => ..store..
     (get-original ..store.. beach-map) => ..original..
-    (file-stream ..original..) => ..stream..
-    (original->local ..stream.. beach-map) => ..local..
+    (original->local ..original.. beach-map) => ..local..
     (background-delete-file ..local..) => true
     (original->thumbnail ..local.. beach-map) => nil)) 
 
@@ -69,8 +65,7 @@
          (store ..system..) => ..store..
          (get-thumbnail ..store.. beach-map) => false
          (generate-thumbnail ..system.. beach-map) => ..thumb..
-         (file-stream ..thumb..) => ..stream..
-         (background-save-thumbnail ..store.. ..stream.. beach-map) => true)
+         (background-save-thumbnail ..store.. ..thumb.. beach-map) => true)
 
        ; generate new - fail
        (let [image-dne (assoc beach-map :original "doesnotexist.jpg")]

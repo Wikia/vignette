@@ -51,27 +51,31 @@
                     (sh "mkdir" "-p" local-path)))]
 
   (facts :save-thumbnail :integration
-    (let [local (create-local-object-storage local-path)
-          image-store (create-image-storage local "originals" "thumbs")]
+    (let [local (create-local-storage-system local-path)
+          image-store (create-image-storage local "originals" "thumbs")
+          resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
       local => truthy
       image-store => truthy
-      (save-thumbnail image-store (io/file "image-samples/ropes.jpg") sample-thumbnail-hash) => truthy))
+      (save-thumbnail image-store resource sample-thumbnail-hash) => truthy))
 
   (facts :get-thumbnail :integration
-    (let [local (create-local-object-storage local-path)
-          image-store (create-image-storage local "originals" "thumbs")]
+    (let [local (create-local-storage-system local-path)
+          image-store (create-image-storage local "originals" "thumbs")
+          resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
       (get-thumbnail image-store sample-thumbnail-hash) => falsey
-      (save-thumbnail image-store (io/file "image-samples/ropes.jpg") sample-thumbnail-hash) => truthy
+      (save-thumbnail image-store resource sample-thumbnail-hash) => truthy
       (get-thumbnail image-store sample-thumbnail-hash) => truthy))
 
 
   (facts :save-original :integration
-    (let [local (create-local-object-storage local-path)
-          image-store (create-image-storage local "originals" "thumbs")]
-      (save-original image-store (io/file "image-samples/ropes.jpg") sample-media-hash) => truthy))
+    (let [local (create-local-storage-system local-path)
+          image-store (create-image-storage local "originals" "thumbs")
+          resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
+      (save-original image-store resource sample-media-hash) => truthy))
 
   (facts :get-original :integration
-    (let [local (create-local-object-storage local-path)
-          image-store (create-image-storage local "originals" "thumbs")]
-      (save-original image-store (io/file "image-samples/ropes.jpg") sample-media-hash) => truthy
+    (let [local (create-local-storage-system local-path)
+          image-store (create-image-storage local "originals" "thumbs")
+          resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
+      (save-original image-store resource sample-media-hash) => truthy
       (get-original image-store sample-media-hash) => truthy)))

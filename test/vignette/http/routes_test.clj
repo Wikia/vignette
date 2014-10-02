@@ -1,6 +1,7 @@
 (ns vignette.http.routes-test
   (:require [vignette.http.routes :refer :all]
-            [vignette.storage.protocols :refer :all]
+            [vignette.storage.protocols :as sp]
+            [vignette.storage.local :as l]
             [vignette.protocols :refer :all]
             [vignette.util.thumbnail :as u]
             [midje.sweet :refer :all]
@@ -73,7 +74,7 @@
                       :options {}}]
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 200})
     (provided
-     (u/get-or-generate-thumbnail ..system.. route-params) => (io/file "image-samples/ropes.jpg"))
+     (u/get-or-generate-thumbnail ..system.. route-params) => (l/create-stored-object (io/file "image-samples/ropes.jpg")))
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 404})
     (provided
@@ -95,14 +96,14 @@
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 200})
     (provided
      (store ..system..) => ..store..
-     (get-original ..store.. route-params) => (io/file "image-samples/ropes.jpg"))
+     (sp/get-original ..store.. route-params) => (l/create-stored-object (io/file "image-samples/ropes.jpg")))
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 404})
     (provided
      (store ..system..) => ..store..
-     (get-original ..store.. route-params) => nil)
+     (sp/get-original ..store.. route-params) => nil)
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 500})
     (provided
       (store ..system..) => ..store..
-      (get-original ..store.. route-params) =throws=> (NullPointerException.))))
+      (sp/get-original ..store.. route-params) =throws=> (NullPointerException.))))

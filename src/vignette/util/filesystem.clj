@@ -46,32 +46,3 @@
 (defn resolve-local-path
   [& more]
   (reduce str (interpose "/" more)))
-
-; i think this should be a multimethod that dispatches
-; based on the type
-(defmulti transfer! (fn [in out] (class in)))
-
-(defn transfer-file-like-object!
-  [in out]
-  (io/copy (io/file in) (io/file out))
-  (file-exists? out))
-
-(defmethod transfer! java.lang.String
-  [in out]
-  (transfer-file-like-object! in out))
-
-(defmethod transfer! java.io.File
-  [in out]
-  (transfer-file-like-object! in out))
-
-(defmethod transfer! (Class/forName "[B")
-  [in out]
-  (write-byte-stream (io/file out) in)
-  (file-exists? out))
-
-(defmethod transfer! S3ObjectInputStream
-  [in out]
-  (with-open [in-stream (clojure.java.io/input-stream in)
-              out-stream (clojure.java.io/output-stream out)]
-    (io/copy in-stream out-stream))
-  (file-exists? out))

@@ -1,21 +1,22 @@
 (ns vignette.storage.local
-  (:require (vignette.storage [protocols :refer :all]
-                              [common :refer :all])
-            [vignette.media-types :as mt]
-            [vignette.util.filesystem :refer :all]
-            [clojure.java.io :as io]
+  (:require [clojure.java.io :as io]
             [clojure.java.shell :as sh]
-            [pantomime.mime :refer (mime-type-of)])
+            [pantomime.mime :refer [mime-type-of]]
+            [vignette.media-types :as mt]
+            [vignette.storage.protocols :refer :all]
+            [vignette.util.filesystem :refer :all])
   (:import  (java.io FileInputStream)))
 
+(declare create-stored-object)
+
 ; TODO: when the logger has a closure port, we should create an exception that has context that we can log w/ exceptions
-(defrecord LocalObjectStorage [directory]
-  ObjectStorageProtocol
+(defrecord LocalStorageSystem [directory]
+  StorageSystemProtocol
 
   (get-object [this bucket path]
     (let [real-file (io/file (resolve-local-path (:directory this) bucket path))]
       (when (file-exists? real-file)
-        (create-storage-object real-file (mime-type-of real-file) (file-length real-file)))))
+        (create-stored-object real-file))))
 
   (put-object [this resource bucket path]
     (let [real-path (resolve-local-path (:directory this) bucket path)]
@@ -32,8 +33,27 @@
          true))))
 
   (list-buckets [this])
-  (list-objects [this bucket]) )
+  (list-objects [this bucket]))
 
-(defn create-local-object-storage
+(defrecord LocalStoredObject [file]
+  StoredObjectProtocol
+  (file-stream [this]
+    (:file this))
+  (content-length [this]
+    (file-length (file-stream this)))
+  (content-type [this]
+    (mime-type-of (file-stream this)))
+  (transfer! [this to]
+    (io/copy (file-stream this)
+             (io/file to))
+    (file-exists? to))
+  (->response-object [this]
+    (FileInputStream. (file-stream this))))
+
+(defn create-local-storage-system
   [directory]
-  (->LocalObjectStorage directory))
+  (->LocalStorageSystem directory))
+
+(defn create-stored-object
+  [file]
+  (->LocalStoredObject file))

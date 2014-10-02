@@ -1,6 +1,6 @@
 (ns vignette.storage.protocols)
 
-(defprotocol ObjectStorageProtocol
+(defprotocol StorageSystemProtocol
   (get-object [this bucket path])
   (put-object [this resource bucket path])
   (delete-object [this bucket path])
@@ -13,3 +13,10 @@
 
   (save-original  [this resource original-map])
   (get-original  [this original-map]))
+
+(defprotocol StoredObjectProtocol
+  (file-stream [this])
+  (content-length [this])
+  (content-type [this])
+  (transfer! [this to])
+  (->response-object [this]))

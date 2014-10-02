@@ -1,6 +1,6 @@
 (ns vignette.util.thumbnail
-  (:require (vignette.storage [protocols :refer :all]
-                              [common :refer :all])
+  (:require [vignette.storage.protocols :refer :all]
+            [vignette.storage.local :as local-storage]
             [vignette.media-types :refer :all]
             [vignette.util.filesystem :refer :all]
             [vignette.protocols :refer :all]
@@ -56,7 +56,7 @@
   (if-let [thumb (get-thumbnail (store system) thumb-map)]
     thumb
     (when-let [thumb (generate-thumbnail system thumb-map)]
-      (background-save-thumbnail (store system) (file-stream thumb) thumb-map)
+      (background-save-thumbnail (store system) thumb thumb-map)
       thumb)))
 
 (declare original->local)
@@ -68,11 +68,10 @@
   The original will be removed after the thumbnailing is completed."
   [system thumb-map]
   (if-let [original (get-original (store system) thumb-map)]
-    (when-let [local-original (original->local (file-stream original) thumb-map)]
+    (when-let [local-original (original->local original thumb-map)]
       (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
-          ; if we support changing to a different type we need to change the content-type lookup here
-          (create-storage-object thumb (content-type original) (file-length thumb)))
+          (local-storage/create-stored-object thumb))
         (catch Object _ (throw+))
         (finally
           (background-delete-file local-original))))

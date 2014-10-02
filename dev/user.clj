@@ -1,8 +1,7 @@
 (ns user
   (:require (vignette.storage [core :refer (create-image-storage)]
-                              [local :as vlocal]
-                              [protocols :refer :all]
-                              [s3 :as vs3])
+                              [local :refer [create-local-storage-system]]
+                              [s3 :refer [create-s3-storage-system storage-creds]])
             [vignette.api.legacy.routes :as alr]
             (vignette.http [routes :as r])
             (vignette.util [integration :as itg]
@@ -23,7 +22,7 @@
             [clojure.java.io :as io]
             [clojure.tools.namespace.repl :as nrepl]
             [clojure.java.shell :refer (sh)]
-            [useful.experimental :refer (cond-let)])
+            [pantomime.mime :refer [mime-type-of]])
   (:use [environ.core]))
 
 (def sample-original-hash {:wikia "bucket"
@@ -41,12 +40,12 @@
                             :height "10"
                             :width "10"})
 
-(def los  (vlocal/create-local-object-storage itg/integration-path))
+(def los  (create-local-storage-system itg/integration-path))
 (def lis  (create-image-storage los))
 
 (def system-local (create-system lis))
 
-(def s3os  (vs3/create-s3-object-storage vs3/storage-creds))
+(def s3os  (create-s3-storage-system storage-creds))
 (def s3s   (create-image-storage s3os "images" "images/thumb"))
 
 (def system-s3 (create-system s3s))
@@ -75,3 +74,21 @@
      (start system-s3 port)))
   ([]
    (re-init-dev 8080)))
+
+(defn mime-stats [path]
+  (defn benchmark [file]
+    (let [start (System/nanoTime)]
+      (mime-type-of file)
+      (- (System/nanoTime) start)))
+  (when-let [dir (clojure.java.io/file path)]
+    (loop [files (file-seq dir)
+           time-total 0
+           mime-count 0]
+      (if-let [file (first files)]
+        (if (not (.isDirectory file))
+          (recur (rest files) (+ (benchmark file) time-total) (inc mime-count))
+          (recur (rest files) time-total mime-count))
+        (println (clojure.string/join "\n" [(str "file count: " mime-count)
+                                            (str "total time (ns): " time-total)
+                                            (str "average (ns): " (float (/ time-total mime-count)))
+                                            (str "average (ms): " (* 0.000001 (/ time-total mime-count)))]))))))
