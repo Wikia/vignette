@@ -42,7 +42,11 @@
   (content-length [this]
     (file-length (file-stream this)))
   (content-type [this]
-    (mime-type-of (file-stream this))))
+    (mime-type-of (file-stream this)))
+  (transfer! [this to]
+    (io/copy (file-stream this)
+             (io/file to))
+    (file-exists? to)))
 
 (defn create-local-object-storage
   [directory]

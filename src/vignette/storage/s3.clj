@@ -43,8 +43,9 @@
               meta-data (:metadata object)]
           (create-stored-object stream meta-data)))))
   (put-object [this resource bucket path]
-    (let [mime-type (mime-type-of resource)]
-      (when-let [response (s3/put-object (:creds this) bucket path resource {:content-type mime-type})]
+    (let [file (file-stream resource)
+          mime-type (content-type resource)]
+      (when-let [response (s3/put-object (:creds this) bucket path file {:content-type mime-type})]
         response)))
   (delete-object [this bucket path])
   (list-buckets [this])
@@ -57,7 +58,12 @@
   (content-length [this]
     (:content-length (:meta-data this)))
   (content-type [this]
-    (:content-type (:meta-data this))))
+    (:content-type (:meta-data this)))
+  (transfer! [this to]
+    (with-open [in-stream (io/input-stream (file-stream this))
+                out-stream (io/output-stream to)]
+      (io/copy in-stream out-stream))
+    (file-exists? to)))
 
 (defn create-s3-object-storage
   [creds]

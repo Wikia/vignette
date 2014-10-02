@@ -56,7 +56,7 @@
   (if-let [thumb (get-thumbnail (store system) thumb-map)]
     thumb
     (when-let [thumb (generate-thumbnail system thumb-map)]
-      (background-save-thumbnail (store system) (file-stream thumb) thumb-map)
+      (background-save-thumbnail (store system) thumb thumb-map)
       thumb)))
 
 (declare original->local)
@@ -68,7 +68,7 @@
   The original will be removed after the thumbnailing is completed."
   [system thumb-map]
   (if-let [original (get-original (store system) thumb-map)]
-    (when-let [local-original (original->local (file-stream original) thumb-map)]
+    (when-let [local-original (original->local original thumb-map)]
       (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
           (local-storage/create-stored-object thumb))

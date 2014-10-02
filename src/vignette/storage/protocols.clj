@@ -17,4 +17,5 @@
 (defprotocol StoredObjectProtocol
   (file-stream [this])
   (content-length [this])
-  (content-type [this]))
+  (content-type [this])
+  (transfer! [this to]))
