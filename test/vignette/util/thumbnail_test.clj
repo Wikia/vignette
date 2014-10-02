@@ -1,11 +1,11 @@
 (ns vignette.util.thumbnail-test
-  (:require (vignette.util [thumbnail :refer :all]
-                           [filesystem :refer :all])
-            [vignette.protocols :refer :all]
-            [vignette.storage.protocols :refer :all]
-            [vignette.storage.local :refer [create-stored-object]]
+  (:require [clojure.java.io :as io]
             [midje.sweet :refer :all]
-            [clojure.java.io :as io]))
+            [vignette.protocols :refer :all]
+            [vignette.storage.local :refer [create-stored-object]]
+            [vignette.storage.protocols :refer :all]
+            [vignette.util.filesystem :refer :all]
+            [vignette.util.thumbnail :refer :all]))
 
 (def beach-map {:request-type :thumbnail
                 :original "beach.jpg"

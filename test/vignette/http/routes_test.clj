@@ -1,13 +1,13 @@
 (ns vignette.http.routes-test
-  (:require [vignette.http.routes :refer :all]
-            [vignette.storage.protocols :as sp]
-            [vignette.storage.local :as l]
-            [vignette.protocols :refer :all]
-            [vignette.util.thumbnail :as u]
-            [midje.sweet :refer :all]
+  (:require [clojure.java.io :as io]
             [clout.core :refer (route-compile route-matches)]
+            [midje.sweet :refer :all]
             [ring.mock.request :refer :all]
-            [clojure.java.io :as io])
+            [vignette.http.routes :refer :all]
+            [vignette.protocols :refer :all]
+            [vignette.storage.local :as l]
+            [vignette.storage.protocols :as sp]
+            [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
 
 (facts :original-route

@@ -1,8 +1,8 @@
 (ns vignette.api.legacy.routes-test
-  (:require [vignette.api.legacy.routes :as routes]
-            [clout.core :refer (route-compile route-matches)]
+  (:require [clout.core :refer [route-compile route-matches]]
+            [midje.sweet :refer :all]
             [ring.mock.request :refer :all]
-            [midje.sweet :refer :all]))
+            [vignette.api.legacy.routes :as routes]))
 
 (facts :thumbnail-route
   (let [matched (route-matches routes/thumbnail-route

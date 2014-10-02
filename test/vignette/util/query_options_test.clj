@@ -1,6 +1,6 @@
 (ns vignette.util.query-options-test
-  (:require [vignette.util.query-options :refer :all]
-            [midje.sweet :refer :all]))
+  (:require [midje.sweet :refer :all]
+            [vignette.util.query-options :refer :all]))
 
 (def thumb-map {:wikia "bucket"
                 :top-dir "a"
