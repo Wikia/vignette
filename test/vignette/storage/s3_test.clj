@@ -30,11 +30,13 @@
 (facts :s3 :put-object
   (put-object (create-s3-storage-system ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => ..response..
   (provided
-    (mime-type-of ..resource..) => ..content-type..
-    (s3/put-object ..creds.. "bucket" "a/ab/image.jpg" ..resource.. {:content-type ..content-type..}) => ..response..)
+    (file-stream ..resource..) => ..file..
+    (content-type ..resource..) => ..content-type..
+    (s3/put-object ..creds.. "bucket" "a/ab/image.jpg" ..file.. {:content-type ..content-type..}) => ..response..)
 
   ; this may not be realistic. we'll probably get an error before we get nil
   (put-object (create-s3-storage-system ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => nil
   (provided
-    (mime-type-of ..resource..) => ..content-type..
-    (s3/put-object ..creds.. "bucket" "a/ab/image.jpg" ..resource.. {:content-type ..content-type..}) => nil))
+    (file-stream ..resource..) => ..file..
+    (content-type ..resource..) => ..content-type..
+    (s3/put-object ..creds.. "bucket" "a/ab/image.jpg" ..file.. {:content-type ..content-type..}) => nil))
