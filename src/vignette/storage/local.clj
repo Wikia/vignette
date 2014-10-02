@@ -48,7 +48,7 @@
              (io/file to))
     (file-exists? to)))
 
-(defn create-local-object-storage
+(defn create-local-storage-system
   [directory]
   (->LocalStorageSystem directory))
 

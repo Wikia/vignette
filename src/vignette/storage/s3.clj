@@ -65,7 +65,7 @@
       (io/copy in-stream out-stream))
     (file-exists? to)))
 
-(defn create-s3-object-storage
+(defn create-s3-storage-system
   [creds]
   (->S3StorageSystem creds))
 

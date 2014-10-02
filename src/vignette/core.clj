@@ -2,8 +2,8 @@
   (:require [clojure.tools.cli :as cli]
             [vignette.util.integration :as i]
             (vignette.storage [core :refer (create-image-storage)]
-                              [local :refer (create-local-object-storage)]
-                              [s3 :refer (create-s3-object-storage storage-creds)]
+                              [local :refer (create-local-storage-system)]
+                              [s3 :refer (create-s3-storage-system storage-creds)]
                               [protocols :refer :all])
             (vignette [server :as s]
                       [protocols :refer :all]
@@ -33,8 +33,8 @@
     (let [object-storage (if (= (:mode opts) "local")
                            (do
                              (i/create-integration-env)
-                             (create-local-object-storage i/integration-path))
-                           (create-s3-object-storage storage-creds))
+                             (create-local-storage-system i/integration-path))
+                           (create-s3-storage-system storage-creds))
           image-store (create-image-storage object-storage)
           system (create-system image-store)]
       (println (format "Mode: %s. Starting server on %d..." (:mode opts) (:port opts)))

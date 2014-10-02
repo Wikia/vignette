@@ -20,7 +20,7 @@
                 (format "%s/tbar" local-path)) => truthy)
 
   (facts :put-object
-    (let [local (local-storage/create-local-object-storage "/tmp/vignette-local-storage")]
+    (let [local (local-storage/create-local-storage-system "/tmp/vignette-local-storage")]
       local => truthy
       (put-object local
                   (local-storage/create-stored-object (io/file "project.clj"))
@@ -28,7 +28,7 @@
                   "bar") => truthy))
 
   (facts :get-object
-    (let [local (local-storage/create-local-object-storage "/tmp/vignette-local-storage")]
+    (let [local (local-storage/create-local-storage-system "/tmp/vignette-local-storage")]
       local => truthy
       (get-object local "bucket" "bar") => falsey
       (put-object local
@@ -38,7 +38,7 @@
       (get-object local "bucket" "bar") => truthy))
 
   (facts :delete-object
-    (let [local (local-storage/create-local-object-storage "/tmp/vignette-local-storage")]
+    (let [local (local-storage/create-local-storage-system "/tmp/vignette-local-storage")]
       local => truthy
       (delete-object local "bucket" "bar") => falsey
       (put-object local

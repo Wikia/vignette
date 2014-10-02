@@ -1,6 +1,6 @@
 (ns vignette.util.integration
   (:require (vignette.storage [core :refer (create-image-storage)]
-                              [local :refer (create-local-object-storage)]
+                              [local :refer (create-local-storage-system)]
                               [protocols :refer :all]
                               [s3 :as vs3])
             [aws.sdk.s3 :as s3]
@@ -24,7 +24,7 @@
 
 (defn create-integration-env
   ([path]
-   (let [local-store (create-local-object-storage path)
+   (let [local-store (create-local-storage-system path)
          image-store (create-image-storage local-store)]
     (every? true? (map #(save-original image-store (:file-on-disk %) %)
                        (get-sample-image-maps)))))
