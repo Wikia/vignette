@@ -5,7 +5,7 @@
             [ring.mock.request :refer :all]
             [vignette.http.routes :refer :all]
             [vignette.protocols :refer :all]
-            [vignette.storage.local :as l]
+            [vignette.storage.local :as ls]
             [vignette.storage.protocols :as sp]
             [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
@@ -74,7 +74,7 @@
                       :options {}}]
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 200})
     (provided
-     (u/get-or-generate-thumbnail ..system.. route-params) => (l/create-stored-object (io/file "image-samples/ropes.jpg")))
+     (u/get-or-generate-thumbnail ..system.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 404})
     (provided
@@ -96,7 +96,7 @@
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 200})
     (provided
      (store ..system..) => ..store..
-     (sp/get-original ..store.. route-params) => (l/create-stored-object (io/file "image-samples/ropes.jpg")))
+     (sp/get-original ..store.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 404})
     (provided

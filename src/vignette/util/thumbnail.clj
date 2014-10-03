@@ -5,7 +5,7 @@
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.media-types :refer :all]
             [vignette.protocols :refer :all]
-            [vignette.storage.local :as local-storage]
+            [vignette.storage.local :as ls]
             [vignette.storage.protocols :refer :all]
             [vignette.util.filesystem :refer :all]
             [vignette.util.query-options :as q]
@@ -71,7 +71,7 @@
     (when-let [local-original (original->local original thumb-map)]
       (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
-          (local-storage/create-stored-object thumb))
+          (ls/create-stored-object thumb))
         (catch Object _ (throw+))
         (finally
           (background-delete-file local-original))))

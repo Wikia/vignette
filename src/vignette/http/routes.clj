@@ -9,7 +9,7 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :refer [response status charset header]]
             [slingshot.slingshot :refer (try+ throw+)]
-            [vignette.api.legacy.routes :as legacy]
+            [vignette.api.legacy.routes :as alr]
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]
             [vignette.storage.core :refer :all]
@@ -95,15 +95,15 @@
                  (not-found "Unable to find image."))))
 
         ; legacy routes
-        (GET legacy/thumbnail-route
+        (GET alr/thumbnail-route
              {route-params :route-params}
-             (let [image-params (legacy/route->thumb-map route-params)]
+             (let [image-params (alr/route->thumb-map route-params)]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                  (create-image-response thumb)
                  (not-found "Unable to create thumbnail"))))
-        (GET legacy/original-route
+        (GET alr/original-route
              {route-params :route-params}
-             (let [image-params (legacy/route->original-map route-params)]
+             (let [image-params (alr/route->original-map route-params)]
                (if-let [file (get-original (store system) image-params)]
                  (create-image-response file)
                  (not-found "Unable to find image."))))
