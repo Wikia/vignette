@@ -1,13 +1,13 @@
 (ns vignette.core
   (:require [clojure.tools.cli :as cli]
-            [vignette.util.integration :as i]
-            (vignette.storage [core :refer (create-image-storage)]
-                              [local :refer (create-local-storage-system)]
-                              [s3 :refer (create-s3-storage-system storage-creds)]
-                              [protocols :refer :all])
-            (vignette [server :as s]
-                      [protocols :refer :all]
-                      [system :refer :all]))
+            [vignette.protocols :refer :all]
+            [vignette.server :as s]
+            [vignette.storage.core :refer [create-image-storage]]
+            [vignette.storage.local :refer [create-local-storage-system]]
+            [vignette.storage.protocols :refer :all]
+            [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
+            [vignette.system :refer :all]
+            [vignette.util.integration :as i])
   (:gen-class))
 
 (def cli-specs [["-h" "--help" "Show help"]

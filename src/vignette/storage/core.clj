@@ -1,6 +1,6 @@
 (ns vignette.storage.core
-  (:require [vignette.storage.protocols :refer :all]
-            [vignette.media-types :as mt]
+  (:require [vignette.media-types :as mt]
+            [vignette.storage.protocols :refer :all]
             [vignette.util.query-options :as q]))
 
 (defn- join-slash

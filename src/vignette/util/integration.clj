@@ -1,11 +1,11 @@
 (ns vignette.util.integration
-  (:require (vignette.storage [core :refer (create-image-storage)]
-                              [local :refer (create-local-storage-system)]
-                              [protocols :refer :all]
-                              [s3 :as vs3])
-            [aws.sdk.s3 :as s3]
+  (:require [aws.sdk.s3 :as s3]
             [clojure.java.io :as io]
-            [clojure.java.shell :refer (sh)])
+            [clojure.java.shell :refer [sh]]
+            [vignette.storage.core :refer [create-image-storage]]
+            [vignette.storage.local :refer [create-local-storage-system]]
+            [vignette.storage.protocols :refer :all]
+            [vignette.storage.s3 :as vs3])
   (:use [environ.core]))
 
 (def integration-path (env :vignette-integration-root "/tmp/integration"))

@@ -1,6 +1,6 @@
 (ns vignette.media-types-test
-  (:require [vignette.media-types :refer :all]
-            [midje.sweet :refer :all]))
+  (:require [midje.sweet :refer :all]
+            [vignette.media-types :refer :all]))
 
 (def archive-map {:wikia "bucket"
                   :top-dir "a"

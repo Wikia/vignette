@@ -1,13 +1,13 @@
 (ns vignette.api.legacy.routes-test
-  (:require [vignette.api.legacy.routes :as routes]
-            [clout.core :refer (route-compile route-matches)]
+  (:require [clout.core :refer [route-compile route-matches]]
+            [midje.sweet :refer :all]
             [ring.mock.request :refer :all]
-            [midje.sweet :refer :all]))
+            [vignette.api.legacy.routes :as alr]))
 
 (facts :thumbnail-route
-  (let [matched (route-matches routes/thumbnail-route
+  (let [matched (route-matches alr/thumbnail-route
                                (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.webp"))
-        matched (routes/route->thumb-map matched)]
+        matched (alr/route->thumb-map matched)]
     (:request-type matched) => :thumbnail
     (:archive matched) => ""
     (:original matched) => "SuperMario64_20.png"
@@ -20,8 +20,8 @@
     (:thumbname matched) => "185px-SuperMario64_20.webp"
     (:format (:options matched)) => "webp")
 
-  (let [matched (routes/route->thumb-map
-                  (route-matches routes/thumbnail-route
+  (let [matched (alr/route->thumb-map
+                  (route-matches alr/thumbnail-route
                                  (request :get "/charmed/images/thumb/archive/b/b6/20101213101955!6x01-Phoebe.jpg/479px-6x01-Phoebe.jpg")))]
     (:request-type matched) => :thumbnail
     (:wikia matched) => "charmed"
@@ -36,8 +36,8 @@
     (:thumbname matched) => "479px-6x01-Phoebe.jpg"
     (:format (:options matched)) => "jpg")
 
-  (let [matched (routes/route->thumb-map
-                  (route-matches routes/thumbnail-route
+  (let [matched (alr/route->thumb-map
+                  (route-matches alr/thumbnail-route
                                  (request :get "/charmed/images/thumb/archive/b/b6/20101213101955!6x01-Phoebe.jpg/100x200x300-6x01-Phoebe.jpg")))]
     (:request-type matched) => :thumbnail
     (:wikia matched) => "charmed"
@@ -53,8 +53,8 @@
     (:thumbname matched) => "100x200x300-6x01-Phoebe.jpg"
     (:format (:options matched)) => "jpg")
 
-  (let [map (routes/route->thumb-map
-              (route-matches routes/thumbnail-route
+  (let [map (alr/route->thumb-map
+              (route-matches alr/thumbnail-route
                              (request :get "/aigles-et-lys/fr/images/thumb/b/b7/Flag_of_Europe.svg/120px-Flag_of_Europe.svg.png")))]
     (:request-type map) => :thumbnail
     (:wikia map) => "aigles-et-lys"
@@ -66,8 +66,8 @@
     (:lang (:options map)) => "fr"))
 
 (facts :original-route
-       (let [map (routes/route->original-map
-                   (route-matches routes/original-route
+       (let [map (alr/route->original-map
+                   (route-matches alr/original-route
                                   (request :get "/happywheels/images/b/bb/SuperMario64_20.png")))]
          (:request-type map) => :original
          (:wikia map) => "happywheels"
@@ -76,8 +76,8 @@
          (:original map) => "SuperMario64_20.png"
          (:revision map) => "latest")
 
-       (let [map (routes/route->original-map
-                   (route-matches routes/original-route
+       (let [map (alr/route->original-map
+                   (route-matches alr/original-route
                                   (request :get "/aigles-et-lys/fr/images/b/b7/Flag_of_Europe.svg")))]
          (:request-type map) => :original
          (:wikia map) => "aigles-et-lys"

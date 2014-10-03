@@ -1,11 +1,11 @@
 (ns vignette.storage.core-test
-  (:require [vignette.storage.core :refer :all]
-            [vignette.storage.protocols :refer :all]
-            [vignette.storage.local :refer :all]
+  (:require [clojure.java.io :as io]
+            [clojure.java.shell :refer [sh]]
+            [midje.sweet :refer :all]
             [vignette.media-types :as mt]
-            [clojure.java.shell :refer (sh)]
-            [clojure.java.io :as io]
-            [midje.sweet :refer :all]))
+            [vignette.storage.core :refer :all]
+            [vignette.storage.local :refer :all]
+            [vignette.storage.protocols :refer :all]))
 
 (def local-path "/tmp/vignette-local-storage")
 

@@ -1,28 +1,27 @@
 (ns user
-  (:require (vignette.storage [core :refer (create-image-storage)]
-                              [local :refer [create-local-storage-system]]
-                              [s3 :refer [create-s3-storage-system storage-creds]])
-            [vignette.api.legacy.routes :as alr]
-            (vignette.http [routes :as r])
-            (vignette.util [integration :as itg]
-                           [thumbnail :as u]
-                           [byte-streams :as bs]
-                           [filesystem :as fs])
-            (vignette [server :as s]
-                      [protocols :refer :all]
-                      [media-types :as mt]
-                      [system :refer :all])
-            [wikia.common.logger :as log]
-            [aws.sdk.s3 :as s3]
-            [midje.repl :refer :all]
-            [clout.core :as c]
-            [ring.mock.request :refer :all]
+  (:require [aws.sdk.s3 :as s3]
             [cheshire.core :refer :all]
-            [clojure.tools.trace :refer :all]
             [clojure.java.io :as io]
+            [clojure.java.shell :refer [sh]]
             [clojure.tools.namespace.repl :as nrepl]
-            [clojure.java.shell :refer (sh)]
-            [pantomime.mime :refer [mime-type-of]])
+            [clojure.tools.trace :refer :all]
+            [clout.core :as c]
+            [midje.repl :refer :all]
+            [pantomime.mime :refer [mime-type-of]]
+            [ring.mock.request :refer :all]
+            [vignette.api.legacy.routes :as alr]
+            [vignette.http.routes :as r]
+            [vignette.media-types :as mt]
+            [vignette.protocols :refer :all]
+            [vignette.server :as s]
+            [vignette.storage.core :refer [create-image-storage]]
+            [vignette.storage.local :refer [create-local-storage-system]]
+            [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
+            [vignette.system :refer :all]
+            [vignette.util.filesystem :as fs]
+            [vignette.util.integration :as itg]
+            [vignette.util.thumbnail :as u]
+            [wikia.common.logger :as log])
   (:use [environ.core]))
 
 (def sample-original-hash {:wikia "bucket"

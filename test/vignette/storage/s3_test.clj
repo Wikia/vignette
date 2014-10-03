@@ -1,11 +1,10 @@
 (ns vignette.storage.s3-test
-  (:require (vignette.storage [protocols :refer :all]
-                              [s3 :refer :all])
-            (vignette.util [byte-streams :refer :all])
-            [pantomime.mime :refer (mime-type-of)]
-            [aws.sdk.s3 :as s3]
+  (:require [aws.sdk.s3 :as s3]
+            [clojure.java.io :as io]
             [midje.sweet :refer :all]
-            [clojure.java.io :as io])
+            [pantomime.mime :refer [mime-type-of]]
+            [vignette.storage.protocols :refer :all]
+            [vignette.storage.s3 :refer :all])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
 
 (facts :s3 :get-object
