@@ -7,6 +7,7 @@
             [vignette.protocols :refer :all]
             [vignette.storage.local :as ls]
             [vignette.storage.protocols :as sp]
+            [vignette.util.image-response :as ir]
             [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
 
@@ -68,19 +69,21 @@
                       :middle-dir "35"
                       :top-dir "3"
                       :wikia "lotr"
-                      :thumbnail-mode "resize"
+                      :thumbnail-mode "thumbnail"
                       :height "10"
                       :width "10"
                       :options {}}]
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 200})
+    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 200})
     (provided
      (u/get-or-generate-thumbnail ..system.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 404})
+    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 404})
     (provided
-     (u/get-or-generate-thumbnail ..system.. route-params) => nil)
+     (u/get-or-generate-thumbnail ..system.. route-params) => nil
+     (ir/error-image route-params) => ..thumb..
+     (ir/create-image-response ..thumb..) => {})
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/resize/width/10/height/10")) => (contains {:status 500})
+    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 500})
     (provided
       (u/get-or-generate-thumbnail ..system.. route-params) =throws=> (NullPointerException.))))
 
