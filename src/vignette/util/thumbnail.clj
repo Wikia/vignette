@@ -12,6 +12,11 @@
             [wikia.common.logger :as log])
   (:use [environ.core]))
 
+(declare original->local
+         background-delete-file
+         generate-thumbnail
+         background-save-thumbnail)
+
 (def thumbnail-bin (env :vignette-thumbnail-bin (if (file-exists? "/usr/local/bin/thumbnail")
                                                   "/usr/local/bin/thumbnail"
                                                   "bin/thumbnail")))
@@ -48,9 +53,6 @@
       (zero? (:exit sh-out)) (io/file temp-file)
       :else (throw+ {:type ::convert-error :exit (:exit sh-out) :out (:out sh-out) :err (:err sh-out)}))))
 
-(declare generate-thumbnail)
-(declare background-save-thumbnail)
-
 (defn get-or-generate-thumbnail
   [system thumb-map]
   (if-let [thumb (get-thumbnail (store system) thumb-map)]
@@ -58,9 +60,6 @@
     (when-let [thumb (generate-thumbnail system thumb-map)]
       (background-save-thumbnail (store system) thumb thumb-map)
       thumb)))
-
-(declare original->local)
-(declare background-delete-file)
 
 (defn generate-thumbnail
   "Generate a thumbnail from the original specified in thumb-map.
