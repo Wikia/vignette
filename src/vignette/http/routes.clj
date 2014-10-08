@@ -1,7 +1,5 @@
 (ns vignette.http.routes
-  (:require (vignette.storage [protocols :refer :all]
-                              [core :refer :all])
-            [cheshire.core :refer :all]
+  (:require [cheshire.core :refer :all]
             [clojure.java.io :as io]
             [clout.core :refer [route-compile route-matches]]
             [compojure.core :refer [routes GET ANY]]
