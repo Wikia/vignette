@@ -91,9 +91,11 @@
         (GET alr/thumbnail-route
              {route-params :route-params}
              (let [image-params (alr/route->thumb-map route-params)]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
-                 (error-response 404 image-params))))
+               (if (:unsupported image-params)
+                 (status (response "unsupported thumbnail request") 302)
+                 (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+                   (create-image-response thumb)
+                   (error-response 404 image-params)))))
         (GET alr/original-route
              {route-params :route-params}
              (let [image-params (alr/route->original-map route-params)]

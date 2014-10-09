@@ -37,6 +37,7 @@ JPEG_QUALITY_LEVEL=80
 MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"fixed-aspect-ratio-down"
+	"scale-to-width"
 	"thumbnail"
 	"thumbnail-down"
 	"top-crop"
@@ -233,6 +234,9 @@ function thumb_params() {
 			else # original is bigger on at least side, so we can proceed just like --fixed-aspect-ratio
 				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
 			fi
+			;;
+		"scale-to-width")
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}"
 			;;
 		"thumbnail")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}"
