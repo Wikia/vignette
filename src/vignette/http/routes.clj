@@ -94,7 +94,7 @@
                (if (:unsupported image-params)
                  (-> (response "unsupported thumbnail route")
                      (status 307)
-                     (header "Location" (str (env :unsupported-redirect-host "http://thumbnails.com")
+                     (header "Location" (str (env :unsupported-redirect-host "http://images.wikia.com")
                                              (:uri request))))
                  (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                    (create-image-response thumb)
