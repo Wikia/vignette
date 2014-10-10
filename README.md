@@ -36,6 +36,7 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `IMAGEMAGICK_BASE`             path to the root of the ImageMagick installation [/usr/local]
  * `GETOPT`                       when running on osx, install gnu-getopt using brew. see bin/thumbnail
  * `CONVERT_CONSTRAINTS`          universal options to pass to ImageMagick. see bin/thumbnail
+ * `UNSUPPORTED_REDIRECT_HOST`    on an unsupported legacy thumbnail request, host to redirect
 
 ## Testing
 

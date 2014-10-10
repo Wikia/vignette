@@ -4,6 +4,7 @@
             [clout.core :refer [route-compile route-matches]]
             [compojure.core :refer [routes GET ANY]]
             [compojure.route :refer [files not-found]]
+            [environ.core :refer [env]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :refer [response status charset header]]
             [slingshot.slingshot :refer (try+ throw+)]
@@ -57,12 +58,11 @@
   [handler]
   (fn [request]
     (let [response (handler request)]
-      (reduce (fn [response [h v]]
-                (header response h v))
-              response {"Varnish-Logs" "vignette"
-                        "X-Served-By" hostname
-                        "X-Cache" "ORIGIN"
-                        "X-Cache-Hits" "ORIGIN"}))))
+      (-> response
+          (header "Varnish-Logs" "vignette")
+          (header "X-Served-By" hostname)
+          (header "X-Cache" "ORIGIN")
+          (header "X-Cache-Hits" "ORIGIN")))))
 
 (defn image-params
   [request request-type]
@@ -89,10 +89,13 @@
 
         ; legacy routes
         (GET alr/thumbnail-route
-             {route-params :route-params}
-             (let [image-params (alr/route->thumb-map route-params)]
+             request
+             (let [image-params (alr/route->thumb-map (:route-params request))]
                (if (:unsupported image-params)
-                 (error-response 307) ; purposely not passing image-params, since there is probably a redirect in varnish
+                 (-> (response "unsupported thumbnail route")
+                     (status 307)
+                     (header "Location" (str (env :unsupported-redirect-host "http://thumbnails.com")
+                                             (:uri request))))
                  (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                    (create-image-response thumb)
                    (error-response 404 image-params)))))
