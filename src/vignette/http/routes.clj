@@ -92,7 +92,7 @@
              {route-params :route-params}
              (let [image-params (alr/route->thumb-map route-params)]
                (if (:unsupported image-params)
-                 (error-response 302) ; purposely not passing image-params, since there is probably a redirect in varnish
+                 (error-response 307) ; purposely not passing image-params, since there is probably a redirect in varnish
                  (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                    (create-image-response thumb)
                    (error-response 404 image-params)))))
