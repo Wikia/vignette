@@ -95,14 +95,15 @@
 
 (defn route->offset
   [map]
-  (let [[_ x-offset x-end y-offset y-end] (re-find #"^(\d+),(\d+),(\d+),(\d+)-$"
-                                                   (URLDecoder/decode (:offset map)))
-        window-width (- (Integer. x-end) (Integer. x-offset))
-        window-height (- (Integer. y-end) (Integer. y-offset))]
-    (assoc map :thumbnail-mode (if (= (:height map) :auto)
-                                 "window-crop"
-                                 "window-crop-fixed")
-               :x-offset x-offset
-               :y-offset y-offset
-               :window-width window-width
-               :window-height window-height)))
+  (if-let [[_ x-offset x-end y-offset y-end] (re-find #"^(\d+),(\d+),(\d+),(\d+)-$"
+                                                   (URLDecoder/decode (:offset map)))]
+    (let [window-width (- (Integer. x-end) (Integer. x-offset))
+          window-height (- (Integer. y-end) (Integer. y-offset))]
+      (assoc map :thumbnail-mode (if (= (:height map) :auto)
+                                   "window-crop"
+                                   "window-crop-fixed")
+                 :x-offset x-offset
+                 :y-offset y-offset
+                 :window-width (str window-width)
+                 :window-height (str window-height)))
+    map))

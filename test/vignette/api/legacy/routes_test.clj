@@ -68,7 +68,6 @@
   (let [matched (route-matches alr/thumbnail-route
                                (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-0,120,0,240-SuperMario64_20.webp"))
         matched (alr/route->thumb-map matched)]
-    (:unsupported matched) => true
     (:request-type matched) => :thumbnail
     (:archive matched) => ""
     (:original matched) => "SuperMario64_20.png"
@@ -76,11 +75,42 @@
     (:top-dir matched) => "b"
     (:image-type matched) => "images"
     (:width matched) => "185"
+    (:height matched) => :auto
     (:wikia matched) => "happywheels"
     (:revision matched) => "latest"
     (:offset matched) => "0,120,0,240-"
     (:thumbname matched) => "SuperMario64_20.webp"
-    (:format (:options matched)) => "webp"))
+    (:x-offset matched) => "0"
+    (:y-offset matched) => "0"
+    (:window-width matched) => "120"
+    (:window-height matched) => "240"
+    (:thumbnail-mode matched) => "window-crop"
+    (:format (:options matched)) => "webp")
+
+  (let [matched (route-matches alr/thumbnail-route
+                               (request :get "/thelastofus/images/thumb/5/58/Door_4.jpg/400x400-400,600,200,600-Door_4.jpg"))
+        matched (alr/route->thumb-map matched)]
+    (:thumbnail-mode matched) => "window-crop-fixed"
+    (:wikia matched) => "thelastofus"
+    (:top-dir matched) => "5"
+    (:middle-dir matched) => "58"
+    (:original matched) => "Door_4.jpg"
+    (:width matched) => "400"
+    (:height matched) => "400"
+    (:x-offset matched) => "400"
+    (:y-offset matched) => "200"
+    (:window-width matched) => "200"
+    (:window-height matched) => "400")
+
+  (let [matched (route-matches alr/thumbnail-route
+                               (request :get "/muppet/images/thumb/4/40/JohnvanBruggen.jpg/200px-JohnvanBruggen.jpg"))
+        matched (alr/route->thumb-map matched)]
+    (:thumbnail-mode matched) => "scale-to-width"
+    (:wikia matched) => "muppet"
+    (:top-dir matched) => "4"
+    (:middle-dir matched) => "40"
+    (:original matched) => "JohnvanBruggen.jpg"
+    (:width matched) => "200"))
 
 (facts :original-route
        (let [map (alr/route->original-map
