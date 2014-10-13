@@ -42,6 +42,42 @@
                   :width size-regex
                   :height size-regex}))
 
+(def window-crop-route
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/window-crop/width/:width/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+                 {:wikia wikia-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :revision revision-regex
+                  :width size-regex
+                  :x-offset size-regex
+                  :window-width size-regex
+                  :y-offset size-regex
+                  :window-height size-regex}))
+
+(def window-crop-fixed-route
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/window-crop/width/:width/height/:height/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+                 {:wikia wikia-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :revision revision-regex
+                  :width size-regex
+                  :height size-regex
+                  :x-offset size-regex
+                  :window-width size-regex
+                  :y-offset size-regex
+                  :window-height size-regex}))
+
+(def scale-to-width-route
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/scale-to-width/width/:width"
+                 {:wikia wikia-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :revision revision-regex
+                  :width size-regex}))
+
 (defn exception-catcher
   [handler]
   (fn [request]
@@ -74,6 +110,28 @@
 (defn app-routes
   [system]
   (-> (routes
+        (GET scale-to-width-route
+             request
+             (let [route-params (image-params request :thumbnail)
+                   image-params (assoc route-params :thumbnail-mode "scale-to-width")]
+               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+                 (create-image-response thumb)
+                 (error-response 404 image-params))))
+        (GET window-crop-route
+             request
+             (let [route-params (image-params request :thumbnail)
+                   image-params (assoc route-params :thumbnail-mode "window-crop"
+                                                    :height "0")]
+               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+                 (create-image-response thumb)
+                 (error-response 404 image-params))))
+        (GET window-crop-fixed-route
+             request
+             (let [route-params (image-params request :thumbnail)
+                   image-params (assoc route-params :thumbnail-mode "window-crop-fixed")]
+               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+                 (create-image-response thumb)
+                 (error-response 404 image-params))))
         (GET thumbnail-route
              request
              (let [image-params (image-params request :thumbnail)]
