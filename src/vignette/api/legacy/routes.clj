@@ -39,6 +39,7 @@
 
 (defn route->thumb-map
   [route-params]
+  ; order is important! mostly due to the different options changing :thumbnail-mode
   (let [map (-> route-params
                 (assoc :request-type :thumbnail)
                 (assoc :thumbnail-mode "thumbnail")
@@ -91,9 +92,15 @@
       :else map)
     map))
 
-; we currently don't support offsets
 (defn route->offset
   [map]
-  (if (clojure.string/blank? (:offset map))
-    map
-    (assoc map :unsupported true)))
+  (let [[_ x-offset x-end y-offset y-end] (re-find #"^(\d+),(\d+),(\d+),(\d+)-$" (:offset map))
+        window-width (- (Integer. x-end) (Integer. x-offset))
+        window-height (- (Integer. y-end) (Integer. y-offset))]
+    (assoc map :thumbnail-mode (if (= (:height map) :auto)
+                                 "window-crop"
+                                 "window-crop-fixed")
+               :x-offset x-offset
+               :y-offset y-offset
+               :window-width window-width
+               :window-height window-height)))
