@@ -1,7 +1,8 @@
 (ns vignette.api.legacy.routes
   (:require [clout.core :refer [route-compile route-matches]]
             [useful.experimental :refer [cond-let]]
-            [vignette.util.regex :refer :all]))
+            [vignette.util.regex :refer :all])
+  (:import [java.net URLDecoder]))
 
 (declare route->revision
          route->dimensions
@@ -94,7 +95,8 @@
 
 (defn route->offset
   [map]
-  (let [[_ x-offset x-end y-offset y-end] (re-find #"^(\d+),(\d+),(\d+),(\d+)-$" (:offset map))
+  (let [[_ x-offset x-end y-offset y-end] (re-find #"^(\d+),(\d+),(\d+),(\d+)-$"
+                                                   (URLDecoder/decode (:offset map)))
         window-width (- (Integer. x-end) (Integer. x-offset))
         window-height (- (Integer. y-end) (Integer. y-offset))]
     (assoc map :thumbnail-mode (if (= (:height map) :auto)
