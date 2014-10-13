@@ -80,7 +80,7 @@
   (if-let [thumb-dimension (:dimension map)]
     (cond-let
       [[_ dimension] (re-find #"^(\d+)px-" thumb-dimension)] (merge map {:width dimension
-                                                                         :height "0"
+                                                                         :height :auto
                                                                          :thumbnail-mode "scale-to-width"})
       [[_ width height] (re-find #"^(\d+)x(\d+)-" thumb-dimension)] (merge map {:width width
                                                                                 :height height

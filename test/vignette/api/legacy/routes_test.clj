@@ -31,7 +31,7 @@
     (:middle-dir matched) => "b6"
     (:original matched) => "6x01-Phoebe.jpg"
     (:width matched) => "479"
-    (:height matched) => "0"
+    (:height matched) => :auto
     (:revision matched) => "20101213101955"
     (:thumbname matched) => "6x01-Phoebe.jpg"
     (:format (:options matched)) => "jpg")

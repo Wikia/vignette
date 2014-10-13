@@ -113,7 +113,8 @@
         (GET scale-to-width-route
              request
              (let [route-params (image-params request :thumbnail)
-                   image-params (assoc route-params :thumbnail-mode "scale-to-width")]
+                   image-params (assoc route-params :thumbnail-mode "scale-to-width"
+                                                    :height :auto)]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                  (create-image-response thumb)
                  (error-response 404 image-params))))
@@ -121,7 +122,7 @@
              request
              (let [route-params (image-params request :thumbnail)
                    image-params (assoc route-params :thumbnail-mode "window-crop"
-                                                    :height "0")]
+                                                    :height :auto)]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                  (create-image-response thumb)
                  (error-response 404 image-params))))
