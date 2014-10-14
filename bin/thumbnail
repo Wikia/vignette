@@ -128,7 +128,7 @@ while true; do
 			shift
 			X_OFFSET=$1
 			;;
-	  --window-width)
+		--window-width)
 			shift
 			WINDOW_WIDTH=$1
 			;;
