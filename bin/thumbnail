@@ -37,10 +37,13 @@ JPEG_QUALITY_LEVEL=80
 MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"fixed-aspect-ratio-down"
+	"scale-to-width"
 	"thumbnail"
 	"thumbnail-down"
 	"top-crop"
 	"top-crop-down"
+	"window-crop"
+	"window-crop-fixed"
 	"zoom-crop"
 	"zoom-crop-down"
 )
@@ -48,29 +51,33 @@ MODE_OPTIONS=(
 function usage() {
 cat <<EOF
     usage: $0
-    --in|i      FILE   the image we are thumbnailing
-    --out|o     FILE   output the thumbnail to this file
-    --height|H  INT    the height
-    --width|W   INT    the width
+    --in             FILE   the image we are thumbnailing
+    --out            FILE   output the thumbnail to this file
+    --height         INT    the height
+    --width          INT    the width
 
-    --still            only use the first frame of the image
-    --fill             pad or fill color for the image background. only used with --mode fixed-aspect-ratio
-    --animated         treat this as an animated gif
+    --still                 only use the first frame of the image
+    --fill                  pad or fill color for the image background. only used with --mode fixed-aspect-ratio
+    --animated              treat this as an animated gif
 
-    --fuzz      PERC   fuzz factor as percentage. give --fuzz 2% as an example
-                        colors within this distance are considered equal.
-                        currently only applied to animated gifs
+    --fuzz           PERC   fuzz factor as percentage. give --fuzz 2% as an example
+                             colors within this distance are considered equal.
+                             currently only applied to animated gifs
 
-    --mode      MODE   The thumbnail/render mode. Supported options: ${MODE_OPTIONS[*]}
+    --mode           MODE   The thumbnail/render mode. Supported options: ${MODE_OPTIONS[*]}
+    --x-offset       INT    when using window-crop, where to start the window, from the left
+    --window-width   INT    when using window-crop, the width of the window
+    --y-offset       INT    when using window-crop, where to start the window, from the top
+    --window-height  INT    when using window-crop, the height of the window
 
-    --help|h           print this
+    --help                  print this
 
 EOF
 }
 
 OS=$(uname)
 SHORTOPTS="h"
-LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated"
+LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated,x-offset:,window-width:,y-offset:,window-height:"
 
 ARGS=$($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@")
 
@@ -82,6 +89,10 @@ FILL="white"
 ANIMATED=0
 STILL=0
 MODE='thumbnail-down'
+X_OFFSET=''
+Y_OFFSET=''
+WINDOW_WIDTH=''
+WINDOW_HEIGHT=''
 
 THUMB_PARAMS=''
 FUZZ=''
@@ -90,7 +101,7 @@ eval set -- "$ARGS"
 
 while true; do
 	case $1 in
-		-h|--help)
+		--help)
 			usage
 			exit 1
 			;;
@@ -112,6 +123,22 @@ while true; do
 		--width)
 			shift
 			WIDTH=$1
+			;;
+		--x-offset)
+			shift
+			X_OFFSET=$1
+			;;
+		--window-width)
+			shift
+			WINDOW_WIDTH=$1
+			;;
+		--y-offset)
+			shift
+			Y_OFFSET=$1
+			;;
+		--window-height)
+			shift
+			WINDOW_HEIGHT=$1
 			;;
 		--fuzz)
 			shift
@@ -141,25 +168,25 @@ while true; do
 done
 
 if [ "$IN"X = "X" ]; then
-	echo "-i|--in required"
+	echo "--in required"
 	usage
 	exit 1
 fi
 
 if [ "$OUT"X = "X" ]; then
-	echo "-o|--out required"
+	echo "--out required"
 	usage
 	exit 1
 fi
 
 if [ "$HEIGHT"X = "X" ]; then
-	echo "-H|--height required"
+	echo "--height required"
 	usage
 	exit 1
 fi
 
 if [ "$WIDTH"X = "X" ]; then
-	echo "-W|--width required"
+	echo "--width required"
 	usage
 	exit 1
 fi
@@ -176,6 +203,28 @@ if [ $valid_mode -ne 1 ]; then
 	echo "Valid mode options are: ${MODE_OPTIONS[*]}"
 	usage
 	exit 1
+fi
+
+if [[ "$MODE" == "window-crop" || "$MODE" == "window-crop-fixed" ]]; then
+	if [ "$X_OFFSET"X = "X" ]; then
+		echo "--x-offset required when --mode=window-crop"
+		exit 1
+	fi
+
+	if [ "$WINDOW_WIDTH"X = "X" ]; then
+		echo "--x-width required when --mode=window-crop"
+		exit 1
+	fi
+
+	if [ "$Y_OFFSET"X = "X" ]; then
+		echo "--y-offset required when --mode=window-crop"
+		exit 1
+	fi
+
+	if [ "$WINDOW_HEIGHT"X = "X" ]; then
+		echo "--y-height required when --mode=window-crop"
+		exit 1
+	fi
 fi
 
 
@@ -234,6 +283,9 @@ function thumb_params() {
 				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
 			fi
 			;;
+		"scale-to-width")
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}"
+			;;
 		"thumbnail")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}"
 			;;
@@ -256,6 +308,16 @@ function thumb_params() {
 			else
 				THUMB_PARAMS="${QUALITY}"
 			fi
+			;;
+		"window-crop")
+			THUMB_PARAMS="${QUALITY} \( ${IN} -extent ${WINDOW_WIDTH}x${WINDOW_HEIGHT}+${X_OFFSET}+${Y_OFFSET}! -thumbnail ${WINDOW_WIDTH}x${WINDOW_HEIGHT}! \)"
+			THUMB_PARAMS="${THUMB_PARAMS} \( -thumbnail ${WIDTH} \)"
+			IN="" # is now part of THUMB_PARAMS
+			;;
+		"window-crop-fixed")
+			THUMB_PARAMS="${QUALITY} \( ${IN} -extent ${WINDOW_WIDTH}x${WINDOW_HEIGHT}+${X_OFFSET}+${Y_OFFSET}! -thumbnail ${WINDOW_WIDTH}x${WINDOW_HEIGHT}! \)"
+			THUMB_PARAMS="${THUMB_PARAMS} \( -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}! \)"
+			IN="" # is now part of THUMB_PARAMS
 			;;
 		"zoom-crop")
 			# the '^' means Minimum values of width and height given, aspect ratio

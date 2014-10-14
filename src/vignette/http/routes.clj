@@ -4,6 +4,7 @@
             [clout.core :refer [route-compile route-matches]]
             [compojure.core :refer [routes GET ANY]]
             [compojure.route :refer [files not-found]]
+            [environ.core :refer [env]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :refer [response status charset header]]
             [slingshot.slingshot :refer (try+ throw+)]
@@ -41,6 +42,15 @@
                   :width size-regex
                   :height size-regex}))
 
+(def scale-to-width-route
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/scale-to-width/:width"
+                 {:wikia wikia-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :revision revision-regex
+                  :width size-regex}))
+
 (defn exception-catcher
   [handler]
   (fn [request]
@@ -57,12 +67,11 @@
   [handler]
   (fn [request]
     (let [response (handler request)]
-      (reduce (fn [response [h v]]
-                (header response h v))
-              response {"Varnish-Logs" "vignette"
-                        "X-Served-By" hostname
-                        "X-Cache" "ORIGIN"
-                        "X-Cache-Hits" "ORIGIN"}))))
+      (-> response
+          (header "Varnish-Logs" "vignette")
+          (header "X-Served-By" hostname)
+          (header "X-Cache" "ORIGIN")
+          (header "X-Cache-Hits" "ORIGIN")))))
 
 (defn image-params
   [request request-type]
@@ -74,6 +83,14 @@
 (defn app-routes
   [system]
   (-> (routes
+        (GET scale-to-width-route
+             request
+             (let [route-params (image-params request :thumbnail)
+                   image-params (assoc route-params :thumbnail-mode "scale-to-width"
+                                                    :height :auto)]
+               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+                 (create-image-response thumb)
+                 (error-response 404 image-params))))
         (GET thumbnail-route
              request
              (let [image-params (image-params request :thumbnail)]
@@ -89,11 +106,16 @@
 
         ; legacy routes
         (GET alr/thumbnail-route
-             {route-params :route-params}
-             (let [image-params (alr/route->thumb-map route-params)]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
-                 (error-response 404 image-params))))
+             request
+             (let [image-params (alr/route->thumb-map (:route-params request))]
+               (if (:unsupported image-params)
+                 (-> (response "unsupported thumbnail route")
+                     (status 307)
+                     (header "Location" (str (env :unsupported-redirect-host "http://images.wikia.com")
+                                             (:uri request))))
+                 (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+                   (create-image-response thumb)
+                   (error-response 404 image-params)))))
         (GET alr/original-route
              {route-params :route-params}
              (let [image-params (alr/route->original-map route-params)]

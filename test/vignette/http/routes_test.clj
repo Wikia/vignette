@@ -110,3 +110,13 @@
     (provided
       (store ..system..) => ..store..
       (sp/get-original ..store.. route-params) =throws=> (NullPointerException.))))
+
+(facts :scale-to-width-route
+       (route-matches scale-to-width-route
+                      (request :get "/muppet/4/40/JohnvanBruggen.jpg/revision/latest/scale-to-width/200")) =>
+       {:wikia "muppet"
+        :top-dir "4"
+        :middle-dir "40"
+        :original "JohnvanBruggen.jpg"
+        :revision "latest"
+        :width "200"})

@@ -23,7 +23,11 @@
 
 (def options-map {:height "height"
                   :width "width"
-                  :thumbnail-mode "mode"})
+                  :thumbnail-mode "mode"
+                  :x-offset "x-offset"
+                  :y-offset "y-offset"
+                  :window-width "window-width"
+                  :window-height "window-height"})
 
 (defn route-map->thumb-args
   [thumb-map]

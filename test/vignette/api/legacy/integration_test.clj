@@ -9,14 +9,14 @@
   [request-log]
   (with-open [reader (clojure.java.io/reader request-log)]
     (loop [lines (line-seq reader)
-           parse-failures 0
+           parse-failures []
            total-lines 0]
       (if-let [line (first lines)]
         (if (or (and (re-find #"/thumb/" line) (c/route-matches alr/thumbnail-route (request :get line)))
                 (c/route-matches alr/original-route (request :get line)))
           (recur (rest lines) parse-failures (inc total-lines))
-          (recur (rest lines) (inc parse-failures) (inc total-lines)))
-        (/ parse-failures total-lines)))))
+          (recur (rest lines) (conj parse-failures line) (inc total-lines)))
+        (/ (count parse-failures) total-lines)))))
 
 (defn- less-than
   [max]

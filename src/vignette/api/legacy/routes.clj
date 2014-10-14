@@ -1,18 +1,24 @@
 (ns vignette.api.legacy.routes
   (:require [clout.core :refer [route-compile route-matches]]
             [useful.experimental :refer [cond-let]]
-            [vignette.util.regex :refer :all]))
+            [vignette.util.regex :refer :all])
+  (:import [java.net URLDecoder]))
 
 (declare route->revision
          route->dimensions
+         route->offset
          route->thumb-mode
          route->options)
 
 (def archive-regex #"\/archive|")
 (def lang-regex #"\/[a-z-]+|")
+(def dimension-regex #"\d+px-|\d+x\d+-|\d+x\d+x\d+-|")
+(def offset-regex #"(?i)\d+,\d+,\d+,\d+-|\d+%2c\d+%2c\d+%2c\d+-|")
+(def thumbname-regex #".*?")
+(def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
 
 (def thumbnail-route
-  (route-compile "/:wikia:lang/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:thumbname"
+  (route-compile "/:wikia:lang/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
                  {:wikia wikia-regex
                   :lang lang-regex
                   :image-type #"images|avatars"
@@ -20,7 +26,10 @@
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
-                  :thumbname original-regex}))
+                  :videoparams video-params-regex
+                  :dimension dimension-regex
+                  :offset offset-regex
+                  :thumbname thumbname-regex}))
 
 (def original-route
   (route-compile "/:wikia:lang/images:archive/:top-dir/:middle-dir/:original"
@@ -33,10 +42,12 @@
 
 (defn route->thumb-map
   [route-params]
+  ; order is important! mostly due to the different options changing :thumbnail-mode
   (let [map (-> route-params
                 (assoc :request-type :thumbnail)
                 (assoc :thumbnail-mode "thumbnail")
                 (route->dimensions)
+                (route->offset)
                 (route->revision)
                 (route->options))]
     map))
@@ -68,17 +79,33 @@
                          :lang lang})))
 
 (defn route->dimensions
-  [route]
+  [map]
   "Add the :width field to a request map based on the legacy parsing methods."
-  (if-let [thumb-name (:thumbname route)]
+  (if-let [thumb-dimension (:dimension map)]
     (cond-let
-      [[_ dimension] (re-find #"^(\d+)px-" thumb-name)] (merge route {:width dimension
-                                                                      :height dimension})
-      [[_ width height] (re-find #"^(\d+)x(\d+)-" thumb-name)] (merge route {:width width
-                                                                             :height height
-                                                                             :thumbnail-mode "fixed-aspect-ratio"})
-      [[_ width height _] (re-find #"^(\d+)x(\d+)x(\d+)-" thumb-name)] (merge route {:width width
-                                                                                     :height height
-                                                                                     :thumbnail-mode "zoom-crop"})
-      :else route)
-    route))
+      [[_ dimension] (re-find #"^(\d+)px-" thumb-dimension)] (merge map {:width dimension
+                                                                         :height :auto
+                                                                         :thumbnail-mode "scale-to-width"})
+      [[_ width height] (re-find #"^(\d+)x(\d+)-" thumb-dimension)] (merge map {:width width
+                                                                                :height height
+                                                                                :thumbnail-mode "fixed-aspect-ratio"})
+      [[_ width height _] (re-find #"^(\d+)x(\d+)x(\d+)-" thumb-dimension)] (merge map {:width width
+                                                                                        :height height
+                                                                                        :thumbnail-mode "zoom-crop"})
+      :else map)
+    map))
+
+(defn route->offset
+  [map]
+  (if-let [[_ x-offset x-end y-offset y-end] (re-find #"^(\d+),(\d+),(\d+),(\d+)-$"
+                                                   (URLDecoder/decode (:offset map)))]
+    (let [window-width (- (Integer. x-end) (Integer. x-offset))
+          window-height (- (Integer. y-end) (Integer. y-offset))]
+      (assoc map :thumbnail-mode (if (= (:height map) :auto)
+                                   "window-crop"
+                                   "window-crop-fixed")
+                 :x-offset x-offset
+                 :y-offset y-offset
+                 :window-width (str window-width)
+                 :window-height (str window-height)))
+    map))
