@@ -103,6 +103,20 @@
     (:window-height matched) => "400")
 
   (let [matched (route-matches alr/thumbnail-route
+                               (request :get "/callofduty/images/thumb/1/1f/Undone/v,000000,200px-0,480,15,255-Undone"))
+        matched (alr/route->thumb-map matched)]
+    (:thumbnail-mode matched) => "window-crop"
+    (:wikia matched) => "callofduty"
+    (:top-dir matched) => "1"
+    (:middle-dir matched) => "1f"
+    (:original matched) => "Undone"
+    (:width matched) => "200"
+    (:x-offset matched) => "0"
+    (:y-offset matched) => "15"
+    (:window-width matched) => "480"
+    (:window-height matched) => "240")
+
+  (let [matched (route-matches alr/thumbnail-route
                                (request :get "/muppet/images/thumb/4/40/JohnvanBruggen.jpg/200px-JohnvanBruggen.jpg"))
         matched (alr/route->thumb-map matched)]
     (:thumbnail-mode matched) => "scale-to-width"

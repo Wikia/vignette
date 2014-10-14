@@ -15,9 +15,10 @@
 (def dimension-regex #"\d+px-|\d+x\d+-|\d+x\d+x\d+-|")
 (def offset-regex #"(?i)\d+,\d+,\d+,\d+-|\d+%2c\d+%2c\d+%2c\d+-|")
 (def thumbname-regex #".*?")
+(def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
 
 (def thumbnail-route
-  (route-compile "/:wikia:lang/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:dimension:offset:thumbname"
+  (route-compile "/:wikia:lang/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
                  {:wikia wikia-regex
                   :lang lang-regex
                   :image-type #"images|avatars"
@@ -25,6 +26,7 @@
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
+                  :videoparams video-params-regex
                   :dimension dimension-regex
                   :offset offset-regex
                   :thumbname thumbname-regex}))
