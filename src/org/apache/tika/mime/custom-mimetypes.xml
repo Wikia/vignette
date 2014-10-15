@@ -1,0 +1,12 @@
+<mime-info>
+    <mime-type type="image/webp">
+        <!-- container spec https://developers.google.com/speed/webp/docs/riff_container -->
+        <acronym>WEBP</acronym>
+        <tika:link>http://en.wikipedia.org/wiki/WebP</tika:link>
+        <magic priority="50">
+            <match value="RIFF....WEBP" type="string" offset="0"
+                   mask="0xFFFFFFFF00000000FFFFFFFF"/>
+        </magic>
+        <glob pattern="*.webp"/>
+    </mime-type>
+</mime-info>
