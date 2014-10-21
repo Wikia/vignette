@@ -1,11 +1,31 @@
 (ns vignette.media-types
-  (require [vignette.util.query-options :refer :all]))
+  (:require [slingshot.slingshot :refer [throw+]]
+            [vignette.util.query-options :refer :all]))
 
 (declare original
          thumbnail
          map->filename)
 
 (def archive-dir "archive")
+
+(defmulti image-type->thumb-prefix (fn [object-map] (:image-type object-map)))
+
+(defmethod image-type->thumb-prefix "avatars" [object-map]
+  (:image-type object-map))
+
+(defmethod image-type->thumb-prefix "images" [object-map]
+  (let [prefix (:image-type object-map)]
+    (if-let [lang (query-opt object-map :lang)]
+      (str lang "/" prefix)
+      prefix)))
+
+(defmethod image-type->thumb-prefix :default [object-map]
+  (throw+ {:type ::error :message (str "unsupported image-type "
+                                       (:image-type object-map))}))
+
+(defn thumb-prefix [object-map]
+  (let [prefix (image-type->thumb-prefix object-map)]
+    (str prefix "/thumb" )))
 
 (defn revision
   [data]
@@ -33,7 +53,7 @@
 
 (defn original-path
   [data]
-  (let [image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))
+  (let [image-path (clojure.string/join "/" ((juxt :image-type top-dir middle-dir) data))
         filename (revision-filename data)]
     (if (nil? (revision data))
       (clojure.string/join "/" [image-path filename])
@@ -69,8 +89,8 @@
 
 (defn thumbnail-path
   [data]
-  (let [image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))]
-    (map->filename data image-path)))
+  (let [thumb-path (clojure.string/join "/" ((juxt thumb-prefix top-dir middle-dir) data))]
+    (map->filename data thumb-path)))
 
 (defmulti map->filename (fn [data image-path]
                           (revision data)))

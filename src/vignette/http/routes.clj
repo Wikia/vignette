@@ -25,15 +25,17 @@
 (def hostname (.getHostName (InetAddress/getLocalHost)))
 
 (def original-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
                  {:wikia wikia-regex
+                  :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :revision revision-regex}))
 
 (def thumbnail-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/height/:height"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/height/:height"
                  {:wikia wikia-regex
+                  :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
@@ -43,8 +45,9 @@
                   :height size-regex}))
 
 (def scale-to-width-route
-  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/scale-to-width/:width"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/scale-to-width/:width"
                  {:wikia wikia-regex
+                  :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
@@ -59,6 +62,8 @@
       (catch [:type :vignette.util.thumbnail/convert-error] {:keys [exit err]}
         (log/warn "thumbnailing error" {:path (:uri request) :code exit :err err})
         (error-response 500))
+      (catch [:type :vignette.media-types/error] {:keys [message]}
+        (log/warn "media type error" {:error message}))
       (catch Exception e
         (log/warn (str e) {:path (:uri request)})
         (error-response 500)))))
@@ -77,7 +82,12 @@
   [request request-type]
   (let [route-params (assoc (:route-params request) :request-type request-type)
         options (extract-query-opts request)]
-    (assoc route-params :options options)))
+    (assoc route-params :options options
+                        :image-type (if (clojure.string/blank? (:image-type route-params))
+                                      "images"
+                                      (clojure.string/replace (:image-type route-params)
+                                                              #"^\/(.*)"
+                                                              "$1")))))
 
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes

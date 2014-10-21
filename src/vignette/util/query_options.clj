@@ -43,12 +43,6 @@
           []
           (query-opts data)))
 
-(defn query-opts->image-prefix
-  [data prefix]
-  (if-let [lang (query-opt data :lang)]
-    (str lang "/" prefix)
-    prefix))
-
 (defn modify-temp-file
   [data filename]
   (cond
