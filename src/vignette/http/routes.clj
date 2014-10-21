@@ -63,7 +63,8 @@
         (log/warn "thumbnailing error" {:path (:uri request) :code exit :err err})
         (error-response 500))
       (catch [:type :vignette.media-types/error] {:keys [message]}
-        (log/warn "media type error" {:error message}))
+        (log/warn "media type error" {:error message})
+        (error-response 500))
       (catch Exception e
         (log/warn (str e) {:path (:uri request)})
         (error-response 500)))))
