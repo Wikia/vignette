@@ -79,16 +79,20 @@
           (header "X-Cache" "ORIGIN")
           (header "X-Cache-Hits" "ORIGIN")))))
 
+(defn route-params->image-type
+  [route-params]
+  (if (clojure.string/blank? (:image-type route-params))
+    "images"
+    (clojure.string/replace (:image-type route-params)
+                            #"^\/(.*)"
+                            "$1")))
+
 (defn image-params
   [request request-type]
   (let [route-params (assoc (:route-params request) :request-type request-type)
         options (extract-query-opts request)]
     (assoc route-params :options options
-                        :image-type (if (clojure.string/blank? (:image-type route-params))
-                                      "images"
-                                      (clojure.string/replace (:image-type route-params)
-                                                              #"^\/(.*)"
-                                                              "$1")))))
+                        :image-type (route-params->image-type route-params))))
 
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
