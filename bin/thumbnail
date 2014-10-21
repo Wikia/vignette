@@ -48,6 +48,11 @@ MODE_OPTIONS=(
 	"zoom-crop-down"
 )
 
+TYPE_JPEG="JPEG"
+TYPE_GIF="GIF"
+TYPE_SVG="SVG"
+TYPE_PNG="PNG"
+
 function usage() {
 cat <<EOF
     usage: $0
@@ -230,22 +235,23 @@ fi
 
 shopt -s nocasematch
 
-function is_gif() {
-	format=$($IDENTIFY -format "%m\n" "$1" | head -1)
-	if [[ $format == "GIF" ]]; then
+ORIGINAL_FORMAT=$($IDENTIFY -format "%m\n" "$IN" | head -1)
+
+function original_is() {
+	if [[ ${ORIGINAL_FORMAT} == "$1" ]]; then
 		return 1
 	else
 		return 0
 	fi
 }
 
-function is_jpeg() {
-	format=$($IDENTIFY -format "%m\n" "$1" | head -1)
-	if [[ $format == "JPEG" ]]; then
-		return 1
-	else
-		return 0
-	fi
+function remove_custom_type() {
+	OUT=${OUT#*:}
+}
+
+function set_custom_type() {
+	remove_custom_type
+	OUT="${1}:${OUT}"
 }
 
 function thumb_params() {
@@ -255,7 +261,7 @@ function thumb_params() {
 			HEIGHT=${WIDTH}
 	fi
 
-	is_jpeg "$IN"
+	original_is $TYPE_JPEG
 	jpeg=$?
 
 	if [[ $jpeg -eq 1 ]]; then
@@ -341,10 +347,9 @@ function thumb_params() {
 }
 
 function animated_thumb_params() {
-	thumb_params 
-	params=$THUMB_PARAMS
-	OUT=${OUT#*:}
-	THUMB_PARAMS="-coalesce ${params} ${FUZZ} -layers Optimize"
+	thumb_params
+	remove_custom_type
+	THUMB_PARAMS="-coalesce ${THUMB_PARAMS} ${FUZZ} -layers Optimize"
 }
 
 
@@ -358,7 +363,7 @@ function is_animated() {
 }
 
 function thumb() {
-	is_gif "$IN"
+	original_is $TYPE_GIF
 	gif=$?
 	is_animated "$IN"
 	animated=$?
@@ -367,6 +372,13 @@ function thumb() {
 		animated_thumb_params
 	else
 		thumb_params 
+	fi
+
+	original_is $TYPE_SVG
+	svg=$?
+
+	if [[ $svg -eq 1 ]]; then
+		set_custom_type $TYPE_PNG
 	fi
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
