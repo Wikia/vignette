@@ -3,6 +3,7 @@
             [vignette.media-types :refer :all]))
 
 (def archive-map {:wikia "bucket"
+                  :image-type "images"
                   :top-dir "a"
                   :middle-dir "ab"
                   :original "boat.jpg"
@@ -25,12 +26,12 @@
        (revision-filename latest-map) => "boat.jpg")
 
 (facts :original-path
-       (original-path archive-map) => "archive/a/ab/12345!boat.jpg"
-       (original-path latest-map) => "a/ab/boat.jpg")
+       (original-path archive-map) => "images/archive/a/ab/12345!boat.jpg"
+       (original-path latest-map) => "images/a/ab/boat.jpg")
 
 (facts :thumbnail-path
-       (thumbnail-path archive-map) => "archive/a/ab/12345!boat.jpg/200px-300px-thumbnail-boat.jpg"
-       (thumbnail-path latest-map) => "a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg")
+       (thumbnail-path archive-map) => "images/thumb/archive/a/ab/12345!boat.jpg/200px-300px-thumbnail-boat.jpg"
+       (thumbnail-path latest-map) => "images/thumb/a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg")
 
 (facts :thumbnail-path-filled
-       (thumbnail-path filled-map) => "a/ab/boat.jpg/200px-300px-thumbnail[fill=green]-boat.jpg")
+       (thumbnail-path filled-map) => "images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[fill=green]-boat.jpg")

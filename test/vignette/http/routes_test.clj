@@ -64,6 +64,7 @@
 
 (facts :app-routes-thumbnail
   (let [route-params {:request-type :thumbnail
+                      :image-type "images"
                       :original "ropes.jpg"
                       :revision "latest"
                       :middle-dir "35"
@@ -90,6 +91,7 @@
 (facts :app-routes-original
 
   (let [route-params {:request-type :original
+                      :image-type "images"
                       :original "ropes.jpg"
                       :middle-dir "35"
                       :top-dir "3"
@@ -115,8 +117,25 @@
        (route-matches scale-to-width-route
                       (request :get "/muppet/4/40/JohnvanBruggen.jpg/revision/latest/scale-to-width/200")) =>
        {:wikia "muppet"
+        :image-type ""
         :top-dir "4"
         :middle-dir "40"
         :original "JohnvanBruggen.jpg"
         :revision "latest"
         :width "200"})
+
+(facts :avatar-request
+       (route-matches scale-to-width-route
+                      (request :get "/common/avatars/7/7c/1271044.png/revision/latest/scale-to-width/150")) =>
+       {:wikia "common"
+        :image-type "/avatars"
+        :top-dir "7"
+        :middle-dir "7c"
+        :original "1271044.png"
+        :revision "latest"
+        :width "150"})
+
+(facts :route-params->image-type
+       (route-params->image-type {:image-type ""}) => "images"
+       (route-params->image-type {:image-type "/images"}) => "images"
+       (route-params->image-type {:image-type "/avatars"}) => "avatars")

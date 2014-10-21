@@ -8,3 +8,4 @@
 (def adjustment-mode-regex #"\w+")
 (def thumbnail-mode-regex #"[\w-]+")
 (def size-regex #"\d+")
+(def image-type-regex #"\/images|\/avatars|")

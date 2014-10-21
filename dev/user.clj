@@ -45,7 +45,7 @@
 (def system-local (create-system lis))
 
 (def s3os  (create-s3-storage-system storage-creds))
-(def s3s   (create-image-storage s3os "images" "images/thumb"))
+(def s3s   (create-image-storage s3os))
 
 (def system-s3 (create-system s3s))
 
