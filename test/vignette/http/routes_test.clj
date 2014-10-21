@@ -134,3 +134,8 @@
         :original "1271044.png"
         :revision "latest"
         :width "150"})
+
+(facts :route-params->image-type
+       (route-params->image-type {:image-type ""}) => "images"
+       (route-params->image-type {:image-type "/images"}) => "images"
+       (route-params->image-type {:image-type "/avatars"}) => "avatars")
