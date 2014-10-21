@@ -16,6 +16,7 @@
                         :original "arwen.png"})
 
 (def sample-thumbnail-hash {:wikia "lotr"
+                            :image-type "images"
                             :top-dir "3"
                             :middle-dir "35"
                             :request-type :thumbnail
@@ -26,24 +27,23 @@
 
 
 (facts :local-image-storage
-  (let [store (create-image-storage ..disk-store.. "originals" "thumbs")
-        file-name "a/bc/d.png"]
+  (let [store (create-image-storage ..disk-store..)]
 
     (save-thumbnail store ..file.. ..map..) => truthy
     (provided
-      (put* ..disk-store.. ..file.. ..map.. "thumbs" mt/thumbnail-path) => true)
+      (put* ..disk-store.. ..file.. ..map.. mt/thumbnail-path) => true)
 
     (get-thumbnail store ..map..) => "bytes"
     (provided
-      (get* ..disk-store.. ..map.. "thumbs" mt/thumbnail-path) => "bytes")
+      (get* ..disk-store.. ..map.. mt/thumbnail-path) => "bytes")
 
     (save-original store ..file.. ..map..) => true
     (provided
-      (put* ..disk-store.. ..file.. ..map.. "originals" mt/original-path) => true)
+      (put* ..disk-store.. ..file.. ..map.. mt/original-path) => true)
 
     (get-original store ..map..) => "bytes"
     (provided
-      (get* ..disk-store.. ..map.. "originals" mt/original-path) => "bytes")))
+      (get* ..disk-store.. ..map.. mt/original-path) => "bytes")))
 
 (with-state-changes
   [(before :facts (do
@@ -52,7 +52,7 @@
 
   (facts :save-thumbnail :integration
     (let [local (create-local-storage-system local-path)
-          image-store (create-image-storage local "originals" "thumbs")
+          image-store (create-image-storage local)
           resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
       local => truthy
       image-store => truthy
@@ -60,7 +60,7 @@
 
   (facts :get-thumbnail :integration
     (let [local (create-local-storage-system local-path)
-          image-store (create-image-storage local "originals" "thumbs")
+          image-store (create-image-storage local)
           resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
       (get-thumbnail image-store sample-thumbnail-hash) => falsey
       (save-thumbnail image-store resource sample-thumbnail-hash) => truthy
@@ -69,13 +69,13 @@
 
   (facts :save-original :integration
     (let [local (create-local-storage-system local-path)
-          image-store (create-image-storage local "originals" "thumbs")
+          image-store (create-image-storage local)
           resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
       (save-original image-store resource sample-media-hash) => truthy))
 
   (facts :get-original :integration
     (let [local (create-local-storage-system local-path)
-          image-store (create-image-storage local "originals" "thumbs")
+          image-store (create-image-storage local)
           resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
       (save-original image-store resource sample-media-hash) => truthy
       (get-original image-store sample-media-hash) => truthy)))

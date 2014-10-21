@@ -4,7 +4,7 @@
 
 (declare original
          thumbnail
-         map->filename)
+         thumb-map->path)
 
 (def archive-dir "archive")
 
@@ -23,7 +23,7 @@
   (throw+ {:type ::error :message (str "unsupported image-type "
                                        (:image-type object-map))}))
 
-(defn thumb-prefix [object-map]
+(defn thumb-map->prefix [object-map]
   (let [prefix (image-type->thumb-prefix object-map)]
     (str prefix "/thumb" )))
 
@@ -53,11 +53,12 @@
 
 (defn original-path
   [data]
-  (let [image-path (clojure.string/join "/" ((juxt :image-type top-dir middle-dir) data))
+  (let [image-type (:image-type data)
+        image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))
         filename (revision-filename data)]
     (if (nil? (revision data))
-      (clojure.string/join "/" [image-path filename])
-      (clojure.string/join "/" [archive-dir image-path filename]))))
+      (clojure.string/join "/" [image-type image-path filename])
+      (clojure.string/join "/" [image-type archive-dir image-path filename]))))
 
 (defn wikia
   [data]
@@ -89,16 +90,18 @@
 
 (defn thumbnail-path
   [data]
-  (let [thumb-path (clojure.string/join "/" ((juxt thumb-prefix top-dir middle-dir) data))]
-    (map->filename data thumb-path)))
+  (let [thumb-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))]
+    (thumb-map->path data thumb-path)))
 
-(defmulti map->filename (fn [data image-path]
+(defmulti thumb-map->path (fn [data image-path]
                           (revision data)))
 
-(defmethod map->filename nil [data image-path]
-  (let [name (format "%s/%spx-%spx-%s%s-%s" (original data) (width data) (height data) (mode data) (query-opts-str data) (original data))]
-    (clojure.string/join "/" [image-path name])))
+(defmethod thumb-map->path nil [data image-path]
+  (let [prefix (thumb-map->prefix data)
+        name (format "%s/%spx-%spx-%s%s-%s" (original data) (width data) (height data) (mode data) (query-opts-str data) (original data))]
+    (clojure.string/join "/" [prefix image-path name])))
 
-(defmethod map->filename :default [data image-path]
-  (let [name (format "%spx-%spx-%s%s-%s" (width data) (height data) (mode data) (query-opts-str data) (original data))]
-    (clojure.string/join "/" [archive-dir image-path (revision-filename data) name])))
+(defmethod thumb-map->path :default [data image-path]
+  (let [prefix (thumb-map->prefix data)
+        name (format "%spx-%spx-%s%s-%s" (width data) (height data) (mode data) (query-opts-str data) (original data))]
+    (clojure.string/join "/" [prefix archive-dir image-path (revision-filename data) name])))
