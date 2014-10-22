@@ -44,6 +44,33 @@
                   :width size-regex
                   :height size-regex}))
 
+(def window-crop-route
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/window-crop/width/:width/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+                 {:wikia wikia-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :revision revision-regex
+                  :width size-regex
+                  :x-offset size-regex
+                  :window-width size-regex
+                  :y-offset size-regex
+                  :window-height size-regex}))
+
+(def window-crop-fixed-route
+  (route-compile "/:wikia/:top-dir/:middle-dir/:original/revision/:revision/window-crop/width/:width/height/:height/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+                 {:wikia wikia-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :revision revision-regex
+                  :width size-regex
+                  :height size-regex
+                  :x-offset size-regex
+                  :window-width size-regex
+                  :y-offset size-regex
+                  :window-height size-regex}))
+
 (def scale-to-width-route
   (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/scale-to-width/:width"
                  {:wikia wikia-regex
