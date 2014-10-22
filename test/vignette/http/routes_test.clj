@@ -115,8 +115,9 @@
 
 (facts :window-crop-route
        (route-matches window-crop-route
-                      (request :get "/muppet/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/103")) =>
+                      (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/103")) =>
        {:wikia "muppet"
+        :image-type "/images"
         :top-dir "4"
         :middle-dir "40"
         :original "JohnvanBruggen.jpg"
@@ -129,8 +130,9 @@
 
 (facts :window-crop-fixed-route
        (route-matches window-crop-fixed-route
-                      (request :get "/thelastofus/5/58/Door_4.jpg/revision/latest/window-crop-fixed/width/400/height/400/x-offset/400/y-offset/200/window-width/200/window-height/400")) =>
+                      (request :get "/thelastofus/images/5/58/Door_4.jpg/revision/latest/window-crop-fixed/width/400/height/400/x-offset/400/y-offset/200/window-width/200/window-height/400")) =>
        {:wikia "thelastofus"
+        :image-type "/images"
         :top-dir "5"
         :middle-dir "58"
         :original "Door_4.jpg"
