@@ -129,7 +129,7 @@
 
 (facts :window-crop-fixed-route
        (route-matches window-crop-fixed-route
-                      (request :get "/thelastofus/5/58/Door_4.jpg/revision/latest/window-crop/width/400/height/400/x-offset/400/y-offset/200/window-width/200/window-height/400")) =>
+                      (request :get "/thelastofus/5/58/Door_4.jpg/revision/latest/window-crop-fixed/width/400/height/400/x-offset/400/y-offset/200/window-width/200/window-height/400")) =>
        {:wikia "thelastofus"
         :top-dir "5"
         :middle-dir "58"
