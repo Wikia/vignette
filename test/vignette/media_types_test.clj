@@ -27,6 +27,9 @@
 
 (def lang-map (assoc latest-map :options {:lang "es"}))
 
+(def prefix-path-map (assoc latest-map :options {:lang "de"
+                                                 :path-prefix "pokemanshop/zh"}))
+
 (def lang-original-map (assoc original-map :options {:lang "es"}))
 
 (facts :revision
@@ -51,3 +54,6 @@
 (facts :lang-path
        (thumbnail-path lang-map) => "es/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[lang=es]-boat.jpg"
        (original-path lang-original-map) => "es/images/2/2a/Injustice_Vol2_1.jpg")
+
+(facts :prefix-path
+       (thumbnail-path prefix-path-map) => "pokemanshop/zh/de/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[lang=de,path-prefix=pokemanshop-zh]-boat.jpg")
