@@ -2,6 +2,14 @@
   (:require [midje.sweet :refer :all]
             [vignette.media-types :refer :all]))
 
+(def original-map {:wikia "batman"
+                   :image-type "images"
+                   :top-dir "2"
+                   :middle-dir "2a"
+                   :original "Injustice_Vol2_1.jpg"
+                   :revision "latest"
+                   :options {}})
+
 (def archive-map {:wikia "bucket"
                   :image-type "images"
                   :top-dir "a"
@@ -16,6 +24,10 @@
 (def latest-map (assoc archive-map :revision "latest"))
 
 (def filled-map (assoc latest-map :options {:fill "green"}))
+
+(def lang-map (assoc latest-map :options {:lang "es"}))
+
+(def lang-original-map (assoc original-map :options {:lang "es"}))
 
 (facts :revision
        (revision archive-map) => "12345"
@@ -35,3 +47,7 @@
 
 (facts :thumbnail-path-filled
        (thumbnail-path filled-map) => "images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[fill=green]-boat.jpg")
+
+(facts :lang-path
+       (thumbnail-path lang-map) => "es/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[lang=es]-boat.jpg"
+       (original-path lang-original-map) => "es/images/2/2a/Injustice_Vol2_1.jpg")

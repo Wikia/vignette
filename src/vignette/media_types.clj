@@ -53,12 +53,12 @@
 
 (defn original-path
   [data]
-  (let [image-type (:image-type data)
+  (let [prefix (image-type->thumb-prefix data)
         image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))
         filename (revision-filename data)]
     (if (nil? (revision data))
-      (clojure.string/join "/" [image-type image-path filename])
-      (clojure.string/join "/" [image-type archive-dir image-path filename]))))
+      (clojure.string/join "/" [prefix image-path filename])
+      (clojure.string/join "/" [prefix archive-dir image-path filename]))))
 
 (defn wikia
   [data]
