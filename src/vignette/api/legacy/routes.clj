@@ -32,9 +32,10 @@
                   :thumbname thumbname-regex}))
 
 (def original-route
-  (route-compile "/:wikia:lang/images:archive/:top-dir/:middle-dir/:original"
+  (route-compile "/:wikia:lang/:image-type:archive/:top-dir/:middle-dir/:original"
                  {:wikia wikia-regex
                   :lang lang-regex
+                  :image-type #"images|avatars"
                   :archive archive-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex

@@ -10,6 +10,7 @@
 (def local-path "/tmp/vignette-local-storage")
 
 (def sample-media-hash {:wikia "lotr"
+                        :image-type "images"
                         :top-dir "3"
                         :middle-dir "35"
                         :request-type :original
