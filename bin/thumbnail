@@ -297,7 +297,7 @@ function thumb_params() {
 			;;
 		"thumbnail-down")
 			# the '>' means change as per WIDTHxHEIGHT but only if an image dimension exceeds a specified dimension.
-			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}>" 
+			THUMB_PARAMS="${QUALITY} -thumbnail '${WIDTH}x${HEIGHT}>'"
 			;;
 		"top-crop")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity north -extent ${WIDTH}x${HEIGHT}"
