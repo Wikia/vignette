@@ -8,23 +8,23 @@
 
 (def archive-dir "archive")
 
-(defmulti image-type->thumb-prefix (fn [object-map] (:image-type object-map)))
+(defmulti image-type->path-prefix (fn [object-map] (:image-type object-map)))
 
-(defmethod image-type->thumb-prefix "avatars" [object-map]
+(defmethod image-type->path-prefix "avatars" [object-map]
   (:image-type object-map))
 
-(defmethod image-type->thumb-prefix "images" [object-map]
+(defmethod image-type->path-prefix "images" [object-map]
   (let [prefix (:image-type object-map)]
     (if-let [lang (query-opt object-map :lang)]
       (str lang "/" prefix)
       prefix)))
 
-(defmethod image-type->thumb-prefix :default [object-map]
+(defmethod image-type->path-prefix :default [object-map]
   (throw+ {:type ::error :message (str "unsupported image-type "
                                        (:image-type object-map))}))
 
 (defn thumb-map->prefix [object-map]
-  (let [prefix (image-type->thumb-prefix object-map)]
+  (let [prefix (image-type->path-prefix object-map)]
     (str prefix "/thumb" )))
 
 (defn revision
@@ -53,7 +53,7 @@
 
 (defn original-path
   [data]
-  (let [prefix (image-type->thumb-prefix data)
+  (let [prefix (image-type->path-prefix data)
         image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))
         filename (revision-filename data)]
     (if (nil? (revision data))
