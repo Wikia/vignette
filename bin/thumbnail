@@ -300,7 +300,7 @@ function thumb_params() {
 			THUMB_PARAMS="${QUALITY} -thumbnail '${WIDTH}x${HEIGHT}>'"
 			;;
 		"top-crop")
-			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity north -extent ${WIDTH}x${HEIGHT}"
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity north -background none -extent ${WIDTH}x${HEIGHT}"
 			;;
 		"top-crop-down")
 			# get height and width
