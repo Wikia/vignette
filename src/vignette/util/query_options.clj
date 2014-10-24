@@ -3,7 +3,8 @@
 ; regex of valid inputs for query args
 (def query-opts-map {:fill #"^#[a-g0-9]+$|^\w+$"
                      :format #"^\w+$"
-                     :lang #"^\w+$"})
+                     :lang #"^\w+$"
+                     :path-prefix #"[\w\/]+"})
 
 (defn extract-query-opts
   [request]
@@ -29,7 +30,7 @@
   (if-let [options (query-opts data)]
     (str "["
          (clojure.string/join "," (sort (map (fn [[k v]]
-                                               (str (name k) "=" v))
+                                               (str (name k) "=" (clojure.string/replace v "/" "-")))
                                              options)))
          "]")
     ""))

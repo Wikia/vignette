@@ -14,10 +14,10 @@
   (:image-type object-map))
 
 (defmethod image-type->path-prefix "images" [object-map]
-  (let [prefix (:image-type object-map)]
-    (if-let [lang (query-opt object-map :lang)]
-      (str lang "/" prefix)
-      prefix)))
+  (let [path-prefix (query-opt object-map :path-prefix)
+        lang (query-opt object-map :lang)
+        prefix (:image-type object-map)]
+    (clojure.string/join "/" (filter not-empty [path-prefix lang prefix]))))
 
 (defmethod image-type->path-prefix :default [object-map]
   (throw+ {:type ::error :message (str "unsupported image-type "
