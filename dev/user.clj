@@ -21,6 +21,7 @@
             [vignette.util.filesystem :as fs]
             [vignette.util.integration :as itg]
             [vignette.util.thumbnail :as u]
+            [vignette.util.query-options :as q]
             [wikia.common.logger :as log])
   (:use [environ.core]))
 

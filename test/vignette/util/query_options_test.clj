@@ -12,7 +12,10 @@
                 :height "300"
                 :options {}})
 
-(def thumb-option-map (assoc thumb-map :options {:fill "purple"}))
+(def thumb-option-map (assoc thumb-map :options {:fill "purple" :lang "zh" :replace true}))
+
+(facts :create-query-opt
+  (create-query-opt #"\w+") => (contains {:regex #"\w+" :side-effects true}))
 
 (facts :request-options
        (extract-query-opts {:query-params {"fill" "blue"
@@ -22,7 +25,7 @@
        (extract-query-opts {:query-params {"format" "ls -l"}}) => {})
 
 (facts :query-opts
-       (query-opts thumb-option-map) => {:fill "purple"}
+       (query-opts thumb-option-map) => {:fill "purple" :lang "zh" :replace true}
        (query-opts thumb-map) => nil)
 
 (facts :query-opt
@@ -32,7 +35,7 @@
 
 (facts :query-opts-str
        (query-opts-str thumb-map) => ""
-       (query-opts-str thumb-option-map) "[fill=purple]")
+       (query-opts-str thumb-option-map) => "[fill=purple]")
 
 (facts :query-opts->thumb-args
        (query-opts->thumb-args thumb-map) => []
