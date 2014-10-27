@@ -1,16 +1,37 @@
 (ns vignette.util.query-options)
 
-; regex of valid inputs for query args
-(def query-opts-map {:fill #"^#[a-g0-9]+$|^\w+$"
-                     :format #"^\w+$"
-                     :lang #"^\w+$"
-                     :path-prefix #"[\w\/]+"})
+(defn create-query-opt
+  ([re side-effects]
+   {:regex re :side-effects side-effects})
+  ([re]
+   (create-query-opt re true)))
+
+; regex of valid inputs for query arg
+(def query-opts-map {:fill (create-query-opt #"^#[a-g0-9]+$|^\w+$")
+                     :format (create-query-opt #"^\w+$")
+                     :lang (create-query-opt #"^\w+$" false)
+                     :path-prefix (create-query-opt #"[\w\/]+" false)
+                     :replace (create-query-opt #"^true$" false)})
+
+(defn query-opt-regex
+  [query-opt]
+  (get query-opt :regex))
+
+(defn query-opt-side-effects
+  [query-opt]
+  (get query-opt :side-effects))
+
+(defn query-opts-with-side-effects
+  []
+  (into {} (filter (fn [[k v]]
+                     (= (:side-effects v) true))
+                   query-opts-map)))
 
 (defn extract-query-opts
   [request]
   (reduce (fn [running [key val]]
             (if (and (contains? query-opts-map (keyword key))
-                     (re-matches ((keyword key) query-opts-map) val))
+                     (re-matches (query-opt-regex (get query-opts-map (keyword key))) val))
               (assoc running (keyword key) val)
               running))
           {} (:query-params request)))
@@ -27,13 +48,15 @@
 
 (defn query-opts-str
   [data]
-  (if-let [options (query-opts data)]
-    (str "["
-         (clojure.string/join "," (sort (map (fn [[k v]]
-                                               (str (name k) "=" (clojure.string/replace v "/" "-")))
-                                             options)))
-         "]")
-    ""))
+  (let [only (keys (query-opts-with-side-effects))
+        options (select-keys (query-opts data) only)]
+    (if (not-empty options)
+      (str "["
+           (clojure.string/join "," (sort (map (fn [[k v]]
+                                                 (str (name k) "=" (clojure.string/replace v "/" "-")))
+                                               options)))
+           "]")
+      "")))
 
 (defn query-opts->thumb-args
   [data]
@@ -42,7 +65,8 @@
               (conj running (str "--" opt) (str val))
               running))
           []
-          (query-opts data)))
+          (select-keys (query-opts data)
+                       (keys (query-opts-with-side-effects)))))
 
 (defn modify-temp-file
   [data filename]

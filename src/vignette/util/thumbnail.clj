@@ -59,7 +59,8 @@
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
-  (if-let [thumb (get-thumbnail (store system) thumb-map)]
+  (if-let [thumb (and (not (q/query-opt thumb-map :replace))
+                      (get-thumbnail (store system) thumb-map))]
     thumb
     (when-let [thumb (generate-thumbnail system thumb-map)]
       (background-save-thumbnail (store system) thumb thumb-map)

@@ -51,9 +51,14 @@
 (facts :thumbnail-path-filled
        (thumbnail-path filled-map) => "images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[fill=green]-boat.jpg")
 
+; Neither of these should modify the resulting filename since they don't have sideffects
 (facts :lang-path
-       (thumbnail-path lang-map) => "es/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[lang=es]-boat.jpg"
+       (thumbnail-path lang-map) => "es/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg"
        (original-path lang-original-map) => "es/images/2/2a/Injustice_Vol2_1.jpg")
 
 (facts :prefix-path
-       (thumbnail-path prefix-path-map) => "pokemanshop/zh/de/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[lang=de,path-prefix=pokemanshop-zh]-boat.jpg")
+       (thumbnail-path prefix-path-map) => "pokemanshop/zh/de/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg")
+
+(facts :fill-path
+       (thumbnail-path (assoc-in lang-map [:options :fill] "purple")) => "es/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[fill=purple]-boat.jpg"
+       (original-path lang-original-map) => "es/images/2/2a/Injustice_Vol2_1.jpg")

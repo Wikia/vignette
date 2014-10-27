@@ -73,7 +73,15 @@
          (provided
            (store ..system..) => ..store..
            (get-thumbnail ..store.. image-dne) => false
-           (get-original ..store.. image-dne) => false)))
+           (get-original ..store.. image-dne) => false))
+
+       ; fall through when :replace is set
+       (let [option-map (assoc-in beach-map [:options :replace] "true")]
+         (get-or-generate-thumbnail ..system.. option-map) => ..new-thumb..
+         (provided
+           (store ..system..) => ..store..
+           (generate-thumbnail ..system.. option-map) => ..new-thumb..
+           (background-save-thumbnail ..store.. ..new-thumb.. option-map) => true)))
 
 (facts :route-map->thumb-args
        (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
