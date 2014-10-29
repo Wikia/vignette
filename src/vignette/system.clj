@@ -5,6 +5,9 @@
             [vignette.protocols :refer :all]
             [vignette.server :as s]))
 
+(def default-threads 4)
+(def default-queue-size 20000)
+
 (defrecord VignetteSystem [state]
   SystemAPI
   (store [this]
@@ -14,7 +17,9 @@
            (fn [_]
              (run-server
                (#'app-routes this)
-               {:port port}))))
+               {:port port
+                :thread (Integer. (env :vignette-server-threads default-threads))
+                :queue-size (Integer. (env :vignette-server-queue-size default-queue-size))}))))
   (stop [this]
     (when-let [stop-fn @(:running (:state this))]
       (stop-fn))))
