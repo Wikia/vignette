@@ -106,7 +106,8 @@
           (header "Varnish-Logs" "vignette")
           (header "X-Served-By" hostname)
           (header "X-Cache" "ORIGIN")
-          (header "X-Cache-Hits" "ORIGIN")))))
+          (header "X-Cache-Hits" "ORIGIN")
+          (header "Connection" "close")))))
 
 (defn route-params->image-type
   [route-params]
