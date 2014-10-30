@@ -396,6 +396,9 @@ function thumb() {
 			magick="${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
 			echo ${magick}
 			exec ${magick}
+		else
+		  echo ${magick}
+		  exit 1
 		fi
 	fi
 }
