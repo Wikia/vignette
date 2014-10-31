@@ -20,8 +20,9 @@
     (clojure.string/join "/" (filter not-empty [path-prefix lang prefix]))))
 
 (defmethod image-type->path-prefix :default [object-map]
-  (throw+ {:type ::error :message (str "unsupported image-type "
-                                       (:image-type object-map))}))
+  (throw+ {:type :convert-error
+           :image-type (:image-type object-map)}
+          "unsupported image type"))
 
 (defn thumb-map->prefix [object-map]
   (let [prefix (image-type->path-prefix object-map)]

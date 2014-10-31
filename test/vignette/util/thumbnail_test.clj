@@ -5,7 +5,8 @@
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.storage.protocols :refer :all]
             [vignette.util.filesystem :refer :all]
-            [vignette.util.thumbnail :refer :all]))
+            [vignette.util.thumbnail :refer :all])
+  (:import [clojure.lang ExceptionInfo]))
 
 (def beach-map {:request-type :thumbnail
                 :original "beach.jpg"
@@ -38,8 +39,8 @@
     (original->thumbnail ..local.. beach-map) => ..thumb..
     (background-delete-file ..local..) => true
     (create-stored-object ..thumb..) => ..object..)
-  
-  (generate-thumbnail ..system.. beach-map) => falsey
+
+  (generate-thumbnail ..system.. beach-map) => (throws ExceptionInfo)
   (provided
     (store ..system..) => ..store..
     (get-original ..store.. beach-map) => nil)
@@ -69,7 +70,7 @@
 
        ; generate new - fail
        (let [image-dne (assoc beach-map :original "doesnotexist.jpg")]
-         (get-or-generate-thumbnail ..system.. image-dne) => nil
+         (get-or-generate-thumbnail ..system.. image-dne) => (throws ExceptionInfo)
          (provided
            (store ..system..) => ..store..
            (get-thumbnail ..store.. image-dne) => false

@@ -7,7 +7,7 @@
             [environ.core :refer [env]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :refer [response status charset header]]
-            [slingshot.slingshot :refer (try+ throw+)]
+            [slingshot.slingshot :refer [try+ throw+]]
             [vignette.api.legacy.routes :as alr]
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]
@@ -88,14 +88,18 @@
   (fn [request]
     (try+
       (handler request)
-      (catch [:type :vignette.util.thumbnail/convert-error] {:keys [exit err]}
-        (log/warn "thumbnailing error" {:path (:uri request) :code exit :err err})
-        (error-response 500))
-      (catch [:type :vignette.media-types/error] {:keys [message]}
-        (log/warn "media type error" {:error message})
-        (error-response 500))
+      (catch [:type :convert-error] e
+        (let [message (:message &throw-context)
+              thumb-map (:thumb-map e) ; if present, we'll try to thumbnail the error response
+              context (dissoc e :type :thumb-map)]
+          (log/warn message
+                    (merge {:path (:uri request)
+                            :query (:query-string request)}
+                           context))
+          (error-response 500 thumb-map)))
       (catch Exception e
-        (log/warn (str e) {:path (:uri request)})
+        (log/warn (str e) {:path (:uri request)
+                           :query (:query-string request)})
         (error-response 500)))))
 
 (defn add-headers

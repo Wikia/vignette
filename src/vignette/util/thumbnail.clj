@@ -55,7 +55,10 @@
         sh-out (run-thumbnailer args)]
     (cond
       (zero? (:exit sh-out)) (io/file temp-file)
-      :else (throw+ {:type ::convert-error :exit (:exit sh-out) :out (:out sh-out) :err (:err sh-out)}))))
+      :else (throw+ {:type :convert-error
+                     :error-code (:exit sh-out)
+                     :error-string (:err sh-out)}
+                    "thumbnailing error"))))
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
@@ -79,7 +82,9 @@
         (catch Object _ (throw+))
         (finally
           (background-delete-file local-original))))
-    (log/warn "unable to get original for thumbnailing" thumb-map)))
+    (throw+ {:type :convert-error
+             :thumb-map thumb-map}
+            "unable to get original for thumbnailing")))
 
 (defn original->local
   "Take the original and make it local."
