@@ -100,6 +100,7 @@ WINDOW_WIDTH=''
 WINDOW_HEIGHT=''
 
 THUMB_PARAMS=''
+THUMB_PRE_OPTIONS=''
 FUZZ=''
 
 eval set -- "$ARGS" 
@@ -379,21 +380,22 @@ function thumb() {
 
 	if [[ $svg -eq 1 ]]; then
 		set_custom_type $TYPE_PNG
+		THUMB_PRE_OPTIONS="-background none"
 	fi
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
-		magick="${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
+		magick="${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
 		echo ${magick}
 		exec ${magick}
 	else
-		magick="${CONVERT} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
+		magick="${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
 
 		if eval ${magick}; then
 			echo ${magick}
 			exit 0
 		elif [[ $animated -eq 1 ]]; then
 			# on a failed thumb due to a (probably) corrupted animated gif, try thumbnailing the first frame
-			magick="${CONVERT} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
+			magick="${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
 			echo ${magick}
 			exec ${magick}
 		else
