@@ -89,7 +89,8 @@
 (defn original->local
   "Take the original and make it local."
   [original thumb-map]
-  (let [temp-file (io/file (temp-filename (str (wikia thumb-map) "_original")))]
+  (let [temp-file (io/file (temp-filename (str (wikia thumb-map) "_original")
+                                          (file-extension (:original thumb-map))))]
     (when (transfer! original temp-file)
       temp-file)))
 
