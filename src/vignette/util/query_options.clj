@@ -10,7 +10,7 @@
 (def query-opts-map {:fill (create-query-opt #"^#[a-g0-9]+$|^\w+$")
                      :format (create-query-opt #"^\w+$")
                      :lang (create-query-opt #"^\w+$" false)
-                     :path-prefix (create-query-opt #"[\w\/]+" false)
+                     :path-prefix (create-query-opt #"[\w\.\/-]+" false)
                      :replace (create-query-opt #"^true$" false)})
 
 (defn query-opt-regex
