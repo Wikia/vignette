@@ -30,6 +30,7 @@
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
+                  :original original-regex
                   :revision revision-regex}))
 
 (def thumbnail-route
