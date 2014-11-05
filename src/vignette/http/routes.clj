@@ -92,7 +92,7 @@
       (catch [:type :convert-error] e
         (let [message (:message &throw-context)
               thumb-map (:thumb-map e) ; if present, we'll try to thumbnail the error response
-              context (dissoc e :type :thumb-map)]
+              context (assoc (dissoc e :type :thumb-map) :host hostname)]
           (log/warn message
                     (merge {:path (:uri request)
                             :query (:query-string request)}
