@@ -86,7 +86,9 @@
 
 (defn width
   [data]
-  (let [width (:width data)
+  (let [width (if (keyword? (:width data))
+                (name (:width data))
+                (:width data))
         x-offset (:x-offset data)
         window-width (:window-width data)]
     (window-format width x-offset window-width)))
