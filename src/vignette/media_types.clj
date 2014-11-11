@@ -77,7 +77,9 @@
 
 (defn height
   [data]
-  (let [height (:height data)
+  (let [height (if (keyword? (:height data))
+                 (name (:height data))
+                 (:height data))
         y-offset (:y-offset data)
         window-height (:window-height data)]
     (window-format height y-offset window-height)))
