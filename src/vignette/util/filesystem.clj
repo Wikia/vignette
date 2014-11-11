@@ -15,12 +15,12 @@
    (let [extension (if (empty? suffix)
                      ""
                      (str "." suffix))
-         uuid (if (not (empty? prefix))
-                (str prefix "_" (UUID/randomUUID) extension)
-                (UUID/randomUUID))
-         filename (resolve-local-path temp-file-location uuid)]
-     (create-local-path (get-parent filename))
-     filename))
+         uuid (str (UUID/randomUUID))
+         filename (str prefix "_" uuid extension)
+         directory-rainbow (subs uuid 0 1)
+         filepath (resolve-local-path temp-file-location directory-rainbow filename)]
+     (create-local-path (get-parent filepath))
+     filepath))
   ([prefix]
    (temp-filename prefix nil)))
 
