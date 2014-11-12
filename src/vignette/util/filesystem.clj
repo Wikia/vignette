@@ -4,21 +4,41 @@
   (:import java.util.UUID
            com.amazonaws.services.s3.model.S3ObjectInputStream))
 
-(declare resolve-local-path)
-(declare create-local-path)
-(declare get-parent)
+(declare resolve-local-path
+         create-local-path
+         get-parent)
 
 (def temp-file-location (env :vignette-temp-file-location "/tmp/vignette"))
+(def rainbow-path-depth (Integer/parseInt (env :vignette-rainbow-depth "2")))
+
+(defn temp-file-dir []
+  temp-file-location)
+
+(defn str->rainbow-path
+  ([s desired-depth]
+   (let [sanitized (clojure.string/replace s #"[^\w]" "")
+         depth (min desired-depth (count sanitized))]
+     (when (> depth 0)
+       (loop [path []]
+         (if (= depth (count path))
+           (clojure.string/join "/" path)
+           (recur (conj path (subs sanitized 0 (inc (count path))))))))))
+  ([s]
+   (str->rainbow-path s rainbow-path-depth)))
+
+(defn gen-uuid []
+  (str (UUID/randomUUID)))
 
 (defn temp-filename
   ([prefix suffix]
    (let [extension (if (empty? suffix)
                      ""
                      (str "." suffix))
-         uuid (str (UUID/randomUUID))
+         uuid (gen-uuid)
          filename (str prefix "_" uuid extension)
-         directory-rainbow (subs uuid 0 1)
-         filepath (resolve-local-path temp-file-location directory-rainbow filename)]
+         directory-rainbow (str->rainbow-path uuid)
+         temp-dir (temp-file-dir)
+         filepath (apply resolve-local-path (filter not-empty [temp-dir directory-rainbow filename]))]
      (create-local-path (get-parent filepath))
      filepath))
   ([prefix]
