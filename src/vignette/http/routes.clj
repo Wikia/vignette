@@ -92,12 +92,13 @@
       (catch [:type :convert-error] e
         (let [message (:message &throw-context)
               thumb-map (:thumb-map e) ; if present, we'll try to thumbnail the error response
-              context (assoc (dissoc e :type :thumb-map) :host hostname)]
+              response-code (or (:response-code e) 500)
+              context (assoc (dissoc e :type :thumb-map :response-code) :host hostname)]
           (log/warn message
                     (merge {:path (:uri request)
                             :query (:query-string request)}
                            context))
-          (error-response 500 thumb-map)))
+          (error-response response-code thumb-map)))
       (catch Exception e
         (log/warn (str e) {:path (:uri request)
                            :query (:query-string request)})

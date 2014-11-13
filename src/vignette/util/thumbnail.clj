@@ -85,7 +85,8 @@
         (finally
           (background-delete-file local-original))))
     (throw+ {:type :convert-error
-             :thumb-map thumb-map}
+             :thumb-map thumb-map
+             :response-code 404}
             "unable to get original for thumbnailing")))
 
 (defn original->local
