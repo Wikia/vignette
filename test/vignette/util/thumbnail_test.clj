@@ -38,7 +38,7 @@
     (original->local ..original.. beach-map) => ..local..
     (original->thumbnail ..local.. beach-map) => ..thumb..
     (background-delete-file ..local..) => true
-    (create-stored-object ..thumb..) => ..object..)
+    (create-stored-object ..thumb.. & anything) => ..object..)
 
   (generate-thumbnail ..system.. beach-map) => (throws ExceptionInfo)
   (provided
@@ -65,8 +65,7 @@
        (provided
          (store ..system..) => ..store..
          (get-thumbnail ..store.. beach-map) => false
-         (generate-thumbnail ..system.. beach-map) => ..thumb..
-         (background-save-thumbnail ..store.. ..thumb.. beach-map) => true)
+         (generate-thumbnail ..system.. beach-map) => ..thumb..)
 
        ; generate new - fail
        (let [image-dne (assoc beach-map :original "doesnotexist.jpg")]
@@ -80,9 +79,7 @@
        (let [option-map (assoc-in beach-map [:options :replace] "true")]
          (get-or-generate-thumbnail ..system.. option-map) => ..new-thumb..
          (provided
-           (store ..system..) => ..store..
-           (generate-thumbnail ..system.. option-map) => ..new-thumb..
-           (background-save-thumbnail ..store.. ..new-thumb.. option-map) => true)))
+           (generate-thumbnail ..system.. option-map) => ..new-thumb..)))
 
 (facts :route-map->thumb-args
        (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
