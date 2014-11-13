@@ -66,7 +66,6 @@
                       (get-thumbnail (store system) thumb-map))]
     thumb
     (when-let [thumb (generate-thumbnail system thumb-map)]
-      (background-save-thumbnail (store system) thumb thumb-map)
       thumb)))
 
 (defn generate-thumbnail
@@ -96,8 +95,9 @@
 
 (defn background-save-thumbnail
   "Save the thumbnail in the background. This should not delay the rendering."
-  [store stream thumb-map]
-  (future (save-thumbnail store stream thumb-map)))
+  [store stored-object map]
+  (future (save-thumbnail store stored-object map)
+          (io/delete-file (file-stream stored-object))))
 
 (defn background-delete-file
   [file]
