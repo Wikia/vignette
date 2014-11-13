@@ -77,7 +77,10 @@
     (when-let [local-original (original->local original thumb-map)]
       (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
-          (ls/create-stored-object thumb))
+          (ls/create-stored-object thumb (fn [stored-object]
+                                           (background-save-thumbnail (store system)
+                                                                      stored-object
+                                                                      thumb-map))))
         (catch Object _ (throw+))
         (finally
           (background-delete-file local-original))))
