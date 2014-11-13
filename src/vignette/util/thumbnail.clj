@@ -66,7 +66,6 @@
                       (get-thumbnail (store system) thumb-map))]
     thumb
     (when-let [thumb (generate-thumbnail system thumb-map)]
-      (background-save-thumbnail (store system) thumb thumb-map)
       thumb)))
 
 (defn generate-thumbnail
@@ -78,12 +77,16 @@
     (when-let [local-original (original->local original thumb-map)]
       (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
-          (ls/create-stored-object thumb))
+          (ls/create-stored-object thumb (fn [stored-object]
+                                           (background-save-thumbnail (store system)
+                                                                      stored-object
+                                                                      thumb-map))))
         (catch Object _ (throw+))
         (finally
           (background-delete-file local-original))))
     (throw+ {:type :convert-error
-             :thumb-map thumb-map}
+             :thumb-map thumb-map
+             :response-code 404}
             "unable to get original for thumbnailing")))
 
 (defn original->local
@@ -96,8 +99,9 @@
 
 (defn background-save-thumbnail
   "Save the thumbnail in the background. This should not delay the rendering."
-  [store stream thumb-map]
-  (future (save-thumbnail store stream thumb-map)))
+  [store stored-object map]
+  (future (save-thumbnail store stored-object map)
+          (io/delete-file (file-stream stored-object))))
 
 (defn background-delete-file
   [file]

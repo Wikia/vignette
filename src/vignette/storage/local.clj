@@ -35,7 +35,7 @@
   (list-buckets [this])
   (list-objects [this bucket]))
 
-(defrecord LocalStoredObject [file]
+(defrecord LocalStoredObject [file stream-close-callbacks]
   StoredObjectProtocol
   (file-stream [this]
     (:file this))
@@ -48,12 +48,17 @@
              (io/file to))
     (file-exists? to))
   (->response-object [this]
-    (FileInputStream. (file-stream this))))
+    (let [file (file-stream this)
+          stored-object this]
+      (proxy [FileInputStream] [file]
+        (close []
+          (proxy-super close)
+          (doall (map #(% stored-object) (:stream-close-callbacks stored-object))))))))
 
 (defn create-local-storage-system
   [directory]
   (->LocalStorageSystem directory))
 
 (defn create-stored-object
-  [file]
-  (->LocalStoredObject file))
+  [file & callbacks]
+  (->LocalStoredObject file callbacks))
