@@ -53,10 +53,7 @@
       (proxy [FileInputStream] [file]
         (close []
           (proxy-super close)
-          (loop [callbacks (:stream-close-callbacks stored-object)]
-            (when (> (count callbacks) 0)
-              ((first callbacks) stored-object)
-              (recur (rest callbacks)))))))))
+          (doall (map #(% stored-object) (:stream-close-callbacks stored-object))))))))
 
 (defn create-local-storage-system
   [directory]
