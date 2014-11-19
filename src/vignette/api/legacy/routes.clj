@@ -11,16 +11,16 @@
          route->options)
 
 (def archive-regex #"\/archive|")
-(def lang-regex #"\/[a-z-]+|")
+(def path-prefix-regex #"\/[/a-z-]+|")
 (def dimension-regex #"\d+px-|\d+x\d+-|\d+x\d+x\d+-|")
 (def offset-regex #"(?i)\d+,\d+,\d+,\d+-|\d+%2c\d+%2c\d+%2c\d+-|")
 (def thumbname-regex #".*?")
 (def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
 
 (def thumbnail-route
-  (route-compile "/:wikia:lang/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
+  (route-compile "/:wikia:path-prefix/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
                  {:wikia wikia-regex
-                  :lang lang-regex
+                  :path-prefix path-prefix-regex
                   :image-type #"images|avatars"
                   :archive archive-regex
                   :top-dir top-dir-regex
@@ -32,9 +32,9 @@
                   :thumbname thumbname-regex}))
 
 (def original-route
-  (route-compile "/:wikia:lang/:image-type:archive/:top-dir/:middle-dir/:original"
+  (route-compile "/:wikia:path-prefix/:image-type:archive/:top-dir/:middle-dir/:original"
                  {:wikia wikia-regex
-                  :lang lang-regex
+                  :path-prefix path-prefix-regex
                   :image-type #"images|avatars"
                   :archive archive-regex
                   :top-dir top-dir-regex
@@ -75,9 +75,9 @@
 (defn route->options
   [map]
   (let [[_ format] (re-find #"\.([a-z]+)$" (get map :thumbname ""))
-        [_ lang] (re-find #"^/([a-z]+)$" (get map :lang ""))]
+        [_ path-prefix] (re-find #"^/([/a-z]+)$" (get map :path-prefix ""))]
     (assoc map :options {:format format
-                         :lang lang})))
+                         :path-prefix path-prefix})))
 
 (defn route->dimensions
   [map]

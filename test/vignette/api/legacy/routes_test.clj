@@ -63,7 +63,7 @@
     (:original map) => "Flag_of_Europe.svg"
     (:revision map) => "latest"
     (:thumbname map) => "Flag_of_Europe.svg.png"
-    (:lang (:options map)) => "fr")
+    (:path-prefix (:options map)) => "fr")
 
   (let [matched (route-matches alr/thumbnail-route
                                (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-0,120,0,240-SuperMario64_20.webp"))
@@ -146,4 +146,4 @@
          (:middle-dir map) => "b7"
          (:original map) => "Flag_of_Europe.svg"
          (:revision map) => "latest"
-         (:lang (:options map)) => "fr"))
+         (:path-prefix (:options map)) => "fr"))
