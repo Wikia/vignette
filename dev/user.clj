@@ -1,6 +1,7 @@
 (ns user
   (:require [aws.sdk.s3 :as s3]
             [cheshire.core :refer :all]
+            [clj-statsd :as statsd]
             [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [clojure.tools.namespace.repl :as nrepl]

@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[cheshire "5.3.1"]
                  [clj-aws-s3 "0.3.10"]
+                 [clj-statsd "0.3.10"]
                  [clout "1.2.0"]
                  [compojure "1.1.8"]
                  [com.novemberain/pantomime "2.3.0"]
