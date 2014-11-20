@@ -329,7 +329,7 @@ function thumb_params() {
 		"zoom-crop")
 			# the '^' means Minimum values of width and height given, aspect ratio
 			# preserved. see http://www.imagemagick.org/script/command-line-processing.php#geometry
-			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity center -extent ${WIDTH}x${HEIGHT}"
+			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}^ -gravity center -background none -extent ${WIDTH}x${HEIGHT}"
 			;;
 		"zoom-crop-down")
 			# get height and width
