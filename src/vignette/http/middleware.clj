@@ -3,7 +3,7 @@
             [environ.core :refer [env]]
             [ring.util.response :refer [response status charset header]]
             [slingshot.slingshot :refer [try+ throw+]]
-            [vignette.util.constants :refer :all]
+            [vignette.util.statsd :refer :all]
             [vignette.util.image-response :refer :all]
             [wikia.common.logger :as log])
   (:import [java.net InetAddress]))
@@ -45,5 +45,5 @@
   (fn [request]
     (statsd/increment "vignette.request")
     (statsd/with-sampled-timing "vignette.request"
-                                statsd-sample-rate
+                                sample-rate
                                 (handler request))))

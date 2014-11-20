@@ -4,7 +4,7 @@
             [clojure.java.io :as io]
             [pantomime.mime :refer [mime-type-of]]
             [vignette.storage.protocols :refer :all]
-            [vignette.util.constants :refer :all]
+            [vignette.util.statsd :refer :all]
             [vignette.util.filesystem :refer :all])
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
@@ -30,7 +30,7 @@
   [creds bucket path]
   (try
     (statsd/with-sampled-timing "vignette.s3.get"
-                                statsd-sample-rate
+                                sample-rate
                                 (s3/get-object creds bucket path))
     (catch AmazonS3Exception e
       (if (= (.getStatusCode e) 404)
@@ -49,7 +49,7 @@
     (let [file (file-stream resource)
           mime-type (content-type resource)]
       (when-let [response (statsd/with-sampled-timing "vignette.s3.put"
-                                                      statsd-sample-rate
+                                                      sample-rate
                                                       (s3/put-object (:creds this)
                                                                      bucket
                                                                      path

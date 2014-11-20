@@ -1,6 +1,6 @@
-(ns vignette.util.constants
+(ns vignette.util.statsd
   (:require [environ.core :refer [env]]))
 
-(def statsd-sample-rate (if (env :statsd-sample-rate)
+(def sample-rate (if (env :statsd-sample-rate)
                           (Double/parseDouble (env :statsd-sample-rate))
                           0.1))

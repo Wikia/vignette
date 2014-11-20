@@ -8,7 +8,7 @@
             [vignette.protocols :refer :all]
             [vignette.storage.local :as ls]
             [vignette.storage.protocols :refer :all]
-            [vignette.util.constants :refer :all]
+            [vignette.util.statsd :refer :all]
             [vignette.util.filesystem :refer :all]
             [vignette.util.query-options :as q])
   (:use [environ.core]))
@@ -42,7 +42,7 @@
 (defn run-thumbnailer
   [args]
   (statsd/with-sampled-timing "vignette.imagemagick"
-                              statsd-sample-rate
+                              sample-rate
                               (apply sh args)))
 
 (defn original->thumbnail
