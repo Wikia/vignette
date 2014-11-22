@@ -9,6 +9,10 @@
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
 
+(def default-storage-connection-timeout 100)
+(def default-storage-get-socket-timeout 500)
+(def default-storage-put-socket-timeout 10000)
+
 (declare create-stored-object)
 
 (def storage-creds (let [creds {:access-key  (env :storage-access-key)
@@ -31,7 +35,10 @@
   (try
     (statsd/with-sampled-timing "vignette.s3.get"
                                 sample-rate
-                                (s3/get-object creds bucket path))
+                                (s3/get-object (merge creds
+                                                      {:conn-timeout (Integer. (env :storage-connection-timeout default-storage-connection-timeout))
+                                                       :socket-timeout (Integer. (env :storage-get-socket-timeout default-storage-get-socket-timeout))})
+                                               bucket path))
     (catch AmazonS3Exception e
       (if (= (.getStatusCode e) 404)
         nil
@@ -50,7 +57,9 @@
           mime-type (content-type resource)]
       (when-let [response (statsd/with-sampled-timing "vignette.s3.put"
                                                       sample-rate
-                                                      (s3/put-object (:creds this)
+                                                      (s3/put-object (merge (:creds this)
+                                                                            {:conn-timeout (Integer. (env :storage-connection-timeout default-storage-connection-timeout))
+                                                                             :socket-timeout (Integer. (env :storage-put-socket-timeout default-storage-put-socket-timeout))})
                                                                      bucket
                                                                      path
                                                                      file
