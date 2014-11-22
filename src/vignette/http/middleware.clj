@@ -35,6 +35,8 @@
   (fn [request]
     (let [response (handler request)]
       (-> response
+          (header "Cache-Control" "public, s-maxage=604800")
+          (header "X-Pass-Cache-Control" "public, max-age=31536000")
           (header "Varnish-Logs" "vignette")
           (header "X-Served-By" hostname)
           (header "X-Cache" "ORIGIN")
