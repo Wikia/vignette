@@ -363,6 +363,8 @@ function is_animated() {
 	fi
 }
 
+# set background = none to preserve original backgrounds for svgs, and calculate density for
+# scaling svg (http://www.imagemagick.org/discourse-server/viewtopic.php?t=11168#p37647)
 function svg_preoptions() {
 	local default_density=72
 	local orig_height=$($IDENTIFY -format "%h\n" "$IN" | head -1)
