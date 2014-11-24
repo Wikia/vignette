@@ -23,6 +23,16 @@
                        (assoc-in creds [:proxy :port] (Integer/parseInt port))
                        creds)))
 
+(defn add-timeouts
+  [request-type creds]
+  (if (= request-type :get)
+    (merge creds
+           {:conn-timeout (Integer. (env :storage-connection-timeout default-storage-connection-timeout))
+            :socket-timeout (Integer. (env :storage-get-socket-timeout default-storage-get-socket-timeout))})
+    (merge creds
+           {:conn-timeout (Integer. (env :storage-connection-timeout default-storage-connection-timeout))
+            :socket-timeout (Integer. (env :storage-put-socket-timeout default-storage-put-socket-timeout))})))
+
 (defn valid-s3-get?
   [response]
   (and (map? response)
@@ -35,9 +45,7 @@
   (try
     (statsd/with-sampled-timing "vignette.s3.get"
                                 sample-rate
-                                (s3/get-object (merge creds
-                                                      {:conn-timeout (Integer. (env :storage-connection-timeout default-storage-connection-timeout))
-                                                       :socket-timeout (Integer. (env :storage-get-socket-timeout default-storage-get-socket-timeout))})
+                                (s3/get-object creds
                                                bucket path))
     (catch AmazonS3Exception e
       (if (= (.getStatusCode e) 404)
@@ -47,7 +55,7 @@
 (defrecord S3StorageSystem [creds]
   StorageSystemProtocol
   (get-object [this bucket path]
-    (when-let [object (safe-get-object (:creds this) bucket path)]
+    (when-let [object (safe-get-object (add-timeouts :get (:creds this)) bucket path)]
       (when (valid-s3-get? object)
         (let [stream (:content object)
               meta-data (:metadata object)]
@@ -57,9 +65,7 @@
           mime-type (content-type resource)]
       (when-let [response (statsd/with-sampled-timing "vignette.s3.put"
                                                       sample-rate
-                                                      (s3/put-object (merge (:creds this)
-                                                                            {:conn-timeout (Integer. (env :storage-connection-timeout default-storage-connection-timeout))
-                                                                             :socket-timeout (Integer. (env :storage-put-socket-timeout default-storage-put-socket-timeout))})
+                                                      (s3/put-object (add-timeouts :put (:creds this))
                                                                      bucket
                                                                      path
                                                                      file
