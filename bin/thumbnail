@@ -363,6 +363,18 @@ function is_animated() {
 	fi
 }
 
+# set background = none to preserve original backgrounds for svgs, and calculate density for
+# scaling svg (http://www.imagemagick.org/discourse-server/viewtopic.php?t=11168#p37647)
+function svg_preoptions() {
+	local default_density=72
+	local orig_height=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+	local orig_width=$($IDENTIFY -format "%w\n" "$IN" | head -1)
+	local width_density=`echo "(1.5 * ${WIDTH}) / (${orig_width} / ${default_density})" | bc -l`
+	local height_density=`echo "(1.5 * ${HEIGHT}) / (${orig_height} / ${default_density})" | bc -l`
+
+	THUMB_PRE_OPTIONS="-background none -density ${width_density}x${height_density}"
+}
+
 function thumb() {
 	original_is $TYPE_GIF
 	gif=$?
@@ -380,7 +392,7 @@ function thumb() {
 
 	if [[ $svg -eq 1 ]]; then
 		set_custom_type $TYPE_PNG
-		THUMB_PRE_OPTIONS="-background none"
+		svg_preoptions
 	fi
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
