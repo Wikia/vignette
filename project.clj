@@ -5,7 +5,6 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[cheshire "5.3.1"]
                  [clj-aws-s3 "0.3.10"]
-                 [clj-statsd "0.3.10"]
                  [clout "1.2.0"]
                  [compojure "1.1.8"]
                  [com.novemberain/pantomime "2.3.0"]
@@ -16,7 +15,7 @@
                  [ring "1.3.0"]
                  [slingshot "0.10.3"]
                  [useful "0.8.8"]
-                 [wikia/commons "0.1.0-SNAPSHOT"]]
+                 [wikia/commons "0.1.1-SNAPSHOT"]]
   :profiles  {:dev  {:source-paths  ["dev"]
                      :plugins [[lein-midje "3.1.1"]]
                      :dependencies  [[midje "1.6.3"]

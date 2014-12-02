@@ -1,11 +1,10 @@
 (ns vignette.http.middleware
-  (:require [clj-statsd :as statsd]
-            [environ.core :refer [env]]
+  (:require [environ.core :refer [env]]
             [ring.util.response :refer [response status charset header]]
             [slingshot.slingshot :refer [try+ throw+]]
-            [vignette.util.statsd :refer :all]
             [vignette.util.image-response :refer :all]
-            [wikia.common.logger :as log])
+            [wikia.common.logger :as log]
+            [wikia.common.perfmonitoring.core :as perf])
   (:import [java.net InetAddress]))
 
 (def hostname (.getHostName (InetAddress/getLocalHost)))
@@ -45,7 +44,5 @@
 
 (defn request-timer [handler]
   (fn [request]
-    (statsd/increment "vignette.request")
-    (statsd/with-sampled-timing "vignette.request"
-                                sample-rate
-                                (handler request))))
+    (perf/publish {:request-count 1})
+    (perf/timing :request-time (handler request))))

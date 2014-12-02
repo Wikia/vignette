@@ -1,11 +1,10 @@
 (ns vignette.storage.s3
   (:require [aws.sdk.s3 :as s3]
-            [clj-statsd :as statsd]
             [clojure.java.io :as io]
             [pantomime.mime :refer [mime-type-of]]
             [vignette.storage.protocols :refer :all]
-            [vignette.util.statsd :refer :all]
-            [vignette.util.filesystem :refer :all])
+            [vignette.util.filesystem :refer :all]
+            [wikia.common.perfmonitoring.core :as perf])
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
 
@@ -43,10 +42,7 @@
 (defn safe-get-object
   [creds bucket path]
   (try
-    (statsd/with-sampled-timing "vignette.s3.get"
-                                sample-rate
-                                (s3/get-object creds
-                                               bucket path))
+    (perf/timing :s3-get (s3/get-object creds bucket path))
     (catch AmazonS3Exception e
       (if (= (.getStatusCode e) 404)
         nil
@@ -63,13 +59,11 @@
   (put-object [this resource bucket path]
     (let [file (file-stream resource)
           mime-type (content-type resource)]
-      (when-let [response (statsd/with-sampled-timing "vignette.s3.put"
-                                                      sample-rate
-                                                      (s3/put-object (add-timeouts :put (:creds this))
-                                                                     bucket
-                                                                     path
-                                                                     file
-                                                                     {:content-type mime-type}))]
+      (when-let [response (perf/timing :s3-put (s3/put-object (add-timeouts :put (:creds this))
+                                                              bucket
+                                                              path
+                                                              file
+                                                              {:content-type mime-type}))]
         response)))
   (delete-object [this bucket path])
   (list-buckets [this])
