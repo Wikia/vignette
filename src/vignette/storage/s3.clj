@@ -9,6 +9,39 @@
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
 
+
+;;;; Note about timeouts: The timeouts you can specify to the s3 client don't
+;;;; behave as expected. Setting the timeouts will cause the request to timeout
+;;;; but it doesn't match up with the values specified. I suspect it has
+;;;; something to do with the abstraction used in S3Client.
+;;;;
+;;;; In the example below we have timeouts set to 20ms yet it takes almost 2
+;;;; seconds for the exception to bubble up. --drsnyder
+
+(comment
+  (def storage-creds {:max-reties 0
+                      :socket-timeout 20 ; one of these should timeout most of the time
+                      :conn-timeout 20
+                      :access-key "..."
+                      :secret-key "..."
+                      :endpoint "http://endpoint"
+                      :proxy {:host nil}})
+
+  (time (try (s3/get-object storage-creds "muppet" "images/d/d4/Mo-Yet.jpg")
+             (catch Exception e (println (.getMessage e)) (clojure.stacktrace/e)))))
+;Unable to execute HTTP request: Read timed out
+;java.net.SocketTimeoutException: Read timed out
+ ;at java.net.SocketInputStream.socketRead0 (SocketInputStream.java:-2)
+    ;java.net.SocketInputStream.read (SocketInputStream.java:129)
+    ;org.apache.http.impl.io.AbstractSessionInputBuffer.fillBuffer (AbstractSessionInputBuffer.java:166)
+    ;org.apache.http.impl.io.SocketInputBuffer.fillBuffer (SocketInputBuffer.java:90)
+    ;org.apache.http.impl.io.AbstractSessionInputBuffer.readLine (AbstractSessionInputBuffer.java:281)
+    ;org.apache.http.impl.conn.LoggingSessionInputBuffer.readLine (LoggingSessionInputBuffer.java:115)
+    ;org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead (DefaultHttpResponseParser.java:92)
+    ;org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead (DefaultHttpResponseParser.java:62)
+;"Elapsed time: 1912.641 msecs"
+
+
 (def default-storage-connection-timeout 100)
 (def default-storage-get-socket-timeout 500)
 (def default-storage-put-socket-timeout 10000)
