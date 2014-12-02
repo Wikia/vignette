@@ -317,7 +317,10 @@ function thumb_params() {
 			fi
 			;;
 		"window-crop")
-			THUMB_PARAMS="${QUALITY} \( ${IN} -extent ${WINDOW_WIDTH}x${WINDOW_HEIGHT}+${X_OFFSET}+${Y_OFFSET}! -thumbnail ${WINDOW_WIDTH}x${WINDOW_HEIGHT}! \)"
+			# When PNGs are used we need to make sure the source image's transparency
+			# is preserved. See http://www.imagemagick.org/Usage/crop/#border and the
+			# 'Border and Alpha Composition' section regarding regarding transparency.
+			THUMB_PARAMS="${QUALITY} \( ${IN} -compose Copy -extent ${WINDOW_WIDTH}x${WINDOW_HEIGHT}+${X_OFFSET}+${Y_OFFSET}! -thumbnail ${WINDOW_WIDTH}x${WINDOW_HEIGHT}! \)"
 			THUMB_PARAMS="${THUMB_PARAMS} \( -thumbnail ${WIDTH} \)"
 			IN="" # is now part of THUMB_PARAMS
 			;;
