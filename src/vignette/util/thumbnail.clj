@@ -1,6 +1,5 @@
 (ns vignette.util.thumbnail
   (:require [cheshire.core :refer :all]
-            [clj-statsd :as statsd]
             [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [slingshot.slingshot :refer [try+ throw+]]
@@ -8,9 +7,9 @@
             [vignette.protocols :refer :all]
             [vignette.storage.local :as ls]
             [vignette.storage.protocols :refer :all]
-            [vignette.util.statsd :refer :all]
             [vignette.util.filesystem :refer :all]
-            [vignette.util.query-options :as q])
+            [vignette.util.query-options :as q]
+            [wikia.common.perfmonitoring.core :as perf])
   (:use [environ.core]))
 
 (declare original->local
@@ -41,9 +40,7 @@
 
 (defn run-thumbnailer
   [args]
-  (statsd/with-sampled-timing "vignette.imagemagick"
-                              sample-rate
-                              (apply sh args)))
+  (perf/timing :imagemagick (apply sh args)))
 
 (defn original->thumbnail
   [resource thumb-map]

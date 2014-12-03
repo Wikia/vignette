@@ -1,7 +1,6 @@
 (ns user
   (:require [aws.sdk.s3 :as s3]
             [cheshire.core :refer :all]
-            [clj-statsd :as statsd]
             [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [clojure.tools.namespace.repl :as nrepl]
@@ -23,7 +22,8 @@
             [vignette.util.integration :as itg]
             [vignette.util.thumbnail :as u]
             [vignette.util.query-options :as q]
-            [wikia.common.logger :as log])
+            [wikia.common.logger :as log]
+            [wikia.common.perfmonitoring.core :as perf])
   (:use [environ.core]))
 
 (def sample-original-hash {:wikia "bucket"

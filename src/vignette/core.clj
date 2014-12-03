@@ -1,6 +1,5 @@
 (ns vignette.core
-  (:require [clj-statsd :as statsd]
-            [clojure.tools.cli :as cli]
+  (:require [clojure.tools.cli :as cli]
             [vignette.protocols :refer :all]
             [vignette.server :as s]
             [vignette.storage.core :refer [create-image-storage]]
@@ -8,7 +7,8 @@
             [vignette.storage.protocols :refer :all]
             [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
             [vignette.system :refer :all]
-            [vignette.util.integration :as i])
+            [vignette.util.integration :as i]
+            [wikia.common.perfmonitoring.core :as perf])
   (:use [environ.core])
   (:gen-class))
 
@@ -32,9 +32,7 @@
       (println (:errors parsed-opts))
       (System/exit 1))
 
-    (when (env :statsd-server)
-      (let [[server port] (clojure.string/split (env :statsd-server) #":")]
-        (statsd/setup server port)))
+    (perf/init)
 
     (let [object-storage (if (= (:mode opts) "local")
                            (do
