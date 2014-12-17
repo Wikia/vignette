@@ -74,9 +74,9 @@
 
 (defn route->options
   [map]
-  (let [[_ format] (re-find #"\.([a-z]+)$" (get map :thumbname ""))
+  (let [[_ format] (re-find #"(?i)\.([a-z]+)$" (get map :thumbname ""))
         [_ path-prefix] (re-find #"^/([/a-z]+)$" (get map :path-prefix ""))]
-    (assoc map :options {:format format
+    (assoc map :options {:format (.toLowerCase format)
                          :path-prefix path-prefix})))
 
 (defn route->dimensions
