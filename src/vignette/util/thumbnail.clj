@@ -7,6 +7,7 @@
             [vignette.protocols :refer :all]
             [vignette.storage.local :as ls]
             [vignette.storage.protocols :refer :all]
+            [vignette.thumb-modes.face-detection :refer [face-detect]]
             [vignette.util.filesystem :refer :all]
             [vignette.util.query-options :as q]
             [wikia.common.perfmonitoring.core :as perf])
@@ -45,8 +46,11 @@
 (defn original->thumbnail
   [resource thumb-map]
   (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
+        input-file (if (q/query-opt thumb-map :face)
+                     (face-detect resource thumb-map original->thumbnail)
+                     (.getAbsolutePath resource))
         base-command [thumbnail-bin
-                      "--in" (.getAbsolutePath resource)
+                      "--in" input-file
                       "--out" (q/modify-temp-file thumb-map temp-file)]
         route-options (route-map->thumb-args thumb-map)
         query-options (q/query-opts->thumb-args thumb-map)
