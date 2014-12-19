@@ -11,7 +11,8 @@
                      :format (create-query-opt #"^\w+$")
                      :lang (create-query-opt #"^\w+$" false)
                      :path-prefix (create-query-opt #"[\w\.\/-]+" false)
-                     :replace (create-query-opt #"^true$" false)})
+                     :replace (create-query-opt #"^true$" false)
+                     :face (create-query-opt #"\d+" false)})
 
 (defn query-opt-regex
   [query-opt]

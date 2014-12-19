@@ -10,6 +10,8 @@
                  [com.novemberain/pantomime "2.3.0"]
                  [environ "0.5.0"]
                  [http-kit "2.1.18"]
+                 [opencv/opencv "3.0.0"]
+                 [opencv/opencv-native "3.0.0"]
                  [org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.cli "0.3.1"]
                  [ring "1.3.0"]
@@ -23,6 +25,8 @@
                                      [org.clojure/tools.namespace "0.2.5"]
                                      [org.clojure/tools.trace "0.7.8"]
                                      [ring-mock "0.1.5"]]}}
+  :injections [(clojure.lang.RT/loadLibrary org.opencv.core.Core/NATIVE_LIBRARY_NAME)]
+  :plugins [[lein-localrepo "0.5.3"]]
   :main vignette.core
   :aot [vignette.core
         vignette.protocols
