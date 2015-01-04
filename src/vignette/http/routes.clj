@@ -18,6 +18,14 @@
             [vignette.util.regex :refer :all]
             [vignette.util.thumbnail :as u]))
 
+(def revisionless-original-route
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original"
+                 {:wikia wikia-regex
+                  :image-type image-type-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex}))
+
 (def original-route
   (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
                  {:wikia wikia-regex
@@ -93,45 +101,57 @@
     (assoc route-params :options options
                         :image-type (route-params->image-type route-params))))
 
+(declare handle-thumbnail
+         handle-original)
+
+(defn image-request-handler
+  [system request-type request &{:keys [thumbnail-mode height] :or {thumbnail-mode nil height nil} :as params}]
+  (let [image-params (image-params request request-type)
+        image-params (if params (merge image-params params) image-params)]
+    (condp = request-type
+      :thumbnail (handle-thumbnail system image-params)
+      :original (handle-original system image-params))))
+
+(defn handle-thumbnail
+  [system image-params]
+  (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+    (create-image-response thumb)
+    (error-response 404 image-params)))
+
+(defn handle-original
+  [system image-params]
+  (if-let [file (get-original (store system) image-params)]
+    (create-image-response file)
+    (error-response 404 image-params)))
+
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
   [system]
   (-> (routes
         (GET scale-to-width-route
              request
-             (let [route-params (image-params request :thumbnail)
-                   image-params (assoc route-params :thumbnail-mode "scale-to-width"
-                                                    :height :auto)]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
-                 (error-response 404 image-params))))
+             (image-request-handler system :thumbnail request
+                                    :thumbnail-mode "scale-to-width"
+                                    :height :auto))
         (GET window-crop-route
              request
-             (let [route-params (image-params request :thumbnail)
-                   image-params (assoc route-params :thumbnail-mode "window-crop"
-                                                    :height :auto)]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
-                 (error-response 404 image-params))))
+             (image-request-handler system :thumbnail request
+                                    :thumbnail-mode "window-crop"
+                                    :height :auto))
         (GET window-crop-fixed-route
              request
-             (let [route-params (image-params request :thumbnail)
-                   image-params (assoc route-params :thumbnail-mode "window-crop-fixed")]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
-                 (error-response 404 image-params))))
+             (image-request-handler system :thumbnail request
+                                    :thumbnail-mode "window-crop-fixed"
+                                    :height :auto))
         (GET thumbnail-route
              request
-             (let [image-params (image-params request :thumbnail)]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
-                 (error-response 404 image-params))))
+             (image-request-handler system :thumbnail request))
+        (GET revisionless-original-route
+             request
+             (image-request-handler system :original request))
         (GET original-route
              request
-             (let [image-params (image-params request :original)]
-               (if-let [file (get-original (store system) image-params)]
-                 (create-image-response file)
-                 (error-response 404 image-params))))
+             (image-request-handler system :original request))
 
         ; legacy routes
         (GET alr/thumbnail-route

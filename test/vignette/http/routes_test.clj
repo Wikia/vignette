@@ -11,6 +11,12 @@
             [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
 
+
+; TODO:
+;  - test image-request-handler
+;  - test handle-thumbnail
+;  - test handle-original
+
 (facts :original-route
   (route-matches original-route (request :get "/swift/v1")) => falsey
   (route-matches
@@ -112,6 +118,26 @@
     (provided
       (store ..system..) => ..store..
       (sp/get-original ..store.. route-params) =throws=> (NullPointerException.))))
+
+(facts :app-routes-revisionless-original
+
+  (let [route-params {:request-type :original
+                      :image-type "images"
+                      :original "ropes.jpg"
+                      :middle-dir "35"
+                      :top-dir "3"
+                      :wikia "lotr"
+                      :options {}} ]
+    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg")) => (contains {:status 200})
+    (provided
+     (store ..system..) => ..store..
+     (sp/get-original ..store.. (just route-params)) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
+
+    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg")) => (contains {:status 404})
+    (provided
+     (store ..system..) => ..store..
+     (sp/get-original ..store.. route-params) => nil)))
+
 
 (facts :window-crop-route
        (route-matches window-crop-route
