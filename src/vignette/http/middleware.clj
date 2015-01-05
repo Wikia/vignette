@@ -19,12 +19,16 @@
               thumb-map (:thumb-map e) ; if present, we'll try to thumbnail the error response
               response-code (or (:response-code e) 500)
               context (assoc (dissoc e :type :thumb-map :response-code) :host hostname)]
+          (perf/publish {:convert-error 1})
+          (println message)
           (log/warn message
                     (merge {:path (:uri request)
                             :query (:query-string request)}
                            context))
           (error-response response-code thumb-map)))
       (catch Exception e
+        (println (.getMessage e))
+        (perf/publish {:exception-count 1})
         (log/warn (str e) {:path (:uri request)
                            :query (:query-string request)})
         (error-response 500)))))
