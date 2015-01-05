@@ -27,7 +27,7 @@
                            context))
           (error-response response-code thumb-map)))
       (catch Exception e
-        (println (.getMessage e)
+        (println (.getMessage e))
         (perf/publish {:exception-count 1})
         (log/warn (str e) {:path (:uri request)
                            :query (:query-string request)})
