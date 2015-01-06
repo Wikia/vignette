@@ -86,43 +86,7 @@
                   :revision revision-regex
                   :width size-regex}))
 
-(defn route-params->image-type
-  [route-params]
-  (if (clojure.string/blank? (:image-type route-params))
-    "images"
-    (clojure.string/replace (:image-type route-params)
-                            #"^\/(.*)"
-                            "$1")))
-
-(defn image-params
-  [request request-type]
-  (let [route-params (assoc (:route-params request) :request-type request-type)
-        options (extract-query-opts request)]
-    (assoc route-params :options options
-                        :image-type (route-params->image-type route-params))))
-
-(declare handle-thumbnail
-         handle-original)
-
-(defn image-request-handler
-  [system request-type request &{:keys [thumbnail-mode height] :or {thumbnail-mode nil height nil} :as params}]
-  (let [image-params (image-params request request-type)
-        image-params (if params (merge image-params params) image-params)]
-    (condp = request-type
-      :thumbnail (handle-thumbnail system image-params)
-      :original (handle-original system image-params))))
-
-(defn handle-thumbnail
-  [system image-params]
-  (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-    (create-image-response thumb)
-    (error-response 404 image-params)))
-
-(defn handle-original
-  [system image-params]
-  (if-let [file (get-original (store system) image-params)]
-    (create-image-response file)
-    (error-response 404 image-params)))
+(declare image-request-handler)
 
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
@@ -178,3 +142,43 @@
       (wrap-params)
       (exception-catcher)
       (add-headers)))
+
+(declare handle-thumbnail
+         handle-original
+         image-params
+         route-params->image-type)
+
+(defn image-request-handler
+  [system request-type request &{:keys [thumbnail-mode height] :or {thumbnail-mode nil height nil} :as params}]
+  (let [image-params (image-params request request-type)
+        image-params (if params (merge image-params params) image-params)]
+    (condp = request-type
+      :thumbnail (handle-thumbnail system image-params)
+      :original (handle-original system image-params))))
+
+(defn handle-thumbnail
+  [system image-params]
+  (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+    (create-image-response thumb)
+    (error-response 404 image-params)))
+
+(defn handle-original
+  [system image-params]
+  (if-let [file (get-original (store system) image-params)]
+    (create-image-response file)
+    (error-response 404 image-params)))
+
+(defn image-params
+  [request request-type]
+  (let [route-params (assoc (:route-params request) :request-type request-type)
+        options (extract-query-opts request)]
+    (assoc route-params :options options
+                        :image-type (route-params->image-type route-params))))
+
+(defn route-params->image-type
+  [route-params]
+  (if (clojure.string/blank? (:image-type route-params))
+    "images"
+    (clojure.string/replace (:image-type route-params)
+                            #"^\/(.*)"
+                            "$1")))
