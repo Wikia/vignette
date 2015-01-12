@@ -126,6 +126,19 @@
         :x-offset "0"
         :y-offset "29"
         :window-width "206"
+        :window-height "103"}
+       (route-matches window-crop-route
+                      (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/-1/y-offset/29/window-width/206/window-height/103")) =>
+       {:wikia "muppet"
+        :image-type "/images"
+        :top-dir "4"
+        :middle-dir "40"
+        :original "JohnvanBruggen.jpg"
+        :revision "latest"
+        :width "200"
+        :x-offset "-1"
+        :y-offset "29"
+        :window-width "206"
         :window-height "103"})
 
 (facts :window-crop-fixed-route
