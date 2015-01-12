@@ -8,4 +8,5 @@
 (def adjustment-mode-regex #"\w+")
 (def thumbnail-mode-regex #"[\w-]+")
 (def size-regex #"\d+")
+(def size-regex-allow-negative #"-{0,1}\d+")
 (def image-type-regex #"\/images|\/avatars|")

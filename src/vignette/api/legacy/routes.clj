@@ -13,7 +13,7 @@
 (def archive-regex #"\/archive|")
 (def path-prefix-regex #"\/[/a-z-]+|")
 (def dimension-regex #"\d+px-|\d+x\d+-|\d+x\d+x\d+-|")
-(def offset-regex #"(?i)\d+,\d+,\d+,\d+-|\d+%2c\d+%2c\d+%2c\d+-|")
+(def offset-regex #"(?i)-{0,1}\d+,\d+,-{0,1}\d+,\d+-|-{0,1}\d+%2c\d+%2c-{0,1}\d+%2c\d+-|")
 (def thumbname-regex #".*?")
 (def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
 
@@ -100,7 +100,7 @@
 
 (defn route->offset
   [map]
-  (if-let [[_ x-offset x-end y-offset y-end] (re-find #"^(\d+),(\d+),(\d+),(\d+)-$"
+  (if-let [[_ x-offset x-end y-offset y-end] (re-find #"^(-{0,1}\d+),(\d+),(-{0,1}\d+),(\d+)-$"
                                                    (URLDecoder/decode (:offset map)))]
     (let [window-width (- (Integer. x-end) (Integer. x-offset))
           window-height (- (Integer. y-end) (Integer. y-offset))]

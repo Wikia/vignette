@@ -48,9 +48,9 @@
                   :original original-regex
                   :revision revision-regex
                   :width size-regex
-                  :x-offset size-regex
+                  :x-offset size-regex-allow-negative
                   :window-width size-regex
-                  :y-offset size-regex
+                  :y-offset size-regex-allow-negative
                   :window-height size-regex}))
 
 (def window-crop-fixed-route
@@ -63,9 +63,9 @@
                   :revision revision-regex
                   :width size-regex
                   :height size-regex
-                  :x-offset size-regex
+                  :x-offset size-regex-allow-negative
                   :window-width size-regex
-                  :y-offset size-regex
+                  :y-offset size-regex-allow-negative
                   :window-height size-regex}))
 
 (def scale-to-width-route
