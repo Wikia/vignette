@@ -77,7 +77,8 @@ centered either vertically or horizontally, depending on the longer dimension.
 | beach.jpg                                                         | carousel.jpg |
 | :--------:                                                        | :-----------: |
 | ![beach fixed-aspect-ratio](/assets/fixed-aspect-ratio/beach.jpg) | ![carousel fixed-aspect-ratio](/assets/fixed-aspect-ratio/carousel.jpg) |
-[Fixed Aspect Ratio][section-thumbnailing-modes-fixed-aspect-ratio]
+
+Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue`
 
 #### fixed-aspect-ratio-down
 
@@ -85,7 +86,19 @@ This behaves the same as above except that it will not upscale the image. This
 is convenient when you want to preserve the aspect ratio but you don’t want the
 side effects that can result from upscaling the image.
 
+Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio-down/width/200/height/200?fill=blue`
+
 #### scale-to-width
+
+Scales an image to the specified width. The height is adjusted to maintain the
+aspect ratio.
+
+| beach.jpg                                                         | carousel.jpg |
+| :--------:                                                        | :-----------: |
+| ![beach scale-to-width](/assets/scale-to-width/beach.jpg) | ![carousel scale-to-width](/assets/scale-to-width/carousel.jpg) |
+
+Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-width/200`
+
 #### thumbnail
 #### thumbnail-down
 #### top-crop
