@@ -74,7 +74,7 @@ and [carousel.jpg](/image-samples/carousel.jpg).
 | beach.jpg                                                         | carousel.jpg |
 | :--------                                                         | -----------: |
 | ![beach fixed-aspect-ratio](/assets/fixed-aspect-ratio/beach.jpg) | ![carousel
-fixed-aspect-ratio](/assets/fixed-aspect-ratio/carousel.jpg)|
+fixed-aspect-ratio](/assets/fixed-aspect-ratio/carousel.jpg) ||
 [Fixed Aspect Ratio]
 
 
