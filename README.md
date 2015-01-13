@@ -71,14 +71,20 @@ and [carousel.jpg](/image-samples/carousel.jpg).
 
 #### fixed-aspect-ratio
 
+Returns an image that is exactly width x height pixels with the source image
+centered either vertically or horizontally, depending on the longer dimension.
+
 | beach.jpg                                                         | carousel.jpg |
 | :--------:                                                        | :-----------: |
 | ![beach fixed-aspect-ratio](/assets/fixed-aspect-ratio/beach.jpg) | ![carousel fixed-aspect-ratio](/assets/fixed-aspect-ratio/carousel.jpg) |
-[Fixed Aspect Ratio]
-
-
+[Fixed Aspect Ratio][section-thumbnailing-modes-fixed-aspect-ratio]
 
 #### fixed-aspect-ratio-down
+
+This behaves the same as above except that it will not upscale the image. This
+is convenient when you want to preserve the aspect ratio but you don’t want the
+side effects that can result from upscaling the image.
+
 #### scale-to-width
 #### thumbnail
 #### thumbnail-down
