@@ -119,14 +119,15 @@ Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail-
 #### top-crop
 
 This mode is similar to `zoom-crop` below except the top of the image is cropped
-instead of the center.
+instead of the center. The output will be the dimensions specified. This mode
+(and the other `*-crop*` modes) can be useful when you have a precise placement
+you want to fill regardless of the image size or shape.
 
 | beach.jpg                                                         | carousel.jpg |
 | :--------:                                                        | :-----------: |
 | ![beach top-crop](/assets/top-crop/beach.jpg) | ![carousel top-crop](/assets/top-crop/carousel.jpg) |
 
 Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop/width/200/height/200`
-
 
 #### top-crop-down
 
@@ -135,6 +136,16 @@ Same as the above except that it will not upscale the image.
 Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop-down/width/200/height/200`
 
 #### window-crop
+
+Creates a window within the image and then thumbnails that to the specified
+dimensions.
+
+| beach.jpg                                                         | carousel.jpg |
+| :--------:                                                        | :-----------: |
+| ![beach window-crop](/assets/window-crop/beach.jpg) | ![carousel window-crop](/assets/window-crop/carousel.jpg) |
+
+Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop/width/200/x-offset/60/y-offset/550/window-width/200/window-height/260`
+
 #### window-crop-fixed
 #### zoom-crop
 #### zoom-crop-down
