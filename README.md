@@ -100,9 +100,40 @@ aspect ratio.
 Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-width/200`
 
 #### thumbnail
+
+Returns a thumbnail that is at most width pixels wide and height pixels high. The
+aspect ratio will be preserved. Image upscaling is permitted.
+
+| beach.jpg                                                         | carousel.jpg |
+| :--------:                                                        | :-----------: |
+| ![beach thumbnail](/assets/thumbnail/beach.jpg) | ![carousel thumbnail](/assets/thumbnail/carousel.jpg) |
+
+Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail/width/200/height/200`
+
 #### thumbnail-down
+
+This behaves the same as the above except that it will not upscale the image.
+
+Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail-down/width/200/height/200`
+
 #### top-crop
+
+This mode is similar to `zoom-crop` below except the top of the image is cropped
+instead of the center.
+
+| beach.jpg                                                         | carousel.jpg |
+| :--------:                                                        | :-----------: |
+| ![beach top-crop](/assets/top-crop/beach.jpg) | ![carousel top-crop](/assets/top-crop/carousel.jpg) |
+
+Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop/width/200/height/200`
+
+
 #### top-crop-down
+
+Same as the above except that it will not upscale the image.
+
+Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop-down/width/200/height/200`
+
 #### window-crop
 #### window-crop-fixed
 #### zoom-crop
