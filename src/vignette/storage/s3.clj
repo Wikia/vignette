@@ -112,13 +112,15 @@
     (:content-length (:meta-data this)))
   (content-type [this]
     (:content-type (:meta-data this)))
+  (->response-object [this]
+    (file-stream this))
+
+  TransferableProtocol
   (transfer! [this to]
     (with-open [in-stream (io/input-stream (file-stream this))
                 out-stream (io/output-stream to)]
       (io/copy in-stream out-stream))
-    (file-exists? to))
-  (->response-object [this]
-    (file-stream this)))
+    (file-exists? to)))
 
 (defn create-s3-storage-system
   [creds]

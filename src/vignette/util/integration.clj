@@ -13,6 +13,7 @@
 (def default-map {:wikia "bucket"
                   :top-dir "a"
                   :middle-dir "ab"
+                  :image-type "images"
                   :request-type :original})
 
 (defn get-sample-image-maps
