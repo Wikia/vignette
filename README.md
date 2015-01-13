@@ -49,9 +49,54 @@ All testing is done using [Midje](https://github.com/marick/Midje). Running `lei
 
 The main entry point for Vignette happens in src/vignette/http/routes.clj
 
+## Thumbnail Mode Support
+
+For testing an experimentation, vignette includes a facility for setting up integration or browser testing. To set this up,
+do the following:
+
+```sh
+$ lein repl
+
+; creates the integration environment which just copies some images to /tmp
+user=> (i/create-integration-env)
+
+; starts the server using the local integration environment
+user=> (start system-local 8080)
+```
+
+### Thumbnailing modes
+
+The following examples were rendered from [beach.jpg](/image-samples/beach.jpg)
+and [carousel.jpg](/image-samples/carousel.jpg).
+
+#### fixed-aspect-ratio
+
+| beach.jpg                                                         | carousel.jpg |
+| :--------                                                         | -----------: |
+| ![beach fixed-aspect-ratio](/assets/fixed-aspect-ratio/beach.jpg) | ![carousel
+fixed-aspect-ratio](/assets/fixed-aspect-ratio/carousel.jpg)|
+[Fixed Aspect Ratio]
+
+
+
+#### fixed-aspect-ratio-down
+#### scale-to-width
+#### thumbnail
+#### thumbnail-down
+#### top-crop
+#### top-crop-down
+#### window-crop
+#### window-crop-fixed
+#### zoom-crop
+#### zoom-crop-down
+
 # License
 
 Copyright © 2014 Wikia
 
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Distributed under the Eclipse Public License either version 1.0 or (at your option) any later version.
+
+# Contributors
+
+ * [Damon Snyder](https://github.com/drsnyder)
+ * [Nelson Monterroso](https://github.com/nmonterroso)
