@@ -13,6 +13,7 @@
             [vignette.protocols :refer :all]
             [vignette.storage.core :refer :all]
             [vignette.storage.protocols :refer :all]
+            [vignette.util.external-hotlinking :refer :all]
             [vignette.util.image-response :refer :all]
             [vignette.util.query-options :refer :all]
             [vignette.util.regex :refer :all]
@@ -93,6 +94,12 @@
     (assoc route-params :options options
                         :image-type (route-params->image-type route-params))))
 
+(defn original-request->file
+  [request system image-params]
+  (if (force-thumb? request)
+    (u/get-or-generate-thumbnail system (image-params->forced-thumb-params image-params))
+    (get-original (store system) image-params)))
+
 ; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
   [system]
@@ -129,7 +136,7 @@
         (GET original-route
              request
              (let [image-params (image-params request :original)]
-               (if-let [file (get-original (store system) image-params)]
+               (if-let [file (original-request->file request system image-params)]
                  (create-image-response file)
                  (error-response 404 image-params))))
 
@@ -137,18 +144,13 @@
         (GET alr/thumbnail-route
              request
              (let [image-params (alr/route->thumb-map (:route-params request))]
-               (if (:unsupported image-params)
-                 (-> (response "unsupported thumbnail route")
-                     (status 307)
-                     (header "Location" (str (env :unsupported-redirect-host "http://images.wikia.com")
-                                             (:uri request))))
-                 (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                    (create-image-response thumb)
-                   (error-response 404 image-params)))))
+                   (error-response 404 image-params))))
         (GET alr/original-route
-             {route-params :route-params}
-             (let [image-params (alr/route->original-map route-params)]
-               (if-let [file (get-original (store system) image-params)]
+             request
+             (let [image-params (alr/route->original-map (:route-params request))]
+               (if-let [file (original-request->file request system image-params)]
                  (create-image-response file)
                  (error-response 404 image-params))))
         (GET "/ping" [] "pong")
