@@ -80,7 +80,7 @@ centered either vertically or horizontally, depending on the longer dimension.
 | :--------:                                                        | :-----------: |
 | ![beach fixed-aspect-ratio](/assets/fixed-aspect-ratio/beach.jpg) | ![carousel fixed-aspect-ratio](/assets/fixed-aspect-ratio/carousel.jpg) |
 
-Example: http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
 
 
 Note that the `fill=blue` URL parameter isn’t required. It’s there to help
@@ -92,7 +92,7 @@ This behaves the same as above except that it will not upscale the image. This
 is convenient when you want to preserve the aspect ratio but you don’t want the
 side effects that can result from upscaling the image.
 
-Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio-down/width/200/height/200?fill=blue`
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio-down/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
 
 #### scale-to-width
 
@@ -103,7 +103,7 @@ aspect ratio.
 | :--------:                                                        | :-----------: |
 | ![beach scale-to-width](/assets/scale-to-width/beach.jpg) | ![carousel scale-to-width](/assets/scale-to-width/carousel.jpg) |
 
-Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-width/200`
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-width/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-width/200)
 
 #### thumbnail
 
@@ -114,13 +114,13 @@ aspect ratio will be preserved. Image upscaling is permitted.
 | :--------:                                                        | :-----------: |
 | ![beach thumbnail](/assets/thumbnail/beach.jpg) | ![carousel thumbnail](/assets/thumbnail/carousel.jpg) |
 
-Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail/width/200/height/200`
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail/width/200/height/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
 
 #### thumbnail-down
 
 This behaves the same as the above except that it will not upscale the image.
 
-Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail-down/width/200/height/200`
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail-down/width/200/height/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail-down/width/200/height/200)
 
 #### top-crop
 
@@ -133,13 +133,13 @@ you want to fill regardless of the image size or shape.
 | :--------:                                                        | :-----------: |
 | ![beach top-crop](/assets/top-crop/beach.jpg) | ![carousel top-crop](/assets/top-crop/carousel.jpg) |
 
-Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop/width/200/height/200`
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop/width/200/height/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop/width/200/height/200)
 
 #### top-crop-down
 
 Same as the above except that it will not upscale the image.
 
-Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop-down/width/200/height/200`
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop-down/width/200/height/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/top-crop-down/width/200/height/200)
 
 #### window-crop
 
