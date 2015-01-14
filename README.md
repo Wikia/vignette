@@ -144,9 +144,23 @@ dimensions.
 | :--------:                                                        | :-----------: |
 | ![beach window-crop](/assets/window-crop/beach.jpg) | ![carousel window-crop](/assets/window-crop/carousel.jpg) |
 
-Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop/width/200/x-offset/60/y-offset/550/window-width/200/window-height/260`
+Examples: 
+ * `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop/width/200/x-offset/60/y-offset/550/window-width/200/window-height/260`
+ * `http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop/width/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900`
 
 #### window-crop-fixed
+
+Same as window-crop, except a height is specified so the canvas will be exactly
+the specified width and height with the image centered similarly to fixed-aspect-ratio.
+
+| beach.jpg                                                         | carousel.jpg |
+| :--------:                                                        | :-----------: |
+| ![beach window-crop-fixed](/assets/window-crop-fixed/beach.jpg) | ![carousel window-crop-fixed](/assets/window-crop-fixed/carousel.jpg) |
+
+Examples:
+ * `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/60/y-offset/550/window-width/200/window-height/260?fill=blue`
+ * `http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900?fill=black`
+
 #### zoom-crop
 #### zoom-crop-down
 
