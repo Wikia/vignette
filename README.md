@@ -80,6 +80,10 @@ centered either vertically or horizontally, depending on the longer dimension.
 
 Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue`
 
+
+Note that the `fill=blue` URL parameter isn’t required. It’s there to help
+illustrate the cropping behavior.
+
 #### fixed-aspect-ratio-down
 
 This behaves the same as above except that it will not upscale the image. This
@@ -161,8 +165,24 @@ Examples:
  * `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/60/y-offset/550/window-width/200/window-height/260?fill=blue`
  * `http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900?fill=black`
 
+Note that the `fill=black` URL parameter isn’t required. It’s there to help
+illustrate the cropping behavior.
+
 #### zoom-crop
+
+Zooms into the center of an image and then crops. The image rendered is to the
+dimensions specified.
+
+| beach.jpg                                                         | carousel.jpg |
+| :--------:                                                        | :-----------: |
+| ![beach zoom-crop](/assets/zoom-crop/beach.jpg) | ![carousel zoom-crop](/assets/zoom-crop/carousel.jpg) |
+
+Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200`
+
 #### zoom-crop-down
+
+Same as the above except that the image will not be upscaled-- the original
+height and width need to be larger than those specified.
 
 # License
 
