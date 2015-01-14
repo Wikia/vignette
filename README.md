@@ -151,8 +151,8 @@ dimensions.
 | ![beach window-crop](/assets/window-crop/beach.jpg) | ![carousel window-crop](/assets/window-crop/carousel.jpg) |
 
 Examples: 
- * `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop/width/200/x-offset/60/y-offset/550/window-width/200/window-height/260`
- * `http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop/width/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900`
+ * [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop/width/200/x-offset/60/y-offset/550/window-width/200/window-height/260](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop/width/200/x-offset/60/y-offset/550/window-width/200/window-height/260)
+ * [http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop/width/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900](http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop/width/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900)
 
 #### window-crop-fixed
 
@@ -164,8 +164,8 @@ the specified width and height with the image centered similarly to fixed-aspect
 | ![beach window-crop-fixed](/assets/window-crop-fixed/beach.jpg) | ![carousel window-crop-fixed](/assets/window-crop-fixed/carousel.jpg) |
 
 Examples:
- * `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/60/y-offset/550/window-width/200/window-height/260?fill=blue`
- * `http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900?fill=black`
+ * [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/60/y-offset/550/window-width/200/window-height/260?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/60/y-offset/550/window-width/200/window-height/260?fill=blue)
+ * [http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900?fill=black](http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900?fill=black)
 
 Note that the `fill=black` URL parameter isn’t required. It’s there to help
 illustrate the cropping behavior.
@@ -179,7 +179,7 @@ dimensions specified.
 | :--------:                                                        | :-----------: |
 | ![beach zoom-crop](/assets/zoom-crop/beach.jpg) | ![carousel zoom-crop](/assets/zoom-crop/carousel.jpg) |
 
-Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200`
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
 
 #### zoom-crop-down
 
