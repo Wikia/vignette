@@ -1,7 +1,7 @@
 (ns vignette.util.external-hotlinking)
 
-(def force-header-name "x-vary-string")
-(def force-header-val "forced-vignette-thumb")
+(def force-header-name "x-vignette-force-thumb")
+(def force-header-val "1")
 (def force-thumb-params {:request-type :thumbnail
                          :thumbnail-mode "scale-to-width"
                          :width "200"
