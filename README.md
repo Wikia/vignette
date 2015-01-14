@@ -49,7 +49,7 @@ All testing is done using [Midje](https://github.com/marick/Midje). Running `lei
 
 The main entry point for Vignette happens in src/vignette/http/routes.clj
 
-## Thumbnail Mode Support
+## Thumbnail Modes
 
 For testing an experimentation, vignette includes a facility for setting up integration or browser testing. To set this up,
 do the following:
@@ -64,7 +64,9 @@ user=> (i/create-integration-env)
 user=> (start system-local 8080)
 ```
 
-### Thumbnailing modes
+The links provided below were generated using the above.
+
+### Thumbnailing Modes
 
 The following examples were rendered from [beach.jpg](/image-samples/beach.jpg)
 and [carousel.jpg](/image-samples/carousel.jpg).
@@ -78,7 +80,7 @@ centered either vertically or horizontally, depending on the longer dimension.
 | :--------:                                                        | :-----------: |
 | ![beach fixed-aspect-ratio](/assets/fixed-aspect-ratio/beach.jpg) | ![carousel fixed-aspect-ratio](/assets/fixed-aspect-ratio/carousel.jpg) |
 
-Example: `http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue`
+Example: http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue
 
 
 Note that the `fill=blue` URL parameter isn’t required. It’s there to help
