@@ -35,13 +35,6 @@
   (list-buckets [this])
   (list-objects [this bucket]))
 
-(extend java.io.File
-  TransferableProtocol
-  {:transfer! (fn [from to]
-                (io/copy from
-                         (io/file to))
-                (file-exists? to))})
-
 (defrecord LocalStoredObject [file stream-close-callbacks]
   StoredObjectProtocol
   (file-stream [this]
@@ -57,8 +50,6 @@
         (close []
           (proxy-super close)
           (doall (map #(% stored-object) (:stream-close-callbacks stored-object)))))))
-
-  TransferableProtocol
   (transfer! [this to]
     (io/copy (file-stream this)
              (io/file to))

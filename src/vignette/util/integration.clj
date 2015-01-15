@@ -3,7 +3,7 @@
             [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
             [vignette.storage.core :refer [create-image-storage]]
-            [vignette.storage.local :refer [create-local-storage-system]]
+            [vignette.storage.local :refer [create-local-storage-system create-stored-object]]
             [vignette.storage.protocols :refer :all]
             [vignette.storage.s3 :as vs3])
   (:use [environ.core]))
@@ -27,7 +27,7 @@
   ([path]
    (let [local-store (create-local-storage-system path)
          image-store (create-image-storage local-store)]
-    (every? true? (map #(save-original image-store (:file-on-disk %) %)
+    (every? true? (map #(save-original image-store (create-stored-object (:file-on-disk %)) %)
                        (get-sample-image-maps)))))
   ([]
    (create-integration-env integration-path)))

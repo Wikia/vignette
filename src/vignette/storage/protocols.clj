@@ -18,7 +18,5 @@
   (file-stream [this])
   (content-length [this])
   (content-type [this])
+  (transfer! [this to])
   (->response-object [this]))
-
-(defprotocol TransferableProtocol
-  (transfer! [this to]))

@@ -10,7 +10,7 @@
             [vignette.util.integration :as i]))
 
 (facts :get-sample-image-maps
-  (first (i/get-sample-image-maps)) => (contains {:top-dir "a", :wikia "bucket", :image-type "images", :middle-dir "ab", :original "beach.jpg", :request-type :original}))
+  (keys (first (i/get-sample-image-maps))) => (contains #{:file-on-disk :top-dir :wikia :image-type :middle-dir :original :request-type}))
 
 (facts :create-integration-env
   (let [local-store (create-local-storage-system i/integration-path)
