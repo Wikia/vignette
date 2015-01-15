@@ -4,6 +4,28 @@
 
 A Clojure library for thumbnail generation and storage.
 
+# Table of Contents
+
+- [Development](#development)
+    - [Environment Variables](#environment-variables)
+    - [Testing](#testing)
+    - [Entry point](#entry-point)
+    - [Thumbnail Modes](#thumbnail-modes)
+        - [Thumbnailing Modes](#thumbnailing-modes)
+            - [fixed-aspect-ratio](#fixed-aspect-ratio)
+            - [fixed-aspect-ratio-down](#fixed-aspect-ratio-down)
+            - [scale-to-width](#scale-to-width)
+            - [thumbnail](#thumbnail)
+            - [thumbnail-down](#thumbnail-down)
+            - [top-crop](#top-crop)
+            - [top-crop-down](#top-crop-down)
+            - [window-crop](#window-crop)
+            - [window-crop-fixed](#window-crop-fixed)
+            - [zoom-crop](#zoom-crop)
+            - [zoom-crop-down](#zoom-crop-down)
+- [License](#license)
+- [Contributors](#contributors)
+
 # Development
 To run in development:
 
