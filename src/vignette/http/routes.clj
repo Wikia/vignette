@@ -110,7 +110,7 @@
                    image-params (assoc route-params :thumbnail-mode "scale-to-width"
                                                     :height :auto)]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
+                 (create-image-response thumb image-params)
                  (error-response 404 image-params))))
         (GET window-crop-route
              request
@@ -118,26 +118,26 @@
                    image-params (assoc route-params :thumbnail-mode "window-crop"
                                                     :height :auto)]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
+                 (create-image-response thumb image-params)
                  (error-response 404 image-params))))
         (GET window-crop-fixed-route
              request
              (let [route-params (image-params request :thumbnail)
                    image-params (assoc route-params :thumbnail-mode "window-crop-fixed")]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
+                 (create-image-response thumb image-params)
                  (error-response 404 image-params))))
         (GET thumbnail-route
              request
              (let [image-params (image-params request :thumbnail)]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb)
+                 (create-image-response thumb image-params)
                  (error-response 404 image-params))))
         (GET original-route
              request
              (let [image-params (image-params request :original)]
                (if-let [file (original-request->file request system image-params)]
-                 (create-image-response file)
+                 (create-image-response file image-params)
                  (error-response 404 image-params))))
 
         ; legacy routes
@@ -145,13 +145,13 @@
              request
              (let [image-params (alr/route->thumb-map (:route-params request))]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                   (create-image-response thumb)
+                   (create-image-response thumb image-params)
                    (error-response 404 image-params))))
         (GET alr/original-route
              request
              (let [image-params (alr/route->original-map (:route-params request))]
                (if-let [file (original-request->file request system image-params)]
-                 (create-image-response file)
+                 (create-image-response file image-params)
                  (error-response 404 image-params))))
         (GET "/ping" [] "pong")
         (files "/static/")

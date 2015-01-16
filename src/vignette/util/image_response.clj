@@ -29,7 +29,13 @@
    (error-response code nil)))
 
 (defn create-image-response
-  [image]
-  (-> (response (->response-object image))
-      (header "Content-Type" (content-type image))
-      (header "Content-Length" (content-length image))))
+  ([image image-map]
+    (-> (response (->response-object image))
+        (header "Content-Type" (content-type image))
+        (header "Content-Length" (content-length image))
+        (cond->
+          (:original image-map) (header "Content-Disposition"
+                                        (str "inline; filename=\""(:original image-map)"\";"
+                                             "filename*=utf=8' '\""(:original image-map)"\";")))))
+  ([image]
+    (create-image-response image nil)))
