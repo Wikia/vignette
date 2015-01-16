@@ -35,7 +35,8 @@
         (header "Content-Length" (content-length image))
         (cond->
           (:original image-map) (header "Content-Disposition"
-                                        (str "inline; filename=\""(:original image-map)"\";"
-                                             "filename*=utf=8' '\""(:original image-map)"\";")))))
+                                        (format "inline; filename=\"%s\"; filename*=utf-8' '%s"
+                                                (:original image-map)
+                                                (:original image-map))))))
   ([image]
     (create-image-response image nil)))
