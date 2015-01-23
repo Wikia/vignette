@@ -18,13 +18,6 @@
             [vignette.util.regex :refer :all]
             [vignette.util.thumbnail :as u]))
 
-(def revisionless-original-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original"
-                 {:wikia wikia-regex
-                  :image-type image-type-regex
-                  :top-dir top-dir-regex
-                  :middle-dir middle-dir-regex
-                  :original original-regex}))
 
 (def original-route
   (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
@@ -110,9 +103,6 @@
         (GET thumbnail-route
              request
              (image-request-handler system :thumbnail request))
-        (GET revisionless-original-route
-             request
-             (image-request-handler system :original request))
         (GET original-route
              request
              (image-request-handler system :original request))
