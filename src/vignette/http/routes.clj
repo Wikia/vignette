@@ -18,7 +18,6 @@
             [vignette.util.regex :refer :all]
             [vignette.util.thumbnail :as u]))
 
-
 (def original-route
   (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
                  {:wikia wikia-regex

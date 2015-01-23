@@ -152,7 +152,6 @@
       (store ..system..) => ..store..
       (sp/get-original ..store.. route-params) =throws=> (NullPointerException.))))
 
-
 (facts :window-crop-route
        (route-matches window-crop-route
                       (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/103")) =>
