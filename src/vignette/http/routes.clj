@@ -153,6 +153,12 @@
                (if-let [file (original-request->file request system image-params)]
                  (create-image-response file image-params)
                  (error-response 404 image-params))))
+        (GET alr/timeline-route
+             request
+             (let [image-params (alr/route->timeline-map (:route-params request))]
+               (if-let [file (original-request->file request system image-params)]
+                 (create-image-response file image-params)
+                 (error-response 404 image-params))))
         (GET "/ping" [] "pong")
         (files "/static/")
         (not-found "Unrecognized request path!\n"))

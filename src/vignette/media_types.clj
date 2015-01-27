@@ -55,7 +55,7 @@
 (defn original-path
   [data]
   (let [prefix (image-type->path-prefix data)
-        image-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))
+        image-path (clojure.string/join "/" (filter not-empty ((juxt top-dir middle-dir) data)))
         filename (revision-filename data)]
     (if (nil? (revision data))
       (clojure.string/join "/" [prefix image-path filename])

@@ -41,6 +41,13 @@
                   :middle-dir middle-dir-regex
                   :original original-regex}))
 
+(def timeline-route
+  (route-compile "/:wikia:path-prefix/:image-type/timeline/:original"
+                 {:wikia wikia-regex
+                  :path-prefix path-prefix-regex
+                  :image-type #"images"
+                  :original original-regex}))
+
 (defn route->thumb-map
   [route-params]
   ; order is important! mostly due to the different options changing :thumbnail-mode
@@ -60,6 +67,13 @@
                 (route->revision)
                 (route->options))]
     map))
+
+(defn route->timeline-map
+  [route-params]
+  (-> route-params
+      (assoc :request-type :original)
+      (assoc :top-dir "timeline")
+      (route->options)))
 
 (defn route->revision
   [map]
