@@ -53,6 +53,14 @@
   (:original data))
 
 (defn original-path
+  "From a request map, generate a URI for an original image. These typically
+  take the form of one of the following:
+
+  /bucket/images/a/ab/original.ext
+  /bucket/avatars/a/ab/original.ext
+  /bucket/lang/images/a/ab/original.ext
+  /bucket/lang/images/timeline/original.ext
+  "
   [data]
   (let [prefix (image-type->path-prefix data)
         image-path (clojure.string/join "/" (filter not-empty ((juxt top-dir middle-dir) data)))
