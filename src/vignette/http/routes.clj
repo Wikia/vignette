@@ -79,20 +79,7 @@
                   :revision revision-regex
                   :width size-regex}))
 
-(defn route-params->image-type
-  [route-params]
-  (if (clojure.string/blank? (:image-type route-params))
-    "images"
-    (clojure.string/replace (:image-type route-params)
-                            #"^\/(.*)"
-                            "$1")))
-
-(defn image-params
-  [request request-type]
-  (let [route-params (assoc (:route-params request) :request-type request-type)
-        options (extract-query-opts request)]
-    (assoc route-params :options options
-                        :image-type (route-params->image-type route-params))))
+(declare image-request-handler)
 
 (defn original-request->file
   [request system image-params]
@@ -106,39 +93,25 @@
   (-> (routes
         (GET scale-to-width-route
              request
-             (let [route-params (image-params request :thumbnail)
-                   image-params (assoc route-params :thumbnail-mode "scale-to-width"
-                                                    :height :auto)]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb image-params)
-                 (error-response 404 image-params))))
+             (image-request-handler system :thumbnail request
+                                    :thumbnail-mode "scale-to-width"
+                                    :height :auto))
         (GET window-crop-route
              request
-             (let [route-params (image-params request :thumbnail)
-                   image-params (assoc route-params :thumbnail-mode "window-crop"
-                                                    :height :auto)]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb image-params)
-                 (error-response 404 image-params))))
+             (image-request-handler system :thumbnail request
+                                    :thumbnail-mode "window-crop"
+                                    :height :auto))
         (GET window-crop-fixed-route
              request
-             (let [route-params (image-params request :thumbnail)
-                   image-params (assoc route-params :thumbnail-mode "window-crop-fixed")]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb image-params)
-                 (error-response 404 image-params))))
+             (image-request-handler system :thumbnail request
+                                    :thumbnail-mode "window-crop-fixed"
+                                    :height :auto))
         (GET thumbnail-route
              request
-             (let [image-params (image-params request :thumbnail)]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb image-params)
-                 (error-response 404 image-params))))
+             (image-request-handler system :thumbnail request))
         (GET original-route
              request
-             (let [image-params (image-params request :original)]
-               (if-let [file (original-request->file request system image-params)]
-                 (create-image-response file image-params)
-                 (error-response 404 image-params))))
+             (image-request-handler system :original request))
 
         ; legacy routes
         (GET alr/thumbnail-route
@@ -164,5 +137,45 @@
         (not-found "Unrecognized request path!\n"))
       (wrap-params)
       (exception-catcher)
-      (add-headers)
-      (request-timer)))
+      (request-timer)
+      (add-headers)))
+
+(declare handle-thumbnail
+         handle-original
+         image-params
+         route-params->image-type)
+
+(defn image-request-handler
+  [system request-type request &{:keys [thumbnail-mode height] :or {thumbnail-mode nil height nil} :as params}]
+  (let [image-params (image-params request request-type)
+        image-params (if params (merge image-params params) image-params)]
+    (condp = request-type
+      :thumbnail (handle-thumbnail system image-params)
+      :original (handle-original system image-params))))
+
+(defn handle-thumbnail
+  [system image-params]
+  (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+    (create-image-response thumb)
+    (error-response 404 image-params)))
+
+(defn handle-original
+  [system image-params]
+  (if-let [file (get-original (store system) image-params)]
+    (create-image-response file)
+    (error-response 404 image-params)))
+
+(defn image-params
+  [request request-type]
+  (let [route-params (assoc (:route-params request) :request-type request-type)
+        options (extract-query-opts request)]
+    (assoc route-params :options options
+                        :image-type (route-params->image-type route-params))))
+
+(defn route-params->image-type
+  [route-params]
+  (if (clojure.string/blank? (:image-type route-params))
+    "images"
+    (clojure.string/replace (:image-type route-params)
+                            #"^\/(.*)"
+                            "$1")))

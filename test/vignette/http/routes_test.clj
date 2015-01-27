@@ -5,11 +5,50 @@
             [ring.mock.request :refer :all]
             [vignette.http.routes :refer :all]
             [vignette.protocols :refer :all]
+            [vignette.util.image-response :refer :all]
+            [vignette.storage.core :refer :all]
             [vignette.storage.local :as ls]
             [vignette.storage.protocols :as sp]
             [vignette.util.image-response :as ir]
             [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
+
+(facts :image-request-handler
+  (image-request-handler {} :foo {}) => (throws IllegalArgumentException)
+
+  (image-request-handler ..system.. :thumbnail ..request..) => ..response..
+  (provided
+    (image-params ..request.. :thumbnail) => ..params..
+    (handle-thumbnail ..system.. ..params..) => ..response..)
+
+  (image-request-handler ..system.. :original ..request..) => ..response..
+  (provided
+    (image-params ..request.. :original) => ..params..
+    (handle-original ..system.. ..params..) => ..response..))
+
+(facts :handle-thumbnail
+  (handle-thumbnail ..system.. ..params..) => ..response..
+  (provided
+    (u/get-or-generate-thumbnail ..system.. ..params..) => ..thumb..
+    (create-image-response ..thumb..) => ..response..)
+
+  (handle-thumbnail ..system.. ..params..) => ..error..
+  (provided
+    (u/get-or-generate-thumbnail ..system.. ..params..) => nil
+    (error-response 404 ..params..) => ..error..))
+
+(facts :handle-original
+  (handle-original ..system.. ..params..) => ..response..
+  (provided
+    (store ..system..) => ..store..
+    (sp/get-original ..store.. ..params..) => ..original..
+    (create-image-response ..original..) => ..response..)
+
+  (handle-original ..system.. ..params..) => ..error..
+  (provided
+    (store ..system..) => ..store..
+    (sp/get-original ..store.. ..params..) => nil
+    (error-response 404 ..params..) => ..error..))
 
 (facts :original-route
   (route-matches original-route (request :get "/swift/v1")) => falsey
