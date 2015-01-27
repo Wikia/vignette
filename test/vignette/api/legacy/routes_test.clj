@@ -147,3 +147,15 @@
          (:original map) => "Flag_of_Europe.svg"
          (:revision map) => "latest"
          (:path-prefix (:options map)) => "fr"))
+
+(facts :timeline-route
+  (let [map (alr/route->timeline-map
+              (route-matches alr/timeline-route
+                             (request :get "/television/es/images/timeline/bbe457792492f1b89f21a45aa6ca6088.png")))]
+    (:request-type map) => :original
+    (:top-dir map) => "timeline"
+    (:middle-dir map) => nil
+    (:wikia map) => "television"
+    (:path-prefix (:options map)) => "es"
+    (:original map) => "bbe457792492f1b89f21a45aa6ca6088.png"
+    (:image-type map) => "images"))

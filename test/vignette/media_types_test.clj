@@ -32,6 +32,15 @@
 
 (def lang-original-map (assoc original-map :options {:lang "es"}))
 
+
+(def timeline-file "bbe457792492f1b89f21a45aa6ca6088.jpg")
+(def timeline-map {:wikia "television"
+                   :image-type "images"
+                   :top-dir "timeline"
+                   :original timeline-file
+                   :revision "latest"
+                   :options {:path-prefix "es"}})
+
 (facts :revision
        (revision archive-map) => "12345"
        (revision latest-map) => nil)
@@ -62,3 +71,6 @@
 (facts :fill-path
        (thumbnail-path (assoc-in lang-map [:options :fill] "purple")) => "es/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[fill=purple]-boat.jpg"
        (original-path lang-original-map) => "es/images/2/2a/Injustice_Vol2_1.jpg")
+
+(facts :timeline-path
+  (original-path timeline-map) => (str "es/images/timeline/" timeline-file))
