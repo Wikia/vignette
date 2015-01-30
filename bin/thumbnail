@@ -372,10 +372,15 @@ function svg_preoptions() {
 	local default_density=72
 	local orig_height=$($IDENTIFY -format "%h\n" "$IN" | head -1)
 	local orig_width=$($IDENTIFY -format "%w\n" "$IN" | head -1)
-	local width_density=`echo "(1.5 * ${WIDTH}) / (${orig_width} / ${default_density})" | bc -l`
-	local height_density=`echo "(1.5 * ${HEIGHT}) / (${orig_height} / ${default_density})" | bc -l`
 
-	THUMB_PRE_OPTIONS="-background none -density ${width_density}x${height_density}"
+	if [[ ${orig_width} -gt ${WIDTH} || ${orig_height} -gt ${HEIGHT} ]]; then
+		THUMB_PRE_OPTIONS="-background none"
+	else
+		local width_density=`echo "(1.5 * ${WIDTH}) / (${orig_width} / ${default_density})" | bc -l`
+		local height_density=`echo "(1.5 * ${HEIGHT}) / (${orig_height} / ${default_density})" | bc -l`
+
+		THUMB_PRE_OPTIONS="-background none -density ${width_density}x${height_density}"
+	fi
 }
 
 function thumb() {
