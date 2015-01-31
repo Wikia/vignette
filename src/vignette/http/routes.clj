@@ -142,12 +142,12 @@
 
 (declare handle-thumbnail
          handle-original
-         image-params
+         get-image-params
          route-params->image-type)
 
 (defn image-request-handler
   [system request-type request &{:keys [thumbnail-mode height] :or {thumbnail-mode nil height nil} :as params}]
-  (let [image-params (image-params request request-type)
+  (let [image-params (get-image-params request request-type)
         image-params (if params (merge image-params params) image-params)]
     (condp = request-type
       :thumbnail (handle-thumbnail system image-params)
@@ -156,16 +156,16 @@
 (defn handle-thumbnail
   [system image-params]
   (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-    (create-image-response thumb)
+    (create-image-response thumb image-params)
     (error-response 404 image-params)))
 
 (defn handle-original
   [system image-params]
   (if-let [file (get-original (store system) image-params)]
-    (create-image-response file)
+    (create-image-response file image-params)
     (error-response 404 image-params)))
 
-(defn image-params
+(defn get-image-params
   [request request-type]
   (let [route-params (assoc (:route-params request) :request-type request-type)
         options (extract-query-opts request)]
