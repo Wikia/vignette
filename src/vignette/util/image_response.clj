@@ -8,6 +8,7 @@
             [vignette.util.thumbnail :refer :all]))
 
 (declare create-image-response
+         add-content-disposition-header
          add-surrogate-header
          surrogate-key)
 
@@ -38,14 +39,18 @@
        (header "Content-Length" (content-length image))
        (header "X-Thumbnailer" "Vignette")
        (cond->
-         (original image-map) (header "Content-Disposition"
-                                       (format "inline; filename=\"%s\""
-                                               (:original image-map)))
+         (original image-map) (add-content-disposition-header image-map)
          (and (wikia image-map)
               (original image-map)
               (image-type image-map)) (add-surrogate-header image-map))))
   ([image]
     (create-image-response image nil)))
+
+(defn add-content-disposition-header
+  [response-map image-map]
+  (header response-map "Content-Disposition"
+          (format "inline; filename=\"%s\""
+                  (original image-map))))
 
 (defn add-surrogate-header
   [response-map image-map]
