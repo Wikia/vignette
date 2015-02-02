@@ -17,5 +17,5 @@
                           :original)
         response (create-image-response (create-stored-object "image-samples/ropes.jpg")  image-map)
         response-headers (:headers response)]
-    (get response-headers "Surrogate-Key") => "lotr/images/3/35/ropes.jpg"
+    (get response-headers "Surrogate-Key") => "7d1d24f2c2af364882953e8c97bf90092c2f7a08"
     (get response-headers "Content-Disposition") => "inline; filename=\"ropes.jpg\""))

@@ -55,7 +55,9 @@
 
 (facts :thumbnail-path
        (thumbnail-path archive-map) => "images/thumb/archive/a/ab/12345!boat.jpg/200px-300px-thumbnail-boat.jpg"
-       (thumbnail-path latest-map) => "images/thumb/a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg")
+       (thumbnail-path latest-map) => "images/thumb/a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg"
+       (fully-qualified-original-path latest-map) => "bucket/images/a/ab/boat.jpg"
+       (fully-qualified-original-path archive-map) => "bucket/images/archive/a/ab/12345!boat.jpg")
 
 (facts :thumbnail-path-filled
        (thumbnail-path filled-map) => "images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[fill=green]-boat.jpg")
@@ -63,7 +65,9 @@
 ; Neither of these should modify the resulting filename since they don't have sideffects
 (facts :lang-path
        (thumbnail-path lang-map) => "es/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg"
-       (original-path lang-original-map) => "es/images/2/2a/Injustice_Vol2_1.jpg")
+       (original-path lang-original-map) => "es/images/2/2a/Injustice_Vol2_1.jpg"
+       (fully-qualified-original-path lang-map) => "bucket/es/images/a/ab/boat.jpg"
+       (fully-qualified-original-path lang-original-map) => "batman/es/images/2/2a/Injustice_Vol2_1.jpg")
 
 (facts :prefix-path
        (thumbnail-path prefix-path-map) => "pokemanshop/zh/de/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg")
@@ -73,4 +77,5 @@
        (original-path lang-original-map) => "es/images/2/2a/Injustice_Vol2_1.jpg")
 
 (facts :timeline-path
-  (original-path timeline-map) => (str "es/images/timeline/" timeline-file))
+  (original-path timeline-map) => (str "es/images/timeline/" timeline-file)
+  (fully-qualified-original-path timeline-map) => (str "television/es/images/timeline/" timeline-file))
