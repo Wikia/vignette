@@ -25,12 +25,11 @@
 
 (def filled-map (assoc latest-map :options {:fill "green"}))
 
-(def lang-map (assoc latest-map :options {:lang "es"}))
+(def lang-map (assoc latest-map :options {:path-prefix "es"}))
 
-(def prefix-path-map (assoc latest-map :options {:lang "de"
-                                                 :path-prefix "pokemanshop/zh"}))
+(def prefix-path-map (assoc latest-map :options {:path-prefix "pokemanshop/zh/de"}))
 
-(def lang-original-map (assoc original-map :options {:lang "es"}))
+(def lang-original-map (assoc original-map :options {:path-prefix "es"}))
 
 
 (def timeline-file "bbe457792492f1b89f21a45aa6ca6088.jpg")

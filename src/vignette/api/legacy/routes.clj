@@ -16,12 +16,14 @@
 (def offset-regex #"(?i)-{0,1}\d+,\d+,-{0,1}\d+,\d+-|-{0,1}\d+%2c\d+%2c-{0,1}\d+%2c\d+-|")
 (def thumbname-regex #".*?")
 (def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
+(def zone-regex #"\/[a-z]+|")
 
 (def thumbnail-route
-  (route-compile "/:wikia:path-prefix/:image-type/thumb:archive/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
+  (route-compile "/:wikia:path-prefix/:image-type/thumb:zone:archive/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
                  {:wikia wikia-regex
                   :path-prefix path-prefix-regex
                   :image-type #"images|avatars"
+                  :zone zone-regex
                   :archive archive-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
@@ -32,10 +34,11 @@
                   :thumbname thumbname-regex}))
 
 (def original-route
-  (route-compile "/:wikia:path-prefix/:image-type:archive/:top-dir/:middle-dir/:original"
+  (route-compile "/:wikia:path-prefix/:image-type:zone:archive/:top-dir/:middle-dir/:original"
                  {:wikia wikia-regex
                   :path-prefix path-prefix-regex
                   :image-type #"images|avatars"
+                  :zone zone-regex
                   :archive archive-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
@@ -90,9 +93,11 @@
   [map]
   (let [[_ format] (re-find #"(?i)\.([a-z]+)$" (get map :thumbname ""))
         [_ path-prefix] (re-find #"^/([/a-z]+)$" (get map :path-prefix ""))
-        options {}
-        options (if format (assoc options :format (.toLowerCase format)) options)
-        options (if path-prefix (assoc options :path-prefix path-prefix) options)]
+        [_ zone] (re-find #"^/([a-z]+)$" (get map :zone))
+        options (cond-> {}
+                     format (assoc :format (.toLowerCase format))
+                     path-prefix (assoc :path-prefix path-prefix)
+                     zone (assoc :zone zone))]
     (assoc map :options options)))
 
 (defn route->dimensions
