@@ -4,14 +4,15 @@
 
 (declare original
          thumbnail
-         thumb-map->path)
+         thumb-map->path
+         image-type)
 
 (def archive-dir "archive")
 
-(defmulti image-type->path-prefix (fn [object-map] (:image-type object-map)))
+(defmulti image-type->path-prefix (fn [object-map] (image-type object-map)))
 
 (defmethod image-type->path-prefix "avatars" [object-map]
-  (:image-type object-map))
+  (image-type object-map))
 
 (defmethod image-type->path-prefix "images" [object-map]
   "
@@ -20,13 +21,13 @@
     this is needed because mediawiki supports these in filerepo->getZoneUrl
   "
   (let [path-prefix (query-opt object-map :path-prefix)
-        image-type (:image-type object-map)
+        image-type (image-type object-map)
         zone (query-opt object-map :zone)]
     (clojure.string/join "/" (filter not-empty [path-prefix image-type zone]))))
 
 (defmethod image-type->path-prefix :default [object-map]
   (throw+ {:type :convert-error
-           :image-type (:image-type object-map)}
+           :image-type (image-type object-map)}
           "unsupported image type"))
 
 (defn thumb-map->prefix [object-map]
@@ -57,14 +58,22 @@
   [data]
   (:original data))
 
+(defn wikia
+  [data]
+  (:wikia data))
+
+(defn image-type
+  [data]
+  (:image-type data))
+
 (defn original-path
   "From a request map, generate a URI for an original image. These typically
   take the form of one of the following:
 
-  /bucket/images/a/ab/original.ext
-  /bucket/avatars/a/ab/original.ext
-  /bucket/lang/images/a/ab/original.ext
-  /bucket/lang/images/timeline/original.ext
+  images/a/ab/original.ext
+  avatars/a/ab/original.ext
+  lang/images/a/ab/original.ext
+  lang/images/timeline/original.ext
   "
   [data]
   (let [prefix (image-type->path-prefix data)
@@ -74,9 +83,11 @@
       (clojure.string/join "/" [prefix image-path filename])
       (clojure.string/join "/" [prefix archive-dir image-path filename]))))
 
-(defn wikia
+(defn fully-qualified-original-path
+  "The fully qualified original path includes the bucket. This can be used as a
+  key to uniquely identify the image."
   [data]
-  (:wikia data))
+  (format "%s/%s" (wikia data) (original-path data)))
 
 (defn mode
   [data]
