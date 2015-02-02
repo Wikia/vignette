@@ -19,6 +19,12 @@
   path-prefix comes before the image-type, and can be a language code (ex: 'es') or a path (ex: /some/dir)
   zone is further distinction of what type of image. For instance, 'temp' indicates the image is a temporary image.
     this is needed because mediawiki supports these in filerepo->getZoneUrl
+
+  examples:
+    es/images/temp (path-prefix, image-type, and zone)
+    es/images (path-prefix and image-type)
+    images/temp (image-type and zone)
+    images (only image-type)
   "
   (let [path-prefix (query-opt object-map :path-prefix)
         image-type (image-type object-map)

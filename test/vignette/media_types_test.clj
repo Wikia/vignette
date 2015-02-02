@@ -31,6 +31,8 @@
 
 (def lang-original-map (assoc original-map :options {:path-prefix "es"}))
 
+(def zone-original-map (assoc original-map :options {:zone "temp"}))
+
 
 (def timeline-file "bbe457792492f1b89f21a45aa6ca6088.jpg")
 (def timeline-map {:wikia "television"
@@ -70,6 +72,11 @@
 (facts :fill-path
        (thumbnail-path (assoc-in lang-map [:options :fill] "purple")) => "es/images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[fill=purple]-boat.jpg"
        (original-path lang-original-map) => "es/images/2/2a/Injustice_Vol2_1.jpg")
+
+(facts :zone-path
+       (original-path zone-original-map) => "images/temp/2/2a/Injustice_Vol2_1.jpg"
+       (thumbnail-path (assoc latest-map :options {:zone "temp"})) => "images/temp/thumb/a/ab/boat.jpg/200px-300px-thumbnail[zone=temp]-boat.jpg"
+       (thumbnail-path (assoc archive-map :options {:zone "temp"})) => "images/temp/thumb/archive/a/ab/12345!boat.jpg/200px-300px-thumbnail[zone=temp]-boat.jpg")
 
 (facts :timeline-path
   (original-path timeline-map) => (str "es/images/timeline/" timeline-file))
