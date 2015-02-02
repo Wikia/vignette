@@ -124,6 +124,16 @@
     (:top-dir matched) => "4"
     (:middle-dir matched) => "40"
     (:original matched) => "JohnvanBruggen.jpg"
+    (:width matched) => "200")
+  (let [matched (route-matches alr/thumbnail-route
+                               (request :get "/muppet/images/thumb/temp/4/40/JohnvanBruggen.jpg/200px-JohnvanBruggen.jpg"))
+        matched (alr/route->thumb-map matched)]
+    (:thumbnail-mode matched) => "scale-to-width"
+    (alr/zone matched) => "temp"
+    (:wikia matched) => "muppet"
+    (:top-dir matched) => "4"
+    (:middle-dir matched) => "40"
+    (:original matched) => "JohnvanBruggen.jpg"
     (:width matched) => "200"))
 
 (facts :original-route
@@ -142,6 +152,17 @@
                                   (request :get "/aigles-et-lys/fr/images/b/b7/Flag_of_Europe.svg")))]
          (:request-type map) => :original
          (:wikia map) => "aigles-et-lys"
+         (:top-dir map) => "b"
+         (:middle-dir map) => "b7"
+         (:original map) => "Flag_of_Europe.svg"
+         (:revision map) => "latest"
+         (:path-prefix (:options map)) => "fr")
+       (let [map (alr/route->original-map
+                   (route-matches alr/original-route
+                                  (request :get "/aigles-et-lys/fr/images/temp/b/b7/Flag_of_Europe.svg")))]
+         (:request-type map) => :original
+         (:wikia map) => "aigles-et-lys"
+         (alr/zone map) => "temp"
          (:top-dir map) => "b"
          (:middle-dir map) => "b7"
          (:original map) => "Flag_of_Europe.svg"
