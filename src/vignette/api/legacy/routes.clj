@@ -1,6 +1,7 @@
 (ns vignette.api.legacy.routes
   (:require [clout.core :refer [route-compile route-matches]]
             [useful.experimental :refer [cond-let]]
+            [vignette.media-types :refer [archive-dir]]
             [vignette.util.regex :refer :all])
   (:import [java.net URLDecoder]))
 
@@ -10,21 +11,19 @@
          route->thumb-mode
          route->options)
 
-(def archive-regex #"\/archive|")
 (def path-prefix-regex #"\/[/a-z-]+|")
 (def dimension-regex #"\d+px-|\d+x\d+-|\d+x\d+x\d+-|")
 (def offset-regex #"(?i)-{0,1}\d+,\d+,-{0,1}\d+,\d+-|-{0,1}\d+%2c\d+%2c-{0,1}\d+%2c\d+-|")
 (def thumbname-regex #".*?")
 (def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
-(def zone-regex #"\/[a-z]+|")
+(def zone-regex #"\/[a-z]+|") ; includes "archive"
 
 (def thumbnail-route
-  (route-compile "/:wikia:path-prefix/:image-type/thumb:zone:archive/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
+  (route-compile "/:wikia:path-prefix/:image-type/thumb:zone/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
                  {:wikia wikia-regex
                   :path-prefix path-prefix-regex
                   :image-type #"images|avatars"
                   :zone zone-regex
-                  :archive archive-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
@@ -34,12 +33,11 @@
                   :thumbname thumbname-regex}))
 
 (def original-route
-  (route-compile "/:wikia:path-prefix/:image-type:zone:archive/:top-dir/:middle-dir/:original"
+  (route-compile "/:wikia:path-prefix/:image-type:zone/:top-dir/:middle-dir/:original"
                  {:wikia wikia-regex
                   :path-prefix path-prefix-regex
                   :image-type #"images|avatars"
                   :zone zone-regex
-                  :archive archive-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex}))
@@ -50,6 +48,16 @@
                   :path-prefix path-prefix-regex
                   :image-type #"images"
                   :original original-regex}))
+
+(defn archive? [map]
+  (= (:zone map) (str "/" archive-dir)))
+
+(defn zone [map]
+  (if (and (:zone map)
+           (not (archive? map)))
+    (let [[_ zone] (re-find #"^/([a-z]+)$" (get map :zone ""))]
+      zone)
+    nil))
 
 (defn route->thumb-map
   [route-params]
@@ -80,7 +88,7 @@
 
 (defn route->revision
   [map]
-  (let [revision (if (and (not= (:archive map) "")
+  (let [revision (if (and (archive? map)
                           (re-matches #"^\d+!.*" (:original map)))
                    (re-find #"^\d+" (:original map))
                    "latest")
@@ -93,7 +101,7 @@
   [map]
   (let [[_ format] (re-find #"(?i)\.([a-z]+)$" (get map :thumbname ""))
         [_ path-prefix] (re-find #"^/([/a-z]+)$" (get map :path-prefix ""))
-        [_ zone] (re-find #"^/([a-z]+)$" (get map :zone))
+        zone (zone map)
         options (cond-> {}
                      format (assoc :format (.toLowerCase format))
                      path-prefix (assoc :path-prefix path-prefix)

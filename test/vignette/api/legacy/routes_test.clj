@@ -9,7 +9,7 @@
                                (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.webp"))
         matched (alr/route->thumb-map matched)]
     (:request-type matched) => :thumbnail
-    (:archive matched) => ""
+    (alr/archive? matched) => false
     (:original matched) => "SuperMario64_20.png"
     (:middle-dir matched) => "bb"
     (:top-dir matched) => "b"
@@ -26,7 +26,7 @@
     (:request-type matched) => :thumbnail
     (:wikia matched) => "charmed"
     (:image-type matched) => "images"
-    (:archive matched) => "/archive"
+    (alr/archive? matched) => true
     (:top-dir matched) => "b"
     (:middle-dir matched) => "b6"
     (:original matched) => "6x01-Phoebe.jpg"
@@ -42,7 +42,7 @@
     (:request-type matched) => :thumbnail
     (:wikia matched) => "charmed"
     (:image-type matched) => "images"
-    (:archive matched) => "/archive"
+    (alr/archive? matched) => true
     (:top-dir matched) => "b"
     (:middle-dir matched) => "b6"
     (:original matched) => "6x01-Phoebe.jpg"
@@ -69,7 +69,7 @@
                                (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-0,120,0,240-SuperMario64_20.webp"))
         matched (alr/route->thumb-map matched)]
     (:request-type matched) => :thumbnail
-    (:archive matched) => ""
+    (alr/archive? matched) => false
     (:original matched) => "SuperMario64_20.png"
     (:middle-dir matched) => "bb"
     (:top-dir matched) => "b"
