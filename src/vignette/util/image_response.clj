@@ -28,7 +28,7 @@
 (defn error-response
   ([code map]
    (if-let [image (error-image map)]
-     (status (create-image-response image) code)
+     (status (create-image-response image map) code)
      (not-found "Unable to fetch or generate image")))
   ([code]
    (error-response code nil)))
