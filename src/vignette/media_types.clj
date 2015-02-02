@@ -14,10 +14,15 @@
   (:image-type object-map))
 
 (defmethod image-type->path-prefix "images" [object-map]
+  "
+  path-prefix comes before the image-type, and can be a language code (ex: 'es') or a path (ex: /some/dir)
+  zone is further distinction of what type of image. For instance, 'temp' indicates the image is a temporary image.
+    this is needed because mediawiki supports these in filerepo->getZoneUrl
+  "
   (let [path-prefix (query-opt object-map :path-prefix)
-        zone (query-opt object-map :zone)
-        prefix (:image-type object-map)]
-    (clojure.string/join "/" (filter not-empty [path-prefix prefix zone]))))
+        image-type (:image-type object-map)
+        zone (query-opt object-map :zone)]
+    (clojure.string/join "/" (filter not-empty [path-prefix image-type zone]))))
 
 (defmethod image-type->path-prefix :default [object-map]
   (throw+ {:type :convert-error
