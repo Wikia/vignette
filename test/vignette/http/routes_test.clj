@@ -18,19 +18,19 @@
 
   (image-request-handler ..system.. :thumbnail ..request..) => ..response..
   (provided
-    (image-params ..request.. :thumbnail) => ..params..
+    (get-image-params ..request.. :thumbnail) => ..params..
     (handle-thumbnail ..system.. ..params..) => ..response..)
 
   (image-request-handler ..system.. :original ..request..) => ..response..
   (provided
-    (image-params ..request.. :original) => ..params..
+    (get-image-params ..request.. :original) => ..params..
     (handle-original ..system.. ..params..) => ..response..))
 
 (facts :handle-thumbnail
   (handle-thumbnail ..system.. ..params..) => ..response..
   (provided
     (u/get-or-generate-thumbnail ..system.. ..params..) => ..thumb..
-    (create-image-response ..thumb..) => ..response..)
+    (create-image-response ..thumb.. ..params..) => ..response..)
 
   (handle-thumbnail ..system.. ..params..) => ..error..
   (provided
@@ -42,7 +42,7 @@
   (provided
     (store ..system..) => ..store..
     (sp/get-original ..store.. ..params..) => ..original..
-    (create-image-response ..original..) => ..response..)
+    (create-image-response ..original.. ..params..) => ..response..)
 
   (handle-original ..system.. ..params..) => ..error..
   (provided
