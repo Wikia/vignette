@@ -15,9 +15,9 @@
 
 (defmethod image-type->path-prefix "images" [object-map]
   (let [path-prefix (query-opt object-map :path-prefix)
-        lang (query-opt object-map :lang)
+        zone (query-opt object-map :zone)
         prefix (:image-type object-map)]
-    (clojure.string/join "/" (filter not-empty [path-prefix lang prefix]))))
+    (clojure.string/join "/" (filter not-empty [path-prefix prefix zone]))))
 
 (defmethod image-type->path-prefix :default [object-map]
   (throw+ {:type :convert-error

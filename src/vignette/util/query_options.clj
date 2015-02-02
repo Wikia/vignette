@@ -9,9 +9,9 @@
 ; regex of valid inputs for query arg
 (def query-opts-map {:fill (create-query-opt #"^#[a-g0-9]+$|^\w+$")
                      :format (create-query-opt #"^\w+$")
-                     :lang (create-query-opt #"^\w+$" false)
                      :path-prefix (create-query-opt #"[\w\.\/-]+" false)
-                     :replace (create-query-opt #"^true$" false)})
+                     :replace (create-query-opt #"^true$" false)
+                     :zone (create-query-opt #"\w+")})
 
 (defn query-opt-regex
   [query-opt]
