@@ -9,7 +9,7 @@
                                (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.webp"))
         matched (alr/route->thumb-map matched)]
     (:request-type matched) => :thumbnail
-    (:archive matched) => ""
+    (alr/archive? matched) => false
     (:original matched) => "SuperMario64_20.png"
     (:middle-dir matched) => "bb"
     (:top-dir matched) => "b"
@@ -26,7 +26,7 @@
     (:request-type matched) => :thumbnail
     (:wikia matched) => "charmed"
     (:image-type matched) => "images"
-    (:archive matched) => "/archive"
+    (alr/archive? matched) => true
     (:top-dir matched) => "b"
     (:middle-dir matched) => "b6"
     (:original matched) => "6x01-Phoebe.jpg"
@@ -42,7 +42,7 @@
     (:request-type matched) => :thumbnail
     (:wikia matched) => "charmed"
     (:image-type matched) => "images"
-    (:archive matched) => "/archive"
+    (alr/archive? matched) => true
     (:top-dir matched) => "b"
     (:middle-dir matched) => "b6"
     (:original matched) => "6x01-Phoebe.jpg"
@@ -69,7 +69,7 @@
                                (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-0,120,0,240-SuperMario64_20.webp"))
         matched (alr/route->thumb-map matched)]
     (:request-type matched) => :thumbnail
-    (:archive matched) => ""
+    (alr/archive? matched) => false
     (:original matched) => "SuperMario64_20.png"
     (:middle-dir matched) => "bb"
     (:top-dir matched) => "b"
@@ -124,6 +124,16 @@
     (:top-dir matched) => "4"
     (:middle-dir matched) => "40"
     (:original matched) => "JohnvanBruggen.jpg"
+    (:width matched) => "200")
+  (let [matched (route-matches alr/thumbnail-route
+                               (request :get "/muppet/images/thumb/temp/4/40/JohnvanBruggen.jpg/200px-JohnvanBruggen.jpg"))
+        matched (alr/route->thumb-map matched)]
+    (:thumbnail-mode matched) => "scale-to-width"
+    (alr/zone matched) => "temp"
+    (:wikia matched) => "muppet"
+    (:top-dir matched) => "4"
+    (:middle-dir matched) => "40"
+    (:original matched) => "JohnvanBruggen.jpg"
     (:width matched) => "200"))
 
 (facts :original-route
@@ -142,6 +152,17 @@
                                   (request :get "/aigles-et-lys/fr/images/b/b7/Flag_of_Europe.svg")))]
          (:request-type map) => :original
          (:wikia map) => "aigles-et-lys"
+         (:top-dir map) => "b"
+         (:middle-dir map) => "b7"
+         (:original map) => "Flag_of_Europe.svg"
+         (:revision map) => "latest"
+         (:path-prefix (:options map)) => "fr")
+       (let [map (alr/route->original-map
+                   (route-matches alr/original-route
+                                  (request :get "/aigles-et-lys/fr/images/temp/b/b7/Flag_of_Europe.svg")))]
+         (:request-type map) => :original
+         (:wikia map) => "aigles-et-lys"
+         (alr/zone map) => "temp"
          (:top-dir map) => "b"
          (:middle-dir map) => "b7"
          (:original map) => "Flag_of_Europe.svg"
