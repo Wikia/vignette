@@ -2,6 +2,7 @@
   (:require [clojure.java.io :refer [file]]
             [compojure.route :refer [not-found]]
             [ring.util.response :refer [response status header]]
+            [digest :as digest]
             [vignette.media-types :refer :all]
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.storage.protocols :refer :all]
@@ -27,7 +28,7 @@
 (defn error-response
   ([code map]
    (if-let [image (error-image map)]
-     (status (create-image-response image) code)
+     (status (create-image-response image map) code)
      (not-found "Unable to fetch or generate image")))
   ([code]
    (error-response code nil)))
@@ -62,6 +63,6 @@
 (defn surrogate-key
   [image-map]
   (try
-    (fully-qualified-original-path image-map)
+    (digest/sha1 (fully-qualified-original-path image-map))
     (catch Exception e
       (str "vignette-"(:original image-map)))))

@@ -121,7 +121,7 @@
     (provided
      (u/get-or-generate-thumbnail ..system.. route-params) => nil
      (ir/error-image route-params) => ..thumb..
-     (ir/create-image-response ..thumb..) => {})
+     (ir/create-image-response ..thumb.. route-params) => {})
 
     ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 500})
     (provided
