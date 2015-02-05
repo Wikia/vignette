@@ -3,7 +3,7 @@
             [clojure.java.io :as io]
             [clout.core :refer [route-compile route-matches]]
             [compojure.core :refer [routes GET ANY]]
-            [compojure.route :refer [files not-found]]
+            [compojure.route :refer [files]]
             [environ.core :refer [env]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :refer [response status charset header]]
@@ -134,7 +134,7 @@
                  (error-response 404 image-params))))
         (GET "/ping" [] "pong")
         (files "/static/")
-        (not-found "Unrecognized request path!\n"))
+        (bad-request-path))
       (wrap-params)
       (exception-catcher)
       (request-timer)

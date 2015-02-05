@@ -1,5 +1,6 @@
 (ns vignette.http.middleware
   (:require [environ.core :refer [env]]
+            [compojure.response :refer [render]]
             [ring.util.response :refer [response status charset header]]
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.util.image-response :refer :all]
@@ -20,14 +21,14 @@
               response-code (or (:response-code e) 500)
               context (assoc (dissoc e :type :thumb-map :response-code) :host hostname)]
           (perf/publish {:convert-error 1})
-          (println message)
+          (println message ":" (:uri request))
           (log/warn message
                     (merge {:path (:uri request)
                             :query (:query-string request)}
                            context))
           (error-response response-code thumb-map)))
       (catch Exception e
-        (println (.getMessage e))
+        (println (.getMessage e) ":" (:uri request))
         (perf/publish {:exception-count 1})
         (log/warn (str e) {:path (:uri request)
                            :query (:query-string request)})
@@ -46,7 +47,16 @@
           (header "X-Cache-Hits" "ORIGIN")
           (header "Connection" "close")))))
 
-(defn request-timer [handler]
+(defn request-timer
+  [handler]
   (fn [request]
     (perf/publish {:request-count 1})
     (perf/timing :request-time (handler request))))
+
+(defn bad-request-path
+  []
+  (fn [request]
+    (perf/publish {:bad-request-path-count 1})
+    (log/warn (str "bad-request-path: " (:uri request)))
+    (-> (render "Unrecognized request path!\nSee https://github.com/Wikia/vignette for documentation.\n" request)
+        (status 404))))
