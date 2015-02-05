@@ -132,6 +132,12 @@
                (if-let [file (original-request->file request system image-params)]
                  (create-image-response file image-params)
                  (error-response 404 image-params))))
+        (GET alr/math-route
+             request
+             (let [image-params (alr/route->original-map (:route-params request))]
+               (if-let [file (original-request->file request system image-params)]
+                 (create-image-response file image-params)
+                 (error-response 404 image-params))))
         (GET "/ping" [] "pong")
         (files "/static/")
         (bad-request-path))

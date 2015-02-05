@@ -49,14 +49,24 @@
                   :image-type #"images"
                   :original original-regex}))
 
+(def math-route
+  (route-compile "/:wikia:path-prefix/:image-type/:zone/:top-dir/:middle-dir/:original"
+                 {:wikia wikia-regex
+                  :path-prefix path-prefix-regex
+                  :image-type "images"
+                  :zone "math"
+                  :top-dir top-dir-regex
+                  :middle-dir #"\w\/\w"
+                  :original original-regex}))
+
 (defn archive? [map]
   (= (:zone map) (str "/" archive-dir)))
 
 (defn zone [map]
-  (if (and (:zone map)
+  (if (and (not (empty? (:zone map)))
            (not (archive? map)))
-    (let [[_ zone] (re-find #"^/([a-z]+)$" (get map :zone ""))]
-      zone)
+    (cond-> (:zone map)
+            (= (subs (:zone map) 0 1) "/") (subs 1))
     nil))
 
 (defn route->thumb-map

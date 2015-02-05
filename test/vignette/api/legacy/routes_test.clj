@@ -180,3 +180,14 @@
     (:path-prefix (:options map)) => "es"
     (:original map) => "bbe457792492f1b89f21a45aa6ca6088.png"
     (:image-type map) => "images"))
+
+(facts :math-route
+       (let [map (alr/route->original-map
+                   (route-matches alr/math-route
+                                  (request :get "/nelsontest/images/math/3/9/f/39f9e908b194691eef95b328f9abc76c.png")))]
+         (:request-type map) => :original
+         (:top-dir map) => "3"
+         (:middle-dir map) => "9/f"
+         (:original map) => "39f9e908b194691eef95b328f9abc76c.png"
+         (alr/zone map) => "math"
+         (:image-type map) => "images"))
