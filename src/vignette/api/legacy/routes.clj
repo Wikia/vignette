@@ -53,7 +53,7 @@
 (def interactive-maps-route
   (route-compile "/:wikia:path-prefix/:original"
                  {:wikia interactive-maps-regex
-                  :path-prefix #"/\d/\d|"
+                  :path-prefix #"/\d+/\d+|"
                   :original original-regex}))
 
 (def interactive-maps-thumbnail-route
