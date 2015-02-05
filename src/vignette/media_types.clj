@@ -31,6 +31,11 @@
         zone (query-opt object-map :zone)]
     (clojure.string/join "/" (filter not-empty [path-prefix image-type zone]))))
 
+
+(defmethod image-type->path-prefix "arbitrary" [object-map]
+  (when-let [path-prefix (query-opt object-map :path-prefix)]
+    path-prefix))
+
 (defmethod image-type->path-prefix :default [object-map]
   (throw+ {:type :convert-error
            :image-type (image-type object-map)}
@@ -86,7 +91,7 @@
         image-path (clojure.string/join "/" (filter not-empty ((juxt top-dir middle-dir) data)))
         filename (revision-filename data)]
     (if (nil? (revision data))
-      (clojure.string/join "/" [prefix image-path filename])
+      (clojure.string/join "/" (filter not-empty [prefix image-path filename]))
       (clojure.string/join "/" [prefix archive-dir image-path filename]))))
 
 (defn fully-qualified-original-path
@@ -125,7 +130,7 @@
 
 (defn thumbnail-path
   [data]
-  (let [thumb-path (clojure.string/join "/" ((juxt top-dir middle-dir) data))]
+  (let [thumb-path (clojure.string/join "/" (filter not-empty ((juxt top-dir middle-dir) data)))]
     (thumb-map->path data thumb-path)))
 
 (defmulti thumb-map->path (fn [data image-path]
@@ -134,7 +139,7 @@
 (defmethod thumb-map->path nil [data image-path]
   (let [prefix (thumb-map->prefix data)
         name (format "%s/%spx-%spx-%s%s-%s" (original data) (width data) (height data) (mode data) (query-opts-str data) (original data))]
-    (clojure.string/join "/" [prefix image-path name])))
+    (clojure.string/join "/" (filter not-empty [prefix image-path name]))))
 
 (defmethod thumb-map->path :default [data image-path]
   (let [prefix (thumb-map->prefix data)
