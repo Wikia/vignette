@@ -57,6 +57,6 @@
   []
   (fn [request]
     (perf/publish {:bad-request-path-count 1})
-    (log/warn (str "bad-request-path: " (:uri request)))
+    (log/warn "bad-request-path" {:path (:uri request)})
     (-> (render "Unrecognized request path!\nSee https://github.com/Wikia/vignette for documentation.\n" request)
         (status 404))))
