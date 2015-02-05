@@ -80,8 +80,9 @@
 (defn zone [map]
   (if (and (not (empty? (:zone map)))
            (not (archive? map)))
-    (cond-> (:zone map)
-            (= (subs (:zone map) 0 1) "/") (subs 1))
+    (if (= (subs (:zone map) 0 1) "/")
+      (subs (:zone map) 1)
+      (:zone map))
     nil))
 
 (defn route->thumb-map
