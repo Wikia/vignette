@@ -80,7 +80,7 @@
 (defn zone [map]
   (if (and (not (empty? (:zone map)))
            (not (archive? map)))
-    (if (= (subs (:zone map) 0 1) "/")
+    (if (.startsWith (:zone map) "/")
       (subs (:zone map) 1)
       (:zone map))
     nil))
