@@ -17,6 +17,7 @@
 (def thumbname-regex #".*?")
 (def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
 (def zone-regex #"\/[a-z]+|") ; includes "archive"
+(def interactive-maps-regex #"intmap_tile_set_\d+")
 
 (def thumbnail-route
   (route-compile "/:wikia:path-prefix/:image-type/thumb:zone/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
@@ -48,6 +49,20 @@
                   :path-prefix path-prefix-regex
                   :image-type #"images"
                   :original original-regex}))
+
+(def interactive-maps-route
+  (route-compile "/:wikia:path-prefix/:original"
+                 {:wikia interactive-maps-regex
+                  :path-prefix #"/\d/\d|"
+                  :original original-regex}))
+
+(def interactive-maps-thumbnail-route
+  (route-compile "/:wikia/thumb/:original/:dimension:offset:thumbname"
+                 {:wikia interactive-maps-regex
+                  :original original-regex
+                  :dimension dimension-regex
+                  :offset offset-regex
+                  :thumbname thumbname-regex}))
 
 (defn archive? [map]
   (= (:zone map) (str "/" archive-dir)))
@@ -86,6 +101,23 @@
       (assoc :top-dir "timeline")
       (route->options)))
 
+(defn route->interactive-maps-map
+  [route-params]
+  (-> route-params
+      (assoc :request-type :original)
+      (assoc :image-type "arbitrary")
+      (route->options)))
+
+(defn route->interactive-maps-thumbnail-map
+  [route-params]
+  (-> route-params
+      (assoc :request-type :thumbnail)
+      (assoc :image-type "arbitrary")
+      (route->dimensions)
+      (route->offset)
+      (route->options)))
+
+
 (defn route->revision
   [map]
   (let [revision (if (and (archive? map)
@@ -100,7 +132,7 @@
 (defn route->options
   [map]
   (let [[_ format] (re-find #"(?i)\.([a-z]+)$" (get map :thumbname ""))
-        [_ path-prefix] (re-find #"^/([/a-z]+)$" (get map :path-prefix ""))
+        [_ path-prefix] (re-find #"^/([/a-z0-9]+)$" (get map :path-prefix ""))
         zone (zone map)
         options (cond-> {}
                      format (assoc :format (.toLowerCase format))
