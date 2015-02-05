@@ -191,3 +191,32 @@
          (:original map) => "39f9e908b194691eef95b328f9abc76c.png"
          (alr/zone map) => "math"
          (:image-type map) => "images"))
+
+(facts :map-original-route
+  (let [map (alr/route->interactive-maps-map
+              (route-matches alr/interactive-maps-route
+                           (request :get "/intmap_tile_set_4823/20150205173220!phpZDfa00.jpg")))]
+    (:request-type map) => :original
+    (:image-type map) => "arbitrary"
+    (:original map) => "20150205173220!phpZDfa00.jpg"
+    (:path-prefix map) => empty?
+    (:wikia map) => "intmap_tile_set_4823"))
+
+(facts :map-original-route-zoom
+  (let [map (alr/route->interactive-maps-map
+              (route-matches alr/interactive-maps-route
+                             (request :get "/intmap_tile_set_4692/3/1/2.png")))]
+    (:request-type map) => :original
+    (:image-type map) => "arbitrary"
+    (:original map) => "2.png"
+    (:path-prefix map) => "/3/1"
+    (:path-prefix (:options map)) => "3/1"))
+
+(facts :map-thumbnail-route
+  (let [map (alr/route->interactive-maps-thumbnail-map
+              (route-matches alr/interactive-maps-thumbnail-route
+                             (request :get "/intmap_tile_set_4823/thumb/20150205173220%21phpZDfa00.jpg/1110x300x5-20150205173220%21phpZDfa00.jpg")))]
+    (:width map) => "1110"
+    (:height map) => "300"
+    (:original map) => "20150205173220!phpZDfa00.jpg"
+    (:image-type map) => "arbitrary"))
