@@ -1,7 +1,7 @@
 (ns vignette.http.middleware
   (:require [environ.core :refer [env]]
             [compojure.response :refer [render]]
-            [ring.util.response :refer [response status charset header]]
+            [ring.util.response :refer [response status charset header get-header]]
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.util.image-response :refer :all]
             [wikia.common.logger :as log]
@@ -57,6 +57,7 @@
   []
   (fn [request]
     (perf/publish {:bad-request-path-count 1})
-    (log/warn "bad-request-path" {:path (:uri request)})
+    (log/warn "bad-request-path" (cond-> {:path (:uri request)}
+                                         (get-header request "referer") (assoc :referer (get-header request "referer"))))
     (-> (render "Unrecognized request path!\nSee https://github.com/Wikia/vignette for documentation.\n" request)
         (status 404))))
