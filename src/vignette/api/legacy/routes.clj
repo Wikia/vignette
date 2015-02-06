@@ -143,7 +143,7 @@
 (defn route->options
   [map]
   (let [[_ format] (re-find #"(?i)\.([a-z]+)$" (get map :thumbname ""))
-        [_ path-prefix] (re-find #"^/([/a-z0-9]+)$" (get map :path-prefix ""))
+        [_ path-prefix] (re-find #"^/([/a-z0-9-]+)$" (get map :path-prefix ""))
         zone (zone map)
         options (cond-> {}
                      format (assoc :format (.toLowerCase format))
