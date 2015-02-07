@@ -9,6 +9,7 @@
   (:import [java.net InetAddress]))
 
 (def hostname (.getHostName (InetAddress/getLocalHost)))
+(def cache-control-header "Cache-Control")
 
 (defn exception-catcher
   [handler]
@@ -34,18 +35,40 @@
                            :query (:query-string request)})
         (error-response 500)))))
 
+(declare add-cache-control-header
+         hours-to-seconds)
+
 (defn add-headers
   [handler]
   (fn [request]
     (let [response (handler request)]
       (-> response
-          (header "Cache-Control" "public, s-maxage=604800")
-          (header "X-Pass-Cache-Control" "public, max-age=31536000")
+          (add-cache-control-header)
           (header "Varnish-Logs" "vignette")
           (header "X-Served-By" hostname)
           (header "X-Cache" "ORIGIN")
           (header "X-Cache-Hits" "ORIGIN")
           (header "Connection" "close")))))
+
+(defn add-cache-control-header
+  [response]
+  (let [status (get response :status 0)]
+    (cond
+      (and (>= status 200) (< status 300))
+      (header response cache-control-header (format "public, s-maxage=%d, max-age=%d",
+                                                    (hours-to-seconds (* 7 24))
+                                                    (hours-to-seconds 24)))
+
+      (and (>= status 400) (< status 500))
+      (header response cache-control-header (format "public, max-age=%d"
+                                                    (hours-to-seconds 1)))
+
+      :else (header response cache-control-header (format "public, max-age=%d"
+                                                    (/ (hours-to-seconds 1) 2))))))
+
+(defn hours-to-seconds
+  [hours]
+  (* 60 60 hours))
 
 (defn request-timer
   [handler]
