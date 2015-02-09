@@ -56,7 +56,7 @@
     (cond
       (and (>= status 200) (< status 300))
       (header response cache-control-header (format "public, s-maxage=%d, max-age=%d",
-                                                    (hours-to-seconds (* 7 24))
+                                                    (hours-to-seconds (* 24 365))
                                                     (hours-to-seconds 24)))
 
       (and (>= status 400) (< status 500))

@@ -8,5 +8,6 @@
   (get (:headers (add-cache-control-header {:status 500})) "Cache-Control") => "public, max-age=1800"
   (get (:headers (add-cache-control-header {:status 400})) "Cache-Control") => "public, max-age=3600"
   (get (:headers (add-cache-control-header {:status 401})) "Cache-Control") => "public, max-age=3600"
-  (get (:headers (add-cache-control-header {:status 200})) "Cache-Control") => "public, s-maxage=604800, max-age=86400"
-  (get (:headers (add-cache-control-header {:status 201})) "Cache-Control") => "public, s-maxage=604800, max-age=86400")
+  (get (:headers (add-cache-control-header {:status 404})) "Cache-Control") => "public, max-age=3600"
+  (get (:headers (add-cache-control-header {:status 200})) "Cache-Control") => "public, s-maxage=31536000, max-age=86400"
+  (get (:headers (add-cache-control-header {:status 201})) "Cache-Control") => "public, s-maxage=31536000, max-age=86400")
