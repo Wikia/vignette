@@ -212,6 +212,16 @@
     (:path-prefix map) => "/3/1"
     (:path-prefix (:options map)) => "3/1"))
 
+(facts :map-marker-route
+  (let [map (alr/route->interactive-maps-map
+              (route-matches alr/interactive-maps-marker-route
+                             (request :get "/intmap_markers_109/60px-20140716115821!phpZDweHO.png")))]
+    (:request-type map) => :original
+    (:image-type map) => "arbitrary"
+    (:original map) => "60px-20140716115821!phpZDweHO.png"
+    (:path-prefix map) => nil
+    (:wikia map) => "intmap_markers_109"))
+
 (facts :map-thumbnail-route
   (let [map (alr/route->interactive-maps-thumbnail-map
               (route-matches alr/interactive-maps-thumbnail-route

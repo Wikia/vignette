@@ -144,6 +144,12 @@
                (if-let [file (original-request->file request system image-params)]
                  (create-image-response file image-params)
                  (error-response 404 image-params))))
+        (GET alr/interactive-maps-marker-route
+             request
+             (let [image-params (alr/route->interactive-maps-map (:route-params request))]
+               (if-let [file (original-request->file request system image-params)]
+                 (create-image-response file image-params)
+                 (error-response 404 image-params))))
         (GET alr/interactive-maps-thumbnail-route
              request
              (let [image-params (alr/route->interactive-maps-thumbnail-map (:route-params request))]
