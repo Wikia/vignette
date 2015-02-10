@@ -18,6 +18,7 @@
 (def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
 (def zone-regex #"\/[a-z]+|") ; includes "archive"
 (def interactive-maps-regex #"intmap_tile_set_\d+")
+(def interactive-maps-marker-regex #"intmap_markers_\d+")
 
 (def thumbnail-route
   (route-compile "/:wikia:path-prefix/:image-type/thumb:zone/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
@@ -73,6 +74,12 @@
                   :dimension dimension-regex
                   :offset offset-regex
                   :thumbname thumbname-regex}))
+
+(def interactive-maps-marker-route
+  (route-compile "/:wikia/:original"
+                 {:wikia interactive-maps-marker-regex
+                  :original original-regex}))
+
 
 (defn archive? [map]
   (= (:zone map) (str "/" archive-dir)))
