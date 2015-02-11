@@ -4,6 +4,7 @@
             [ring.util.response :refer [response status header]]
             [digest :as digest]
             [vignette.media-types :refer :all]
+            [vignette.util.query-options :refer :all]
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :refer :all]))
@@ -49,9 +50,10 @@
 
 (defn add-content-disposition-header
   [response-map image-map]
-  (header response-map "Content-Disposition"
-          (format "inline; filename=\"%s\""
-                  (original image-map))))
+  (let [requested-format (query-opt image-map :format)
+        filename (cond-> (original image-map)
+                         requested-format (str "." requested-format))]
+    (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" filename))))
 
 (defn add-surrogate-header
   [response-map image-map]
