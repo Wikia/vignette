@@ -32,7 +32,7 @@
                   :window-width "window-width"
                   :window-height "window-height"})
 
-(def mime-blacklist #{"audio/ogg"
+(def unsupported-mime-types #{"audio/ogg"
                       "video/ogg"})
 
 (defn route-map->thumb-args
@@ -56,7 +56,7 @@
 
 (defmethod original->thumbnail LocalStoredObject [resource thumb-map]
   (let [content-type (content-type resource)]
-    (when (contains? mime-blacklist content-type)
+    (when (contains? unsupported-mime-types content-type)
       (throw+ {:type :convert-error
                :response-code 404
                :content-type content-type
