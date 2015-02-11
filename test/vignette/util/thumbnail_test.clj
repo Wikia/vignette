@@ -1,6 +1,7 @@
 (ns vignette.util.thumbnail-test
   (:require [clojure.java.io :as io]
             [midje.sweet :refer :all]
+            [pantomime.mime :refer [mime-type-of]]
             [vignette.protocols :refer :all]
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.storage.protocols :refer :all]
@@ -17,18 +18,24 @@
                 :height "100"
                 :width "100"})
 
-(def beach-file (io/file "images-samples/beach.jpg"))
+(def beach-file (io/file "image-samples/beach.jpg"))
 
 (facts :original-thumbnail
        ; successful run
        (original->thumbnail beach-file beach-map) => truthy
        (provided
+         (mime-type-of beach-file) => "image/jpg"
          (run-thumbnailer anything) => {:exit 0})
 
        ; failed run
        (original->thumbnail beach-file beach-map) => (throws Exception)
        (provided
-         (run-thumbnailer anything) => {:exit 1 :err 256 :out "testing failure"}))
+         (run-thumbnailer anything) => {:exit 1 :err 256 :out "testing failure"})
+
+       ;invalid mime type
+       (original->thumbnail ..file.. beach-map) => (throws Exception)
+       (provided
+         (mime-type-of ..file..) => "video/ogg"))
 
 (facts :generate-thumbnail
   (generate-thumbnail ..system.. beach-map) => ..object..

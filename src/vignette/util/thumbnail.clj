@@ -2,6 +2,7 @@
   (:require [cheshire.core :refer :all]
             [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
+            [pantomime.mime :refer [mime-type-of]]
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.media-types :refer :all]
             [vignette.protocols :refer :all]
@@ -10,8 +11,6 @@
             [vignette.util.filesystem :refer :all]
             [vignette.util.query-options :as q]
             [wikia.common.perfmonitoring.core :as perf])
-  (:import [java.io File]
-           [vignette.storage.local LocalStoredObject])
   (:use [environ.core]))
 
 (declare original->local
@@ -33,7 +32,16 @@
                   :window-height "window-height"})
 
 (def unsupported-mime-types #{"audio/ogg"
-                      "video/ogg"})
+                              "video/ogg"})
+
+(defn assert-original-mime-type
+  [file thumb-map]
+  (let [mime-type (mime-type-of file)]
+    (when (contains? unsupported-mime-types (mime-type-of file))
+      (throw+ {:type :convert-error
+               :response-code 404
+               :content-type mime-type
+               :thumb-map thumb-map} "unsupported content type"))))
 
 (defn route-map->thumb-args
   [thumb-map]
@@ -48,24 +56,9 @@
   [args]
   (perf/timing :imagemagick (apply sh args)))
 
-(defmulti original->thumbnail (fn [resource thumb-map]
-                                (type resource)))
-
-(defmethod original->thumbnail File [resource thumb-map]
-  (file->thumbnail resource thumb-map))
-
-(defmethod original->thumbnail LocalStoredObject [resource thumb-map]
-  (let [content-type (content-type resource)]
-    (when (contains? unsupported-mime-types content-type)
-      (throw+ {:type :convert-error
-               :response-code 404
-               :content-type content-type
-               :thumb-map thumb-map}
-              "unsupported content-type"))
-    (file->thumbnail (file-stream resource) thumb-map)))
-
-(defn file->thumbnail
+(defn original->thumbnail
   [resource thumb-map]
+  (assert-original-mime-type resource thumb-map)
   (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
@@ -119,7 +112,7 @@
   (let [temp-file (io/file (temp-filename (str (wikia thumb-map) "_original")
                                           (file-extension (:original thumb-map))))]
     (when (transfer! original temp-file)
-      (ls/create-stored-object temp-file))))
+      temp-file)))
 
 (defn background-save-thumbnail
   "Save the thumbnail in the background. This should not delay the rendering."
