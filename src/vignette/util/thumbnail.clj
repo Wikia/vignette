@@ -10,9 +10,12 @@
             [vignette.util.filesystem :refer :all]
             [vignette.util.query-options :as q]
             [wikia.common.perfmonitoring.core :as perf])
+  (:import [java.io File]
+           [vignette.storage.local LocalStoredObject])
   (:use [environ.core]))
 
 (declare original->local
+         file->thumbnail
          background-delete-file
          generate-thumbnail
          background-save-thumbnail)
@@ -29,6 +32,9 @@
                   :window-width "window-width"
                   :window-height "window-height"})
 
+(def mime-blacklist #{"audio/ogg"
+                      "video/ogg"})
+
 (defn route-map->thumb-args
   [thumb-map]
   (reduce (fn [running [opt-key val]]
@@ -42,7 +48,23 @@
   [args]
   (perf/timing :imagemagick (apply sh args)))
 
-(defn original->thumbnail
+(defmulti original->thumbnail (fn [resource thumb-map]
+                                (type resource)))
+
+(defmethod original->thumbnail File [resource thumb-map]
+  (file->thumbnail resource thumb-map))
+
+(defmethod original->thumbnail LocalStoredObject [resource thumb-map]
+  (let [content-type (content-type resource)]
+    (when (contains? mime-blacklist content-type)
+      (throw+ {:type :convert-error
+               :response-code 404
+               :content-type content-type
+               :thumb-map thumb-map}
+              "unsupported content-type"))
+    (file->thumbnail (file-stream resource) thumb-map)))
+
+(defn file->thumbnail
   [resource thumb-map]
   (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
         base-command [thumbnail-bin
@@ -97,7 +119,7 @@
   (let [temp-file (io/file (temp-filename (str (wikia thumb-map) "_original")
                                           (file-extension (:original thumb-map))))]
     (when (transfer! original temp-file)
-      temp-file)))
+      (ls/create-stored-object temp-file))))
 
 (defn background-save-thumbnail
   "Save the thumbnail in the background. This should not delay the rendering."
