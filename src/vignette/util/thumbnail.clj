@@ -2,6 +2,7 @@
   (:require [cheshire.core :refer :all]
             [clojure.java.io :as io]
             [clojure.java.shell :refer [sh]]
+            [pantomime.mime :refer [mime-type-of]]
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.media-types :refer :all]
             [vignette.protocols :refer :all]
@@ -13,6 +14,7 @@
   (:use [environ.core]))
 
 (declare original->local
+         file->thumbnail
          background-delete-file
          generate-thumbnail
          background-save-thumbnail)
@@ -29,6 +31,18 @@
                   :window-width "window-width"
                   :window-height "window-height"})
 
+(def unsupported-mime-types #{"audio/ogg"
+                              "video/ogg"})
+
+(defn assert-original-mime-type
+  [file thumb-map]
+  (let [mime-type (mime-type-of file)]
+    (when (contains? unsupported-mime-types (mime-type-of file))
+      (throw+ {:type :convert-error
+               :response-code 404
+               :content-type mime-type
+               :thumb-map thumb-map} "unsupported content type"))))
+
 (defn route-map->thumb-args
   [thumb-map]
   (reduce (fn [running [opt-key val]]
@@ -44,6 +58,7 @@
 
 (defn original->thumbnail
   [resource thumb-map]
+  (assert-original-mime-type resource thumb-map)
   (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
