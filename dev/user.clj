@@ -13,7 +13,6 @@
             [vignette.http.routes :as r]
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]
-            [vignette.server :as s]
             [vignette.storage.core :refer [create-image-storage]]
             [vignette.storage.local :refer [create-local-storage-system]]
             [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
@@ -68,10 +67,6 @@
   ([port]
    (do
      (stop system-s3)
-     (nrepl/refresh)
-     (clojure.core/use '[clojure.core])
-     (use '[clojure.repl])
-     (load-file "dev/user.clj")
      (start system-s3 port)))
   ([]
    (re-init-dev 8080)))

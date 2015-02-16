@@ -1,7 +1,6 @@
 (ns vignette.core
   (:require [clojure.tools.cli :as cli]
             [vignette.protocols :refer :all]
-            [vignette.server :as s]
             [vignette.storage.core :refer [create-image-storage]]
             [vignette.storage.local :refer [create-local-storage-system]]
             [vignette.storage.protocols :refer :all]
