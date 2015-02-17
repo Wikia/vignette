@@ -11,8 +11,6 @@
                  [compojure "1.3.1"]
                  [com.novemberain/pantomime "2.3.0"]
                  [environ "0.5.0"]
-                 ; FIXME: set the :job-queue to (java.util.concurrent.ArrayBlockingQueue. 6000)
-                 ; see https://wiki.eclipse.org/Jetty/Howto/High_Load#Thread_Pool
                  [info.sunng/ring-jetty9-adapter "0.8.1"]
                  [ring "1.3.2"]
                  [slingshot "0.10.3"]

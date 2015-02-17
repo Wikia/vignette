@@ -56,8 +56,11 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `VIGNETTE_TEMP_FILE_LOCATION`  temporary file location. This is used for thumbnail generation. [/tmp/vignette]
  * `VIGNETTE_THUMBNAIL_BIN`       path to the thumbnail script [/usr/local/bin/thumbnail, bin/thumbnail]
  * `VIGNETTE_INTEGRATION_ROOT`    path to use for integration testing files [/tmp/integration]
- * `VIGNETTE_SERVER_THREADS`      number of threads to allocate for http-kit [4]
- * `VIGNETTE_SERVER_QUEUE_SIZE`   queue size to allocate for http-kit [20000]
+ * `VIGNETTE_SERVER_MIN_THREADS`  minimum number of threads to allocate for jetty [50]
+ * `VIGNETTE_SERVER_MAX_THREADS`  minimum number of threads to allocate for jetty [150]
+ * `VIGNETTE_SERVER_QUEUE_SIZE`   queue size to allocate for jetty [9000]
+ * `ENABLE_ACCESS_LOG`            enable the NCSA access log [false]
+ * `ACCESS_LOG_FILE`              NCSA acces log file [/tmp/Vignette-access.log]
  * `IMAGEMAGICK_BASE`             path to the root of the ImageMagick installation [/usr/local]
  * `GETOPT`                       when running on osx, install gnu-getopt using brew. see bin/thumbnail
  * `CONVERT_CONSTRAINTS`          universal options to pass to ImageMagick. see bin/thumbnail
