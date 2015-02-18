@@ -41,13 +41,14 @@
                   :height size-regex}))
 
 (def window-crop-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/window-crop/width/:width/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
                  {:wikia wikia-regex
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
+                  :thumbnail-mode #"window-crop"
                   :width size-regex
                   :x-offset size-regex-allow-negative
                   :window-width size-regex
@@ -55,13 +56,14 @@
                   :window-height size-regex}))
 
 (def window-crop-fixed-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/window-crop-fixed/width/:width/height/:height/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/height/:height/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
                  {:wikia wikia-regex
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
+                  :thumbnail-mode #"window-crop-fixed"
                   :width size-regex
                   :height size-regex
                   :x-offset size-regex-allow-negative
@@ -70,13 +72,14 @@
                   :window-height size-regex}))
 
 (def scale-to-width-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/scale-to-width/:width"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/:width"
                  {:wikia wikia-regex
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
+                  :thumbnail-mode #"scale-to-width"
                   :width size-regex}))
 
 (declare image-request-handler)
@@ -87,25 +90,19 @@
     (u/get-or-generate-thumbnail system (image-params->forced-thumb-params image-params))
     (get-original (store system) image-params)))
 
-; /lotr/3/35/Arwen.png/resize/10/10?debug=true
+
 (defn app-routes
   [system]
   (-> (routes
         (GET scale-to-width-route
              request
-             (image-request-handler system :thumbnail request
-                                    :thumbnail-mode "scale-to-width"
-                                    :height :auto))
+             (image-request-handler system :thumbnail (assoc request :height :auto)))
         (GET window-crop-route
              request
-             (image-request-handler system :thumbnail request
-                                    :thumbnail-mode "window-crop"
-                                    :height :auto))
+             (image-request-handler system :thumbnail (assoc request :height :auto)))
         (GET window-crop-fixed-route
              request
-             (image-request-handler system :thumbnail request
-                                    :thumbnail-mode "window-crop-fixed"
-                                    :height :auto))
+             (image-request-handler system :thumbnail (assoc request :height :auto)))
         (GET thumbnail-route
              request
              (image-request-handler system :thumbnail request))
@@ -164,18 +161,29 @@
       (request-timer)
       (add-headers)))
 
-(declare handle-thumbnail
+(declare request-method-handler
+         handle-thumbnail
          handle-original
          get-image-params
          route-params->image-type)
 
-(defn image-request-handler
-  [system request-type request &{:keys [thumbnail-mode height] :or {thumbnail-mode nil height nil} :as params}]
-  (let [image-params (get-image-params request request-type)
-        image-params (if params (merge image-params params) image-params)]
+(defmulti image-request-handler (fn [system request-type request]
+                                   (get request :request-method nil)))
+
+(defmethod image-request-handler :get [system request-type request]
+  (let [image-params (get-image-params request request-type)]
     (condp = request-type
       :thumbnail (handle-thumbnail system image-params)
       :original (handle-original system image-params))))
+
+(defmethod image-request-handler :purge [system request-type request]
+  (-> (response "purged\n")
+      (status 202)))
+
+(defmethod image-request-handler :default [system request-type request]
+  (throw+ {:type :request-method-error
+           :request-method (get request :request-method)
+           :request request}))
 
 (defn handle-thumbnail
   [system image-params]
@@ -192,9 +200,10 @@
 (defn get-image-params
   [request request-type]
   (let [route-params (assoc (:route-params request) :request-type request-type)
-        options (extract-query-opts request)]
-    (assoc route-params :options options
-                        :image-type (route-params->image-type route-params))))
+        options (extract-query-opts request)
+        image-params (assoc route-params :options options
+                            :image-type (route-params->image-type route-params))]
+    image-params))
 
 (defn route-params->image-type
   [route-params]
