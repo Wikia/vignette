@@ -148,6 +148,8 @@
   ((app-routes nil) (request :get "/not-a-valid-route")) => (contains {:status 404}))
 
 (facts :app-routes-thumbnail
+  ((app-routes ..system..) (request :purge "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 202})
+
   (let [route-params {:request-type :thumbnail
                       :image-type "images"
                       :original "ropes.jpg"
@@ -174,6 +176,7 @@
       (u/get-or-generate-thumbnail ..system.. route-params) =throws=> (NullPointerException.))))
 
 (facts :app-routes-original
+  ((app-routes ..system..) (request :purge "/lotr/3/35/ropes.jpg/revision/latest")) => (contains {:status 202})
 
   (let [route-params {:request-type :original
                       :image-type "images"

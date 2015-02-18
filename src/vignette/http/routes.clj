@@ -2,7 +2,8 @@
   (:require [cheshire.core :refer :all]
             [clojure.java.io :as io]
             [clout.core :refer [route-compile route-matches]]
-            [compojure.core :refer [routes GET ANY]]
+            [compojure.core :refer [routes GET]]
+            [vignette.http.compojure :refer [GET+]]
             [compojure.route :refer [files]]
             [environ.core :refer [env]]
             [ring.middleware.params :refer [wrap-params]]
@@ -94,19 +95,19 @@
 (defn app-routes
   [system]
   (-> (routes
-        (GET scale-to-width-route
+        (GET+ scale-to-width-route
              request
              (image-request-handler system :thumbnail (assoc request :height :auto)))
-        (GET window-crop-route
+        (GET+ window-crop-route
              request
              (image-request-handler system :thumbnail (assoc request :height :auto)))
-        (GET window-crop-fixed-route
+        (GET+ window-crop-fixed-route
              request
              (image-request-handler system :thumbnail (assoc request :height :auto)))
-        (GET thumbnail-route
+        (GET+ thumbnail-route
              request
              (image-request-handler system :thumbnail request))
-        (GET original-route
+        (GET+ original-route
              request
              (image-request-handler system :original request))
 
