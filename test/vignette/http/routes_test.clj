@@ -26,6 +26,18 @@
     (get-image-params ..request.. :original) => ..params..
     (handle-original ..system.. ..params..) => ..response..))
 
+(facts :image-request-handler :scale-to-width
+  (let [route-params (route-matches scale-to-width-route (request :get "muppet/images/d/d4/Mo-Yet.jpg/revision/latest/scale-to-width/212"))
+       request {:request-method :get :route-params route-params}
+       merged-route-params (merge route-params {:thumbnail-mode "scale-to-width" :height :auto})]
+    (image-request-handler ..system.. :thumbnail
+                           request
+                           :thumbnail-mode "scale-to-width"
+                           :height :auto)  => (contains {:status 200})
+   (provided
+    (get-image-params request :thumbnail) => merged-route-params
+    (handle-thumbnail ..system.. merged-route-params) => {:body nil :status 200})))
+
 (facts :handle-thumbnail
   (handle-thumbnail ..system.. ..params..) => ..response..
   (provided
