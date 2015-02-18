@@ -38,6 +38,20 @@
     (get-image-params request :thumbnail) => merged-route-params
     (handle-thumbnail ..system.. merged-route-params) => {:body nil :status 200})))
 
+(facts :image-request-handler :window-crop
+  (let [route-params (route-matches window-crop-route
+                      (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/103"))
+        request {:request-method :get :route-params route-params}
+        merged-route-params (merge route-params {:thumbnail-mode "window-crop" :height :auto})]
+    (image-request-handler ..system.. :thumbnail
+                           request
+                           :thumbnail-mode "window-crop"
+                           :height :auto)  => (contains {:status 200})
+
+   (provided
+    (get-image-params request :thumbnail) => merged-route-params
+    (handle-thumbnail ..system.. merged-route-params) => {:body nil :status 200})))
+
 (facts :handle-thumbnail
   (handle-thumbnail ..system.. ..params..) => ..response..
   (provided
