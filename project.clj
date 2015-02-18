@@ -3,16 +3,16 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[cheshire "5.3.1"]
+  :dependencies [[org.clojure/clojure "1.5.1"]
+                 [org.clojure/tools.cli "0.3.1"]
+                 [cheshire "5.3.1"]
                  [clj-aws-s3 "0.3.10"]
                  [clout "1.2.0"]
-                 [compojure "1.1.8"]
+                 [compojure "1.3.1"]
                  [com.novemberain/pantomime "2.3.0"]
                  [environ "0.5.0"]
-                 [http-kit "2.1.18"]
-                 [org.clojure/clojure "1.5.1"]
-                 [org.clojure/tools.cli "0.3.1"]
-                 [ring "1.3.0"]
+                 [info.sunng/ring-jetty9-adapter "0.8.1"]
+                 [ring "1.3.2"]
                  [slingshot "0.10.3"]
                  [useful "0.8.8"]
                  [digest "1.4.4"]
