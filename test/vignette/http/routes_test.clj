@@ -29,28 +29,39 @@
 (facts :image-request-handler :scale-to-width
   (let [route-params (route-matches scale-to-width-route (request :get "muppet/images/d/d4/Mo-Yet.jpg/revision/latest/scale-to-width/212"))
        request {:request-method :get :route-params route-params}
-       merged-route-params (merge route-params {:thumbnail-mode "scale-to-width" :height :auto})]
+       merged-route-params (merge route-params {:thumbnail-mode "scale-to-width" :height :auto})
+       image-params (merge merged-route-params {:options {} :image-type "images" :request-type :thumbnail})]
     (image-request-handler ..system.. :thumbnail
                            request
                            :thumbnail-mode "scale-to-width"
                            :height :auto)  => (contains {:status 200})
    (provided
-    (get-image-params request :thumbnail) => merged-route-params
-    (handle-thumbnail ..system.. merged-route-params) => {:body nil :status 200})))
+    (handle-thumbnail ..system.. image-params) => {:body nil :status 200})))
 
 (facts :image-request-handler :window-crop
   (let [route-params (route-matches window-crop-route
                       (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/103"))
         request {:request-method :get :route-params route-params}
-        merged-route-params (merge route-params {:thumbnail-mode "window-crop" :height :auto})]
+        merged-route-params (merge route-params {:thumbnail-mode "window-crop" :height :auto :request-type :thumbnail})
+        image-params (merge merged-route-params {:options {} :image-type "images"})]
     (image-request-handler ..system.. :thumbnail
                            request
                            :thumbnail-mode "window-crop"
                            :height :auto)  => (contains {:status 200})
 
    (provided
-    (get-image-params request :thumbnail) => merged-route-params
-    (handle-thumbnail ..system.. merged-route-params) => {:body nil :status 200})))
+    (handle-thumbnail ..system.. image-params) => {:body nil :status 200})))
+
+(facts :image-request-handler :original
+  (let [route-params (route-matches original-route
+                      (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest"))
+        request {:request-method :get :route-params route-params}
+        image-params (merge route-params {:options {} :image-type "images" :request-type :original})]
+    (println image-params)
+    (image-request-handler ..system.. :original request)  => (contains {:status 200})
+
+   (provided
+    (handle-original ..system.. image-params) => {:body nil :status 200})))
 
 (facts :handle-thumbnail
   (handle-thumbnail ..system.. ..params..) => ..response..
