@@ -60,11 +60,14 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `VIGNETTE_SERVER_MAX_THREADS`  minimum number of threads to allocate for jetty [150]
  * `VIGNETTE_SERVER_QUEUE_SIZE`   queue size to allocate for jetty [9000]
  * `ENABLE_ACCESS_LOG`            enable the NCSA access log [false]
- * `ACCESS_LOG_FILE`              NCSA acces log file [/tmp/Vignette-access.log]
+ * `ACCESS_LOG_FILE`              NCSA acces log file [/tmp/vignette-access.log]
  * `IMAGEMAGICK_BASE`             path to the root of the ImageMagick installation [/usr/local]
  * `GETOPT`                       when running on osx, install gnu-getopt using brew. see bin/thumbnail
  * `CONVERT_CONSTRAINTS`          universal options to pass to ImageMagick. see bin/thumbnail
  * `UNSUPPORTED_REDIRECT_HOST`    on an unsupported legacy thumbnail request, host to redirect
+ * `FASTLY_API_ID`                the Fastly API id
+ * `FASTLY_API_AUTH_KEY`          the Fastly API auth key
+ * `FASTLY_API_URL`               the Fastly API url [https://api.fastly.com]
 
 ## Testing
 
