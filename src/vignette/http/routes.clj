@@ -3,7 +3,7 @@
             [clojure.java.io :as io]
             [clout.core :refer [route-compile route-matches]]
             [compojure.core :refer [routes GET]]
-            [vignette.http.compojure :refer [GET+]]
+            [vignette.http.compojure :refer [GET+PURGE]]
             [compojure.route :refer [files not-found]]
             [environ.core :refer [env]]
             [ring.middleware.params :refer [wrap-params]]
@@ -96,19 +96,19 @@
 (defn app-routes
   [system]
   (-> (routes
-        (GET+ scale-to-width-route
+        (GET+PURGE scale-to-width-route
              request
              (image-request-handler system :thumbnail request))
-        (GET+ window-crop-route
+        (GET+PURGE window-crop-route
              request
              (image-request-handler system :thumbnail request))
-        (GET+ window-crop-fixed-route
+        (GET+PURGE window-crop-fixed-route
              request
              (image-request-handler system :thumbnail request))
-        (GET+ thumbnail-route
+        (GET+PURGE thumbnail-route
              request
              (image-request-handler system :thumbnail request))
-        (GET+ original-route
+        (GET+PURGE original-route
              request
              (image-request-handler system :original request))
 

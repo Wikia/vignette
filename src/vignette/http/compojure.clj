@@ -5,7 +5,7 @@
     [path args & body]
       (compile-route :purge path args body))
 
-(defmacro GET+ "Generate a route that matches GET or PURGE"
+(defmacro GET+PURGE "Generate a route that matches GET or PURGE"
   [path args & body]
   `(context "" []
         (GET ~path ~args ~@body)
