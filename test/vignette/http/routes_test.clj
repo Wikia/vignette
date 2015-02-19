@@ -35,25 +35,8 @@
     (cache ..system..) => ..cache..
     (background-purge ..cache.. ..image-params.. ..uri..) => nil))
 
-(facts :image-request-handler :scale-to-width
-  (let [route-params (route-matches scale-to-width-route (request :get "/muppet/images/d/d4/Mo-Yet.jpg/revision/latest/scale-to-width/212"))
-       merged-route-params (merge route-params {:height :auto})
-       request {:request-method :get :route-params merged-route-params}
-       image-params (merge merged-route-params {:options {} :image-type "images" :request-type :thumbnail})]
-    (image-request-handler ..system.. :thumbnail request)  => (contains {:status 200})
-   (provided
-    (handle-thumbnail ..system.. image-params) => {:body nil :status 200})))
-
-(facts :image-request-handler :window-crop
-  (let [route-params (route-matches window-crop-route
-                      (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/103"))
-        merged-route-params (merge route-params {:height :auto})
-        request {:request-method :get :route-params merged-route-params}
-        image-params (merge merged-route-params {:options {} :image-type "images" :request-type :thumbnail})]
-    (image-request-handler ..system.. :thumbnail request)  => (contains {:status 200})
-
-   (provided
-    (handle-thumbnail ..system.. image-params) => {:body nil :status 200})))
+(facts :get-image-params
+  (get-image-params {:route-params {:wikia "foo"}} :foo) => {:wikia "foo" :options {} :image-type "images" :request-type :foo})
 
 (facts :image-request-handler :thumbnail
   (let [route-params (route-matches thumbnail-route
@@ -151,13 +134,6 @@
   ((app-routes nil) (request :get "/not-a-valid-route")) => (contains {:status 404}))
 
 (facts :app-routes-thumbnail
-  (let [request-map (request :purge "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")
-        uri (:uri request-map)]
-    ((app-routes ..system..) request-map) => (contains {:status 202})
-    (provided
-      (get-image-params anything :thumbnail) => ..image-params..
-      (handle-purge ..system.. ..image-params.. uri) => {:status 202}))
-
   (let [route-params {:request-type :thumbnail
                       :image-type "images"
                       :original "ropes.jpg"
@@ -184,11 +160,6 @@
       (u/get-or-generate-thumbnail ..system.. route-params) =throws=> (NullPointerException.))))
 
 (facts :app-routes-original
-  ((app-routes ..system..) (request :purge "/lotr/3/35/ropes.jpg/revision/latest")) => (contains {:status 202})
-  (provided
-    (get-image-params anything :original) => ..image-params..
-    (handle-purge ..system.. ..image-params.. anything) => {:status 202})
-
   (let [route-params {:request-type :original
                       :image-type "images"
                       :original "ropes.jpg"

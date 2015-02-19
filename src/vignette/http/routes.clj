@@ -98,13 +98,13 @@
   (-> (routes
         (GET+ scale-to-width-route
              request
-             (image-request-handler system :thumbnail (add-height-to-route-params request :auto)))
+             (image-request-handler system :thumbnail request))
         (GET+ window-crop-route
              request
-             (image-request-handler system :thumbnail (add-height-to-route-params request :auto)))
+             (image-request-handler system :thumbnail request))
         (GET+ window-crop-fixed-route
              request
-             (image-request-handler system :thumbnail (add-height-to-route-params request :auto)))
+             (image-request-handler system :thumbnail request))
         (GET+ thumbnail-route
              request
              (image-request-handler system :thumbnail request))

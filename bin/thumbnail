@@ -80,6 +80,25 @@ cat <<EOF
 EOF
 }
 
+# Test for array containment.
+# Example: $(contains "${A[@]}", "foo") == "y"
+# Returns "y"" when the object is contained in the array and "n" otherwise.
+# http://stackoverflow.com/questions/3685970/check-if-an-array-contains-a-value
+function contains() {
+	local n=$#
+	local value=${!n}
+	for ((i=1;i < $#;i++)) {
+		if [ "${!i}" == "${value}" ]; then
+			echo "y"
+			return 0
+		fi
+	}
+
+	echo "n"
+	return 1
+}
+
+
 OS=$(uname)
 SHORTOPTS="h"
 LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated,x-offset:,window-width:,y-offset:,window-height:"
@@ -185,10 +204,13 @@ if [ "$OUT"X = "X" ]; then
 	exit 1
 fi
 
+MODES_REQUIRING_HEIGHT=("fixed-aspect-ratio" "fixed-aspect-ratio-down" "thumbnail" "thumbnail-down" "top-crop" "top-crop-down" "window-crop-fixed" "zoom-crop" "zoom-crop-down")
 if [ "$HEIGHT"X = "X" ]; then
-	echo "--height required"
-	usage
-	exit 1
+	if [ $(contains "${MODES_REQUIRING_HEIGHT[@]}" "${MODE}") == "y" ]; then
+		echo "--height required for mode ${MODE}"
+		usage
+		exit 1
+	fi
 fi
 
 if [ "$WIDTH"X = "X" ]; then
