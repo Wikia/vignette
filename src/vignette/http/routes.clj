@@ -83,8 +83,7 @@
                   :thumbnail-mode #"scale-to-width"
                   :width size-regex}))
 
-(declare image-request-handler
-         add-height-to-route-params)
+(declare image-request-handler)
 
 (defn original-request->file
   [request system image-params]
@@ -162,10 +161,6 @@
       (exception-catcher)
       (request-timer)
       (add-headers)))
-
-(defn add-height-to-route-params
-  [request height]
-  (assoc-in request [:route-params :height] height))
 
 (declare request-method-handler
          handle-thumbnail
