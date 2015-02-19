@@ -83,7 +83,8 @@
                   :thumbnail-mode #"scale-to-width"
                   :width size-regex}))
 
-(declare image-request-handler)
+(declare image-request-handler
+         add-height-to-route-params)
 
 (defn original-request->file
   [request system image-params]
@@ -97,13 +98,13 @@
   (-> (routes
         (GET+ scale-to-width-route
              request
-             (image-request-handler system :thumbnail (assoc request :height :auto)))
+             (image-request-handler system :thumbnail (add-height-to-route-params request :auto)))
         (GET+ window-crop-route
              request
-             (image-request-handler system :thumbnail (assoc request :height :auto)))
+             (image-request-handler system :thumbnail (add-height-to-route-params request :auto)))
         (GET+ window-crop-fixed-route
              request
-             (image-request-handler system :thumbnail (assoc request :height :auto)))
+             (image-request-handler system :thumbnail (add-height-to-route-params request :auto)))
         (GET+ thumbnail-route
              request
              (image-request-handler system :thumbnail request))
@@ -162,6 +163,10 @@
       (request-timer)
       (add-headers)))
 
+(defn add-height-to-route-params
+  [request height]
+  (assoc-in request [:route-params :height] height))
+
 (declare request-method-handler
          handle-thumbnail
          handle-original
@@ -207,7 +212,7 @@
       (background-purge edge-cache image-params uri)
       (-> (response "")
           (status 202)))
-    (not-found "No purger available")))
+    (not-found "No purger available\n")))
 
 (defn background-purge
   [cache image-params uri]
