@@ -14,6 +14,8 @@
   SystemAPI
   (store [this]
     (:store (:state this)))
+  (cache [this]
+    (:cache (:state this)))
   (start [this port]
     (swap! (:running (:state this))
            (fn [_]
@@ -33,5 +35,7 @@
       (.stop server))))
 
 (defn create-system
-  [store]
-  (->VignetteSystem {:store store :running (atom nil)}))
+  ([store cache]
+   (->VignetteSystem {:store store :cache cache :running (atom nil)}))
+  ([store]
+   (create-system store nil)))

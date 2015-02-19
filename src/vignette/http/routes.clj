@@ -4,7 +4,7 @@
             [clout.core :refer [route-compile route-matches]]
             [compojure.core :refer [routes GET]]
             [vignette.http.compojure :refer [GET+]]
-            [compojure.route :refer [files]]
+            [compojure.route :refer [files not-found]]
             [environ.core :refer [env]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :refer [response status charset header]]
@@ -165,6 +165,7 @@
 (declare request-method-handler
          handle-thumbnail
          handle-original
+         handle-purge
          get-image-params
          route-params->image-type)
 
@@ -178,8 +179,7 @@
       :original (handle-original system image-params))))
 
 (defmethod image-request-handler :purge [system request-type request]
-  (-> (response "purged\n")
-      (status 202)))
+  (handle-purge system (get-image-params request request-type) (:uri request)))
 
 (defmethod image-request-handler :default [system request-type request]
   (throw+ {:type :request-method-error
@@ -197,6 +197,21 @@
   (if-let [file (get-original (store system) image-params)]
     (create-image-response file image-params)
     (error-response 404 image-params)))
+
+(declare background-purge)
+
+(defn handle-purge
+  [system image-params uri]
+  (if-let [edge-cache (cache system)]
+    (do
+      (background-purge edge-cache image-params uri)
+      (-> (response "")
+          (status 202)))
+    (not-found "No purger available")))
+
+(defn background-purge
+  [cache image-params uri]
+  (future (purge cache uri (surrogate-key image-params))))
 
 (defn get-image-params
   [request request-type]

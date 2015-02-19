@@ -28,9 +28,12 @@
     (get-image-params ..request.. :original) => ..params..
     (handle-original ..system.. ..params..) => ..response..)
 
-  (image-request-handler ..system.. :original ..request..) => (contains {:body "purged\n" :status 202})
+  (image-request-handler ..system.. :original ..request..) => (contains {:body "" :status 202})
   (provided
-    ..request.. =contains=> {:request-method :purge}))
+    ..request.. =contains=> {:request-method :purge :uri ..uri..}
+    (get-image-params ..request.. :original) => ..image-params..
+    (cache ..system..) => ..cache..
+    (background-purge ..cache.. ..image-params.. ..uri..) => nil))
 
 (facts :image-request-handler :scale-to-width
   (let [route-params (route-matches scale-to-width-route (request :get "/muppet/images/d/d4/Mo-Yet.jpg/revision/latest/scale-to-width/212"))
@@ -148,7 +151,12 @@
   ((app-routes nil) (request :get "/not-a-valid-route")) => (contains {:status 404}))
 
 (facts :app-routes-thumbnail
-  ((app-routes ..system..) (request :purge "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 202})
+  (let [request-map (request :purge "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")
+        uri (:uri request-map)]
+    ((app-routes ..system..) request-map) => (contains {:status 202})
+    (provided
+      (get-image-params anything :thumbnail) => ..image-params..
+      (handle-purge ..system.. ..image-params.. uri) => {:status 202}))
 
   (let [route-params {:request-type :thumbnail
                       :image-type "images"
@@ -177,6 +185,9 @@
 
 (facts :app-routes-original
   ((app-routes ..system..) (request :purge "/lotr/3/35/ropes.jpg/revision/latest")) => (contains {:status 202})
+  (provided
+    (get-image-params anything :original) => ..image-params..
+    (handle-purge ..system.. ..image-params.. anything) => {:status 202})
 
   (let [route-params {:request-type :original
                       :image-type "images"

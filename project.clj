@@ -16,6 +16,7 @@
                  [slingshot "0.10.3"]
                  [useful "0.8.8"]
                  [digest "1.4.4"]
+                 [clj-http "1.0.1"]
                  [wikia/commons "0.1.3-SNAPSHOT"]]
   :profiles  {:dev  {:source-paths  ["dev"]
                      :plugins [[lein-midje "3.1.1"]]
