@@ -106,7 +106,7 @@ centered either vertically or horizontally, depending on the longer dimension.
 | :--------:                                                        | :-----------: |
 | ![beach fixed-aspect-ratio](/assets/fixed-aspect-ratio/beach.jpg) | ![carousel fixed-aspect-ratio](/assets/fixed-aspect-ratio/carousel.jpg) |
 
-Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue)
 
 
 Note that the `fill=blue` URL parameter isn’t required. It’s there to help
@@ -118,7 +118,7 @@ This behaves the same as above except that it will not upscale the image. This
 is convenient when you want to preserve the aspect ratio but you don’t want the
 side effects that can result from upscaling the image.
 
-Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio-down/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio-down/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio-down/width/200/height/200?fill=blue)
 
 #### scale-to-width
 
@@ -140,7 +140,7 @@ aspect ratio will be preserved. Image upscaling is permitted.
 | :--------:                                                        | :-----------: |
 | ![beach thumbnail](/assets/thumbnail/beach.jpg) | ![carousel thumbnail](/assets/thumbnail/carousel.jpg) |
 
-Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail/width/200/height/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail/width/200/height/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail/width/200/height/200)
 
 #### thumbnail-down
 
