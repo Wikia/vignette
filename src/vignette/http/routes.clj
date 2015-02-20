@@ -167,6 +167,7 @@
          handle-original
          handle-purge
          get-image-params
+         background-purge
          route-params->image-type)
 
 (defmulti image-request-handler (fn [system request-type request]
@@ -197,8 +198,6 @@
   (if-let [file (get-original (store system) image-params)]
     (create-image-response file image-params)
     (error-response 404 image-params)))
-
-(declare background-purge)
 
 (defn handle-purge
   [system image-params uri]
