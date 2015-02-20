@@ -5,7 +5,7 @@
             [vignette.storage.local :refer [create-local-storage-system]]
             [vignette.storage.protocols :refer :all]
             [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
-            [vignette.caching.edge.fastly :refer [create-fastly-api fastly-creds]]
+            [vignette.caching.edge.fastly :refer [create-fastly-api fastly-creds empty-fastly-creds?]]
             [vignette.system :refer :all]
             [vignette.util.integration :as i]
             [wikia.common.perfmonitoring.core :as perf])
@@ -20,10 +20,6 @@
                  :default 8080
                  :parse-fn #(Integer/parseInt %)
                  :validate  [#(< 0 % 0x10000) "Must be a number between 0 and 65536"]]])
-
-(defn empty-fastly-creds?
-  [creds]
-  (some nil? (vals creds)))
 
 (defn -main [& args]
   (let [parsed-opts (cli/parse-opts args cli-specs)

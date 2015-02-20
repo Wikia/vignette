@@ -11,6 +11,10 @@
                    :auth-key (env :fastly-api-auth-key)
                    :api-url  (env :fastly-api-url default-fastly-api-url)})
 
+(defn empty-fastly-creds?
+  [creds]
+  (some nil? (vals creds)))
+
 (declare purge-request-url
          api-params)
 
@@ -24,7 +28,7 @@
                                 (api-params (:auth-key this)))]
       (if (not= (:status response) 200)
         (do (perf/publish {:failed-purge-count 1})
-            (log/warn (:body response) {:path uri :key surrogate-key})
+            (log/warn "vignette fastly purge failed" {:path uri :key surrogate-key :error (:body response)})
             false)
         (do
           (log/info (format "purged: %s using key %s" uri surrogate-key) {:path uri :key surrogate-key})

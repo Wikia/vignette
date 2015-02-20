@@ -17,3 +17,7 @@
     (api-params ..auth..) => ..params..
     (client/post ..url.. ..params..) => {:status 200}))
 
+(facts :empty-fastly-creds
+  (empty-fastly-creds? {:a true :b true}) => falsey
+  (empty-fastly-creds? {:a true :b nil}) => truthy)
+
