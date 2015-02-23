@@ -147,13 +147,22 @@
       map
       (assoc map :original (clojure.string/replace (:original map) #"^\d+!" "")))))
 
+(defn image->format
+  [file]
+  (let [[_ ext] (re-find #"(?i)\.([a-z]+)$" file)]
+    (when ext
+      (.toLowerCase ext))))
+
 (defn route->options
   [map]
-  (let [[_ format] (re-find #"(?i)\.([a-z]+)$" (get map :thumbname ""))
+  (let [thumb-format (image->format (get map :thumbname ""))
+        original-format (image->format (get map :original ""))
+        to-format (when (not= thumb-format original-format)
+                 thumb-format)
         [_ path-prefix] (re-find #"^/([/a-z0-9-]+)$" (get map :path-prefix ""))
         zone (zone map)
         options (cond-> {}
-                     format (assoc :format (.toLowerCase format))
+                     to-format (assoc :format to-format)
                      path-prefix (assoc :path-prefix path-prefix)
                      zone (assoc :zone zone))]
     (assoc map :options options)))
