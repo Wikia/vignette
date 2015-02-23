@@ -229,3 +229,10 @@
     (:height map) => "300"
     (:original map) => "20150205173220!phpZDfa00.jpg"
     (:image-type map) => "arbitrary"))
+
+(facts :image-format
+  (alr/image->format "foo.webp") => "webp"
+  (alr/image->format "foo.WEBP") => "webp"
+  (alr/image->format "foo.PNG") => "png"
+  (alr/image->format "foo.jpg.PNG") => "png"
+  (alr/image->format "foo") => nil?)
