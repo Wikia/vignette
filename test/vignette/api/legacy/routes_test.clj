@@ -6,7 +6,7 @@
 
 (facts :thumbnail-route
   (let [matched (route-matches alr/thumbnail-route
-                               (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.webp"))
+                               (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.WEBP"))
         matched (alr/route->thumb-map matched)]
     (:request-type matched) => :thumbnail
     (alr/archive? matched) => false
@@ -17,7 +17,7 @@
     (:width matched) => "185"
     (:wikia matched) => "happywheels"
     (:revision matched) => "latest"
-    (:thumbname matched) => "SuperMario64_20.webp"
+    (:thumbname matched) => "SuperMario64_20.WEBP"
     (:format (:options matched)) => "webp")
 
   (let [matched (alr/route->thumb-map
@@ -34,7 +34,7 @@
     (:height matched) => :auto
     (:revision matched) => "20101213101955"
     (:thumbname matched) => "6x01-Phoebe.jpg"
-    (:format (:options matched)) => "jpg")
+    (get (:options matched) :format nil) => nil?)
 
   (let [matched (alr/route->thumb-map
                   (route-matches alr/thumbnail-route
@@ -50,8 +50,7 @@
     (:height matched) => "200"
     (:thumbnail-mode matched) => "zoom-crop"
     (:revision matched) => "20101213101955"
-    (:thumbname matched) => "6x01-Phoebe.jpg"
-    (:format (:options matched)) => "jpg")
+    (:thumbname matched) => "6x01-Phoebe.jpg")
 
   (let [map (alr/route->thumb-map
               (route-matches alr/thumbnail-route
