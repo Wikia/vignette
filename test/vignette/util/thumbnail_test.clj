@@ -91,3 +91,8 @@
 (facts :route-map->thumb-args
        (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
                                                       "--mode" "thumbnail"] :in-any-order))
+
+(facts :assert-original-mime-type
+  (assert-original-mime-type "" {}) => nil
+  (assert-original-mime-type "file.jpg" {}) => nil
+  (assert-original-mime-type "file.ogv" {}) => (throws ExceptionInfo))
