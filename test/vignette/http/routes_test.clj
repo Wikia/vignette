@@ -205,6 +205,7 @@
         :middle-dir "40"
         :original "JohnvanBruggen.jpg"
         :revision "latest"
+        :thumbnail-mode "scale-to-width"
         :width "200"})
 
 (facts :avatar-request
@@ -216,6 +217,7 @@
         :middle-dir "7c"
         :original "1271044.png"
         :revision "latest"
+        :thumbnail-mode "scale-to-width"
         :width "150"})
 
 (facts :route-params->image-type

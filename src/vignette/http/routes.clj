@@ -70,16 +70,24 @@
                   :window-height size-regex}))
 
 (def scale-to-width-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/scale-to-width/:width"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/:width"
                  {:wikia wikia-regex
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
+                  :thumbnail-mode "scale-to-width"
                   :width size-regex}))
 
-(declare image-request-handler)
+(declare image-request-handler
+         handle-thumbnail
+         handle-original
+         get-image-params
+         route->scale-to-width-map
+         route->options
+         route-params->image-type
+         route->image-type)
 
 (defn original-request->file
   [request system image-params]
@@ -87,15 +95,14 @@
     (u/get-or-generate-thumbnail system (image-params->forced-thumb-params image-params))
     (get-original (store system) image-params)))
 
-; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
   [system]
   (-> (routes
         (GET scale-to-width-route
              request
-             (image-request-handler system :thumbnail request
-                                    :thumbnail-mode "scale-to-width"
-                                    :height :auto))
+             (handle-thumbnail system
+                               (route->scale-to-width-map (:route-params request)
+                                                          request)))
         (GET window-crop-route
              request
              (image-request-handler system :thumbnail request
@@ -164,11 +171,7 @@
       (request-timer)
       (add-headers)))
 
-(declare handle-thumbnail
-         handle-original
-         get-image-params
-         route-params->image-type)
-
+; TODO: remove
 (defn image-request-handler
   [system request-type request &{:keys [thumbnail-mode height] :or {thumbnail-mode nil height nil} :as params}]
   (let [image-params (get-image-params request request-type)
@@ -189,6 +192,7 @@
     (create-image-response file image-params)
     (error-response 404 image-params)))
 
+; TODO: remove
 (defn get-image-params
   [request request-type]
   (let [route-params (assoc (:route-params request) :request-type request-type)
@@ -203,3 +207,22 @@
     (clojure.string/replace (:image-type route-params)
                             #"^\/(.*)"
                             "$1")))
+
+(defn route->image-type
+  [request-map]
+  (assoc request-map :image-type (route-params->image-type request-map)))
+
+(defn route->scale-to-width-map
+  ([request-map request]
+   (-> request-map
+       (assoc :request-type :thumbnail)
+       (assoc :height :auto)
+       (route->image-type)
+       (route->options request)))
+  ([request-map]
+   (route->scale-to-width-map request-map {})))
+
+(defn route->options
+  "Extracts the query options and moves them to 'request-map'"
+  [request-map request]
+  (assoc request-map :options (extract-query-opts request)))

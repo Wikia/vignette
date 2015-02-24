@@ -1,5 +1,9 @@
 (ns vignette.media-types-test
   (:require [midje.sweet :refer :all]
+            [clout.core :refer (route-compile route-matches)]
+            [ring.mock.request :refer :all]
+            [vignette.http.routes :as r]
+            [vignette.api.legacy.routes :as alr]
             [vignette.media-types :refer :all]))
 
 (def original-map {:wikia "batman"
@@ -85,3 +89,13 @@
 (facts :timeline-path
   (original-path timeline-map) => (str "es/images/timeline/" timeline-file)
   (fully-qualified-original-path timeline-map) => (str "television/es/images/timeline/" timeline-file))
+
+(facts :scale-to-width-thumbnail
+  (let [new-thumbnail-map (r/route->scale-to-width-map
+                            (route-matches r/scale-to-width-route (request :get "/happywheels/images/b/bb/SuperMario64_20.png/revision/latest/scale-to-width/185")))
+        legacy-thumbnail-map (alr/route->thumb-map
+                               (route-matches alr/thumbnail-route
+                                              (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.png")))]
+    (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
+
+; TODO: do the same for the other new route types that have legacy equivalents
