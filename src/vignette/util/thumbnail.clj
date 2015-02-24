@@ -37,7 +37,7 @@
 (defn assert-original-mime-type
   [file thumb-map]
   (let [mime-type (mime-type-of file)]
-    (when (contains? unsupported-mime-types (mime-type-of file))
+    (when (contains? unsupported-mime-types mime-type)
       (throw+ {:type :convert-error
                :response-code 404
                :content-type mime-type
@@ -58,7 +58,6 @@
 
 (defn original->thumbnail
   [resource thumb-map]
-  (assert-original-mime-type resource thumb-map)
   (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
@@ -79,6 +78,7 @@
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
+  (assert-original-mime-type (get thumb-map :original) thumb-map)
   (if-let [thumb (and (not (q/query-opt thumb-map :replace))
                       (get-thumbnail (store system) thumb-map))]
     thumb
