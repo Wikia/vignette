@@ -58,6 +58,7 @@
 
 (defn original->thumbnail
   [resource thumb-map]
+  (assert-original-mime-type resource thumb-map)
   (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
