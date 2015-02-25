@@ -1,13 +1,15 @@
 (ns vignette.util.query-options)
 
 (defn create-query-opt
+  ([re side-effects command-line-option]
+   {:regex re :side-effects side-effects :command-line-option command-line-option})
   ([re side-effects]
-   {:regex re :side-effects side-effects})
+   (create-query-opt re side-effects false) )
   ([re]
-   (create-query-opt re true)))
+   (create-query-opt re true false)))
 
 ; regex of valid inputs for query arg
-(def query-opts-map {:fill (create-query-opt #"^#[a-g0-9]+$|^\w+$")
+(def query-opts-map {:fill (create-query-opt #"^#[a-g0-9]+$|^\w+$" true true)
                      :format (create-query-opt #"^\w+$")
                      :path-prefix (create-query-opt #"[\w\.\/-]+" false)
                      :replace (create-query-opt #"^true$" false)
@@ -25,6 +27,12 @@
   []
   (into {} (filter (fn [[k v]]
                      (= (:side-effects v) true))
+                   query-opts-map)))
+
+(defn query-opts-command-line-options
+  []
+  (into {} (filter (fn [[k v]]
+                     (= (:command-line-option v) true))
                    query-opts-map)))
 
 (defn extract-query-opts
@@ -66,7 +74,7 @@
               running))
           []
           (select-keys (query-opts data)
-                       (keys (query-opts-with-side-effects)))))
+                       (keys (query-opts-command-line-options)))))
 
 (defn modify-temp-file
   [data filename]

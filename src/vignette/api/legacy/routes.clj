@@ -5,6 +5,8 @@
             [vignette.util.regex :refer :all])
   (:import [java.net URLDecoder]))
 
+(def default-width 200)
+
 (declare route->revision
          route->dimensions
          route->offset
@@ -12,7 +14,7 @@
          route->options)
 
 (def path-prefix-regex #"\/[/a-z-]+|")
-(def dimension-regex #"\d+px-|\d+x\d+-|\d+x\d+x\d+-|")
+(def dimension-regex #"\d+px-|\d+x\d+-|\d+x\d+x\d+-|mid-|")
 (def offset-regex #"(?i)-{0,1}\d+,\d+,-{0,1}\d+,\d+-|-{0,1}\d+%2c\d+%2c-{0,1}\d+%2c\d+-|")
 (def thumbname-regex #".*?")
 (def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
@@ -172,6 +174,10 @@
   "Add the :width field to a request map based on the legacy parsing methods."
   (if-let [thumb-dimension (:dimension map)]
     (cond-let
+      ; this matches some legacy video requests that attempt to take the width from a frame in the "middle"
+      [_ (re-matches #"^mid-.*" thumb-dimension)] (merge map {:width default-width
+                                                              :height :auto
+                                                              :thumbnail-mode "scale-to-width"})
       [[_ dimension] (re-find #"^(\d+)px-" thumb-dimension)] (merge map {:width dimension
                                                                          :height :auto
                                                                          :thumbnail-mode "scale-to-width"})

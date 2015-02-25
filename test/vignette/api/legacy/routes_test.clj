@@ -20,6 +20,21 @@
     (:thumbname matched) => "SuperMario64_20.WEBP"
     (:format (:options matched)) => "webp")
 
+  (let [matched (route-matches alr/thumbnail-route
+                               (request :get "/leagueoflegends/images/thumb/3/31/Cassiopeia_RVideo.ogv/mid-Cassiopeia_RVideo.ogv.jpg"))
+        matched (alr/route->thumb-map matched)]
+    (:request-type matched) => :thumbnail
+    (alr/archive? matched) => false
+    (:original matched) => "Cassiopeia_RVideo.ogv"
+    (:middle-dir matched) => "31"
+    (:top-dir matched) => "3"
+    (:image-type matched) => "images"
+    (:width matched) => alr/default-width
+    (:wikia matched) => "leagueoflegends"
+    (:revision matched) => "latest"
+    (:thumbname matched) => "Cassiopeia_RVideo.ogv.jpg"
+    (:format (:options matched)) => "jpg")
+
   (let [matched (alr/route->thumb-map
                   (route-matches alr/thumbnail-route
                                  (request :get "/charmed/images/thumb/archive/b/b6/20101213101955!6x01-Phoebe.jpg/479px-6x01-Phoebe.jpg")))]
