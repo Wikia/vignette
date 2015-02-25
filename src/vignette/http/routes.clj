@@ -41,13 +41,14 @@
                   :height size-regex}))
 
 (def window-crop-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/window-crop/width/:width/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
                  {:wikia wikia-regex
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
+                  :thumbnail-mode "window-crop"
                   :width size-regex
                   :x-offset size-regex-allow-negative
                   :window-width size-regex
@@ -84,7 +85,9 @@
          handle-thumbnail
          handle-original
          get-image-params
-         route->scale-to-width-map
+         route->offset
+         route->thumbnail-map
+         route->thumbnail-auto-height-map
          route->options
          route-params->image-type
          route->image-type)
@@ -101,13 +104,15 @@
         (GET scale-to-width-route
              request
              (handle-thumbnail system
-                               (route->scale-to-width-map (:route-params request)
-                                                          request)))
+                               (route->thumbnail-auto-height-map
+                                 (:route-params request)
+                                 request)))
         (GET window-crop-route
              request
-             (image-request-handler system :thumbnail request
-                                    :thumbnail-mode "window-crop"
-                                    :height :auto))
+             (handle-thumbnail system
+                               (route->thumbnail-auto-height-map
+                                 (:route-params request)
+                                 request)))
         (GET window-crop-fixed-route
              request
              (image-request-handler system :thumbnail request
@@ -125,8 +130,8 @@
              request
              (let [image-params (alr/route->thumb-map (:route-params request))]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                   (create-image-response thumb image-params)
-                   (error-response 404 image-params))))
+                 (create-image-response thumb image-params)
+                 (error-response 404 image-params))))
         (GET alr/original-route
              request
              (let [image-params (alr/route->original-map (:route-params request))]
@@ -212,17 +217,39 @@
   [request-map]
   (assoc request-map :image-type (route-params->image-type request-map)))
 
-(defn route->scale-to-width-map
-  ([request-map request]
-   (-> request-map
-       (assoc :request-type :thumbnail)
-       (assoc :height :auto)
-       (route->image-type)
-       (route->options request)))
-  ([request-map]
-   (route->scale-to-width-map request-map {})))
+(defn route->thumbnail-map
+  [request-map request &[options]]
+  (-> request-map
+      (assoc :request-type :thumbnail)
+      (route->image-type)
+      (route->options request)
+      (route->adjust-window-offsets)
+      ; todo validate
+      (cond->
+        options (merge options))))
+
+(defn route->thumbnail-auto-height-map
+  [request-map request]
+  (route->thumbnail-map request-map request {:height :auto}))
 
 (defn route->options
   "Extracts the query options and moves them to 'request-map'"
   [request-map request]
   (assoc request-map :options (extract-query-opts request)))
+
+(defn route->window-params-seq
+  [request-map]
+  {:pre [(map? request-map)]}
+  (let [tuple ((juxt :x-offset :window-width :y-offset :window-height) request-map)]
+    (when-not (some nil? tuple)
+      (map #(Integer. %) tuple))))
+
+(defn route->adjust-window-offsets
+  [request-map]
+  (if-let [[x-offset x-end y-offset y-end] (route->window-params-seq request-map)]
+    (let [window-width (- x-end x-offset)
+          window-height (- y-end y-offset)]
+      (-> request-map
+          (assoc :window-width (str window-width))
+          (assoc :window-height (str window-height))))
+    request-map))

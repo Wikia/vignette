@@ -90,12 +90,27 @@
   (original-path timeline-map) => (str "es/images/timeline/" timeline-file)
   (fully-qualified-original-path timeline-map) => (str "television/es/images/timeline/" timeline-file))
 
-(facts :scale-to-width-thumbnail
-  (let [new-thumbnail-map (r/route->scale-to-width-map
-                            (route-matches r/scale-to-width-route (request :get "/happywheels/images/b/bb/SuperMario64_20.png/revision/latest/scale-to-width/185")))
-        legacy-thumbnail-map (alr/route->thumb-map
-                               (route-matches alr/thumbnail-route
-                                              (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.png")))]
+(facts :scale-to-width-thumbnail-path
+  (let [new-thumbnail-map
+        (r/route->thumbnail-auto-height-map
+          (route-matches r/scale-to-width-route
+                         (request :get "/happywheels/images/b/bb/SuperMario64_20.png/revision/latest/scale-to-width/185"))
+          {})
+        legacy-thumbnail-map
+        (alr/route->thumb-map
+          (route-matches alr/thumbnail-route
+                         (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.png")))]
     (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
 
 ; TODO: do the same for the other new route types that have legacy equivalents
+(facts :window-crop-thumbnail-path
+  (let [new-thumbnail-map
+        (r/route->thumbnail-auto-height-map
+          (route-matches r/window-crop-route
+                         (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/103"))
+          {})
+        legacy-thumbnail-map
+        (alr/route->thumb-map
+          (route-matches alr/thumbnail-route
+                         (request :get "/happywheels/images/thumb/4/40/JohnvanBruggen.jpg/200px-0,206,29,103-JohnvanBruggen.jpg")))]
+    (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
