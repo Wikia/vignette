@@ -86,6 +86,7 @@
          handle-original
          get-image-params
          route->offset
+         route->adjust-window-offsets
          route->thumbnail-map
          route->thumbnail-auto-height-map
          route->options
