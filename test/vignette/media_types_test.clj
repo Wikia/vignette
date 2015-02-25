@@ -102,7 +102,6 @@
                          (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.png")))]
     (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
 
-; TODO: do the same for the other new route types that have legacy equivalents
 (facts :window-crop-thumbnail-path
   (let [new-thumbnail-map
         (r/route->thumbnail-auto-height-map

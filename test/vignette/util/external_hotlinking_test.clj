@@ -31,5 +31,5 @@
        (let [request (generate-request original-url)
              route-match (route-matches original-route request)
              request (assoc-in request [:route-params] route-match)
-             image-params (get-image-params request :original)]
+             image-params (route->original-map route-match request)]
          (image-params->forced-thumb-params image-params) => (contains force-thumb-params)))

@@ -13,19 +13,6 @@
             [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
 
-(facts :image-request-handler
-  (image-request-handler {} :foo {}) => (throws IllegalArgumentException)
-
-  (image-request-handler ..system.. :thumbnail ..request..) => ..response..
-  (provided
-    (get-image-params ..request.. :thumbnail) => ..params..
-    (handle-thumbnail ..system.. ..params..) => ..response..)
-
-  (image-request-handler ..system.. :original ..request..) => ..response..
-  (provided
-    (get-image-params ..request.. :original) => ..params..
-    (handle-original ..system.. ..params..) => ..response..))
-
 (facts :handle-thumbnail
   (handle-thumbnail ..system.. ..params..) => ..response..
   (provided

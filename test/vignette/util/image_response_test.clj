@@ -11,10 +11,10 @@
 
 (facts :create-image-response
   (let [image-map 
-        (get-image-params {:route-params (route-matches
-                                           original-route
-                                           (request :get "/lotr/3/35/ropes.jpg/revision/latest"))}
-                          :original)
+        (route->original-map (route-matches
+                               original-route
+                               (request :get "/lotr/3/35/ropes.jpg/revision/latest"))
+                             {})
         response (create-image-response (create-stored-object "image-samples/ropes.jpg")  image-map)
         response-headers (:headers response)]
     (get response-headers "Surrogate-Key") => "7d1d24f2c2af364882953e8c97bf90092c2f7a08"

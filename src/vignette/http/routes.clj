@@ -82,10 +82,8 @@
                   :thumbnail-mode "scale-to-width"
                   :width size-regex}))
 
-(declare image-request-handler
-         handle-thumbnail
+(declare handle-thumbnail
          handle-original
-         get-image-params
          route->offset
          route->adjust-window-offsets
          route->thumbnail-map
@@ -186,15 +184,6 @@
       (request-timer)
       (add-headers)))
 
-; TODO: remove
-(defn image-request-handler
-  [system request-type request &{:keys [thumbnail-mode height] :or {thumbnail-mode nil height nil} :as params}]
-  (let [image-params (get-image-params request request-type)
-        image-params (if params (merge image-params params) image-params)]
-    (condp = request-type
-      :thumbnail (handle-thumbnail system image-params)
-      :original (handle-original system image-params))))
-
 (defn handle-thumbnail
   [system image-params]
   (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
@@ -206,14 +195,6 @@
   (if-let [file (get-original (store system) image-params)]
     (create-image-response file image-params)
     (error-response 404 image-params)))
-
-; TODO: remove
-(defn get-image-params
-  [request request-type]
-  (let [route-params (assoc (:route-params request) :request-type request-type)
-        options (extract-query-opts request)]
-    (assoc route-params :options options
-                        :image-type (route-params->image-type route-params))))
 
 (defn route-params->image-type
   [route-params]
