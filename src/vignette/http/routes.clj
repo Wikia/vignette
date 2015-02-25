@@ -56,13 +56,14 @@
                   :window-height size-regex}))
 
 (def window-crop-fixed-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/window-crop-fixed/width/:width/height/:height/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/height/:height/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
                  {:wikia wikia-regex
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
+                  :thumbnail-mode "window-crop-fixed"
                   :width size-regex
                   :height size-regex
                   :x-offset size-regex-allow-negative
@@ -116,9 +117,10 @@
                                  request)))
         (GET window-crop-fixed-route
              request
-             (image-request-handler system :thumbnail request
-                                    :thumbnail-mode "window-crop-fixed"
-                                    :height :auto))
+             (handle-thumbnail system
+                               (route->thumbnail-auto-height-map
+                                 (:route-params request)
+                                 request)))
         (GET thumbnail-route
              request
              (image-request-handler system :thumbnail request))
@@ -225,7 +227,6 @@
       (route->image-type)
       (route->options request)
       (route->adjust-window-offsets)
-      ; todo validate
       (cond->
         options (merge options))))
 

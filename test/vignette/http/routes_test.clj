@@ -192,6 +192,7 @@
         :middle-dir "58"
         :original "Door_4.jpg"
         :revision "latest"
+        :thumbnail-mode "window-crop-fixed"
         :width "400"
         :height "400"
         :x-offset "400"
@@ -238,5 +239,4 @@
 
 (facts :route->adjust-window-offsets
   (route->adjust-window-offsets {:nothing nil}) => {:nothing nil}
-  (route->adjust-window-offsets {:x-offset "1" :window-width "100" :y-offset "1" :window-height "100"}) => {:x-offset "1" :window-width "99" :y-offset "1" :window-height "99"}
-  )
+  (route->adjust-window-offsets {:x-offset "1" :window-width "100" :y-offset "1" :window-height "100"}) => {:x-offset "1" :window-width "99" :y-offset "1" :window-height "99"})

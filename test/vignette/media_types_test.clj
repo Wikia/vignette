@@ -114,3 +114,15 @@
           (route-matches alr/thumbnail-route
                          (request :get "/happywheels/images/thumb/4/40/JohnvanBruggen.jpg/200px-0,206,29,103-JohnvanBruggen.jpg")))]
     (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
+
+(facts :window-crop-fixed-thumbnail-path
+  (let [new-thumbnail-map
+        (r/route->thumbnail-map
+          (route-matches r/window-crop-fixed-route
+                         (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/0/y-offset/29/window-width/206/window-height/103"))
+          {})
+        legacy-thumbnail-map
+        (alr/route->thumb-map
+          (route-matches alr/thumbnail-route
+                         (request :get "/happywheels/images/thumb/4/40/JohnvanBruggen.jpg/200x200-0,206,29,103-JohnvanBruggen.jpg")))]
+    (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
