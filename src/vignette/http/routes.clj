@@ -89,6 +89,7 @@
          route->offset
          route->adjust-window-offsets
          route->thumbnail-map
+         route->original-map
          route->thumbnail-auto-height-map
          route->options
          route-params->image-type
@@ -123,10 +124,16 @@
                                  request)))
         (GET thumbnail-route
              request
-             (image-request-handler system :thumbnail request))
+             (handle-thumbnail system
+                               (route->thumbnail-map
+                                 (:route-params request)
+                                 request)))
         (GET original-route
              request
-             (image-request-handler system :original request))
+             (handle-original system
+                              (route->original-map
+                                (:route-params request)
+                                request)))
 
         ; legacy routes
         (GET alr/thumbnail-route
@@ -219,6 +226,13 @@
 (defn route->image-type
   [request-map]
   (assoc request-map :image-type (route-params->image-type request-map)))
+
+(defn route->original-map
+  [request-map request]
+  (-> request-map
+      (assoc :request-type :original)
+      (route->image-type)
+      (route->options request)))
 
 (defn route->thumbnail-map
   [request-map request &[options]]
