@@ -117,7 +117,7 @@
         (GET window-crop-fixed-route
              request
              (handle-thumbnail system
-                               (route->thumbnail-auto-height-map
+                               (route->thumbnail-map
                                  (:route-params request)
                                  request)))
         (GET thumbnail-route
