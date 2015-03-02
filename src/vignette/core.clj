@@ -5,6 +5,7 @@
             [vignette.storage.local :refer [create-local-storage-system]]
             [vignette.storage.protocols :refer :all]
             [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
+            [vignette.caching.edge.fastly :refer [create-fastly-api fastly-creds empty-fastly-creds?]]
             [vignette.system :refer :all]
             [vignette.util.integration :as i]
             [wikia.common.perfmonitoring.core :as perf])
@@ -39,6 +40,8 @@
                              (create-local-storage-system i/integration-path))
                            (create-s3-storage-system storage-creds))
           image-store (create-image-storage object-storage)
-          system (create-system image-store)]
+          cache (when (not (empty-fastly-creds? fastly-creds))
+                  (create-fastly-api fastly-creds))
+          system (create-system image-store cache)]
       (println (format "Mode: %s. Starting server on %d..." (:mode opts) (:port opts)))
       (start system (:port opts)))))

@@ -16,11 +16,13 @@
             [vignette.storage.core :refer [create-image-storage]]
             [vignette.storage.local :refer [create-local-storage-system]]
             [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
+            [vignette.caching.edge.fastly :refer [create-fastly-api fastly-creds]]
             [vignette.system :refer :all]
             [vignette.util.filesystem :as fs]
             [vignette.util.integration :as itg]
             [vignette.util.thumbnail :as u]
             [vignette.util.query-options :as q]
+            [vignette.caching.edge.fastly :as fastly]
             [wikia.common.logger :as log]
             [wikia.common.perfmonitoring.core :as perf])
   (:use [environ.core]))
@@ -40,15 +42,17 @@
                             :height "10"
                             :width "10"})
 
+(def fastly (create-fastly-api fastly-creds))
+
 (def los  (create-local-storage-system itg/integration-path))
 (def lis  (create-image-storage los))
 
-(def system-local (create-system lis))
+(def system-local (create-system lis nil))
 
 (def s3os  (create-s3-storage-system storage-creds))
 (def s3s   (create-image-storage s3os))
 
-(def system-s3 (create-system s3s))
+(def system-s3 (create-system s3s fastly))
 
 (comment
   (start S 8080)

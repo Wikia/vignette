@@ -74,6 +74,7 @@
                (file-exists? temp-file))) (io/file temp-file)
       :else (throw+ {:type :convert-error
                      :error-code (:exit sh-out)
+                     :out-string (:out sh-out)
                      :error-string (:err sh-out)}
                     "thumbnailing error"))))
 

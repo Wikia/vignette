@@ -20,10 +20,12 @@
         (let [message (:message &throw-context)
               thumb-map (:thumb-map e) ; if present, we'll try to thumbnail the error response
               response-code (or (:response-code e) 500)
-              context (assoc (dissoc e :type :thumb-map :response-code) :host hostname)]
+              context (-> e
+                          (dissoc :type :thumb-map :response-code :out-string)
+                          (assoc :host hostname))]
           (when (>= response-code 500)
             (perf/publish {:convert-error 1})
-            (println message ":" (:uri request))
+            (println message ":" (:uri request) " error: " (:out-string e))
             (log/warn message
                       (merge {:path (:uri request)
                               :query (:query-string request)

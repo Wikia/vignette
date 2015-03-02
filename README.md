@@ -60,11 +60,14 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `VIGNETTE_SERVER_MAX_THREADS`  minimum number of threads to allocate for jetty [150]
  * `VIGNETTE_SERVER_QUEUE_SIZE`   queue size to allocate for jetty [9000]
  * `ENABLE_ACCESS_LOG`            enable the NCSA access log [false]
- * `ACCESS_LOG_FILE`              NCSA acces log file [/tmp/Vignette-access.log]
+ * `ACCESS_LOG_FILE`              NCSA acces log file [/tmp/vignette-access.log]
  * `IMAGEMAGICK_BASE`             path to the root of the ImageMagick installation [/usr/local]
  * `GETOPT`                       when running on osx, install gnu-getopt using brew. see bin/thumbnail
  * `CONVERT_CONSTRAINTS`          universal options to pass to ImageMagick. see bin/thumbnail
  * `UNSUPPORTED_REDIRECT_HOST`    on an unsupported legacy thumbnail request, host to redirect
+ * `FASTLY_API_ID`                the Fastly API id
+ * `FASTLY_API_AUTH_KEY`          the Fastly API auth key
+ * `FASTLY_API_URL`               the Fastly API url [https://api.fastly.com]
 
 ## Testing
 
@@ -105,7 +108,7 @@ centered either vertically or horizontally, depending on the longer dimension.
 | :--------:                                                        | :-----------: |
 | ![beach fixed-aspect-ratio](/assets/fixed-aspect-ratio/beach.jpg) | ![carousel fixed-aspect-ratio](/assets/fixed-aspect-ratio/carousel.jpg) |
 
-Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue)
 
 
 Note that the `fill=blue` URL parameter isn’t required. It’s there to help
@@ -117,7 +120,7 @@ This behaves the same as above except that it will not upscale the image. This
 is convenient when you want to preserve the aspect ratio but you don’t want the
 side effects that can result from upscaling the image.
 
-Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio-down/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio-down/width/200/height/200?fill=blue](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio-down/width/200/height/200?fill=blue)
 
 #### scale-to-width
 
@@ -139,7 +142,7 @@ aspect ratio will be preserved. Image upscaling is permitted.
 | :--------:                                                        | :-----------: |
 | ![beach thumbnail](/assets/thumbnail/beach.jpg) | ![carousel thumbnail](/assets/thumbnail/carousel.jpg) |
 
-Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail/width/200/height/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/width/200/height/200)
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail/width/200/height/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/thumbnail/width/200/height/200)
 
 #### thumbnail-down
 

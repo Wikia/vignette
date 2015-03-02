@@ -14,17 +14,49 @@
   (:import java.io.FileNotFoundException))
 
 (facts :image-request-handler
-  (image-request-handler {} :foo {}) => (throws IllegalArgumentException)
+  (image-request-handler {} :foo {}) => (throws clojure.lang.ExceptionInfo)
 
   (image-request-handler ..system.. :thumbnail ..request..) => ..response..
   (provided
+    ..request.. =contains=> {:request-method :get}
     (get-image-params ..request.. :thumbnail) => ..params..
     (handle-thumbnail ..system.. ..params..) => ..response..)
 
   (image-request-handler ..system.. :original ..request..) => ..response..
   (provided
+    ..request.. =contains=> {:request-method :get}
     (get-image-params ..request.. :original) => ..params..
-    (handle-original ..system.. ..params..) => ..response..))
+    (handle-original ..system.. ..params..) => ..response..)
+
+  (image-request-handler ..system.. :original ..request..) => (contains {:body "" :status 202})
+  (provided
+    ..request.. =contains=> {:request-method :purge :uri ..uri..}
+    (get-image-params ..request.. :original) => ..image-params..
+    (cache ..system..) => ..cache..
+    (background-purge ..cache.. ..image-params.. ..uri..) => nil))
+
+(facts :get-image-params
+  (get-image-params {:route-params {:wikia "foo"}} :foo) => {:wikia "foo" :options {} :image-type "images" :request-type :foo})
+
+(facts :image-request-handler :thumbnail
+  (let [route-params (route-matches thumbnail-route
+                                    (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10"))
+        request {:request-method :get :route-params route-params}
+        image-params (merge route-params {:options {} :image-type "images" :request-type :thumbnail})]
+    (image-request-handler ..system.. :thumbnail request) => ..response..
+
+    (provided
+      (handle-thumbnail ..system.. image-params) => ..response..)))
+
+(facts :image-request-handler :original
+  (let [route-params (route-matches original-route
+                      (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest"))
+        request {:request-method :get :route-params route-params}
+        image-params (merge route-params {:options {} :image-type "images" :request-type :original})]
+    (image-request-handler ..system.. :original request)  => (contains {:status 200})
+
+   (provided
+    (handle-original ..system.. image-params) => {:body nil :status 200})))
 
 (facts :handle-thumbnail
   (handle-thumbnail ..system.. ..params..) => ..response..
@@ -128,7 +160,6 @@
       (u/get-or-generate-thumbnail ..system.. route-params) =throws=> (NullPointerException.))))
 
 (facts :app-routes-original
-
   (let [route-params {:request-type :original
                       :image-type "images"
                       :original "ropes.jpg"
@@ -161,6 +192,7 @@
         :middle-dir "40"
         :original "JohnvanBruggen.jpg"
         :revision "latest"
+        :thumbnail-mode "window-crop"
         :width "200"
         :x-offset "0"
         :y-offset "29"
@@ -174,6 +206,7 @@
         :middle-dir "40"
         :original "JohnvanBruggen.jpg"
         :revision "latest"
+        :thumbnail-mode "window-crop"
         :width "200"
         :x-offset "-1"
         :y-offset "29"
@@ -189,6 +222,7 @@
         :middle-dir "58"
         :original "Door_4.jpg"
         :revision "latest"
+        :thumbnail-mode "window-crop-fixed"
         :width "400"
         :height "400"
         :x-offset "400"
@@ -205,6 +239,7 @@
         :middle-dir "40"
         :original "JohnvanBruggen.jpg"
         :revision "latest"
+        :thumbnail-mode "scale-to-width"
         :width "200"})
 
 (facts :avatar-request
@@ -216,6 +251,7 @@
         :middle-dir "7c"
         :original "1271044.png"
         :revision "latest"
+        :thumbnail-mode "scale-to-width"
         :width "150"})
 
 (facts :route-params->image-type
