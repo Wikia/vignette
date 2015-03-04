@@ -85,7 +85,6 @@
 (declare handle-thumbnail
          handle-original
          route->offset
-         route->adjust-window-offsets
          route->thumbnail-map
          route->original-map
          route->thumbnail-auto-height-map
@@ -221,7 +220,6 @@
       (assoc :request-type :thumbnail)
       (route->image-type)
       (route->options request)
-      (route->adjust-window-offsets)
       (cond->
         options (merge options))))
 
@@ -233,20 +231,3 @@
   "Extracts the query options and moves them to 'request-map'"
   [request-map request]
   (assoc request-map :options (extract-query-opts request)))
-
-(defn route->window-params-seq
-  [request-map]
-  {:pre [(map? request-map)]}
-  (let [tuple ((juxt :x-offset :window-width :y-offset :window-height) request-map)]
-    (when-not (some nil? tuple)
-      (map #(Integer. %) tuple))))
-
-(defn route->adjust-window-offsets
-  [request-map]
-  (if-let [[x-offset x-end y-offset y-end] (route->window-params-seq request-map)]
-    (let [window-width (- x-end x-offset)
-          window-height (- y-end y-offset)]
-      (-> request-map
-          (assoc :window-width (str window-width))
-          (assoc :window-height (str window-height))))
-    request-map))

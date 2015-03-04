@@ -211,6 +211,21 @@ Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/zoom-crop/
 Same as the above except that the image will not be upscaled-- the original
 height and width need to be larger than those specified.
 
+### Note Regarding Legacy Compatibility
+
+Vignette also supports legacy Wikia thumbnail request URIs. This request format
+is no longer supported and is currently provided for transitional support. The
+legacy support is handled under the `*.legacy.*` namespaces.
+
+It should also be noted that there may be subtle differences between the
+thumbnails generated via the legacy and vignette URIs. For example, Legacy URLs
+and Vignette URLs calculate window width/height differently because the
+parameters to the image mean different things. In the legacy format `a,b,c,d`, `a`
+is `x-offset`, `b` is `x-endpoint` (which is not specified at all in Vignette URLs),
+and `c,d` are the same but for `y`. In Vignette URLs, we specify the `x-offset`,
+which is the same as a above, but we specify window-width instead of `x-endpoint`
+(where `window-width` is `x-endpoint - x-offset`).
+
 # License
 
 Copyright © 2014 Wikia

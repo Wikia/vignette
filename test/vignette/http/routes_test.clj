@@ -215,15 +215,3 @@
        (route-params->image-type {:image-type ""}) => "images"
        (route-params->image-type {:image-type "/images"}) => "images"
        (route-params->image-type {:image-type "/avatars"}) => "avatars")
-
-(facts :route->window-params-seq
-  (route->window-params-seq nil) => (throws AssertionError)
-  (route->window-params-seq {:nothing nil}) => nil
-  (route->window-params-seq {:x-offset "1"}) => nil
-  (route->window-params-seq {:x-offset "1" :window-width "100"}) => nil
-  (route->window-params-seq {:x-offset "1" :window-width "100" :y-offset "1"}) => nil
-  (route->window-params-seq {:x-offset "1" :window-width "100" :y-offset "1" :window-height "100"}) => [1 100 1 100])
-
-(facts :route->adjust-window-offsets
-  (route->adjust-window-offsets {:nothing nil}) => {:nothing nil}
-  (route->adjust-window-offsets {:x-offset "1" :window-width "100" :y-offset "1" :window-height "100"}) => {:x-offset "1" :window-width "99" :y-offset "1" :window-height "99"})

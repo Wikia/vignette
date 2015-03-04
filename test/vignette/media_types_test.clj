@@ -106,7 +106,7 @@
   (let [new-thumbnail-map
         (r/route->thumbnail-auto-height-map
           (route-matches r/window-crop-route
-                         (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/103"))
+                         (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/74"))
           {})
         legacy-thumbnail-map
         (alr/route->thumb-map
@@ -118,7 +118,7 @@
   (let [new-thumbnail-map
         (r/route->thumbnail-map
           (route-matches r/window-crop-fixed-route
-                         (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/0/y-offset/29/window-width/206/window-height/103"))
+                         (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/0/y-offset/29/window-width/206/window-height/74"))
           {})
         legacy-thumbnail-map
         (alr/route->thumb-map
