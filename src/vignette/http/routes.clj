@@ -41,13 +41,14 @@
                   :height size-regex}))
 
 (def window-crop-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/window-crop/width/:width/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
                  {:wikia wikia-regex
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
+                  :thumbnail-mode "window-crop"
                   :width size-regex
                   :x-offset size-regex-allow-negative
                   :window-width size-regex
@@ -55,13 +56,14 @@
                   :window-height size-regex}))
 
 (def window-crop-fixed-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/window-crop-fixed/width/:width/height/:height/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/width/:width/height/:height/x-offset/:x-offset/y-offset/:y-offset/window-width/:window-width/window-height/:window-height"
                  {:wikia wikia-regex
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
+                  :thumbnail-mode "window-crop-fixed"
                   :width size-regex
                   :height size-regex
                   :x-offset size-regex-allow-negative
@@ -70,16 +72,25 @@
                   :window-height size-regex}))
 
 (def scale-to-width-route
-  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/scale-to-width/:width"
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/:width"
                  {:wikia wikia-regex
                   :image-type image-type-regex
                   :top-dir top-dir-regex
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
+                  :thumbnail-mode "scale-to-width"
                   :width size-regex}))
 
-(declare image-request-handler)
+(declare handle-thumbnail
+         handle-original
+         route->offset
+         route->thumbnail-map
+         route->original-map
+         route->thumbnail-auto-height-map
+         route->options
+         route-params->image-type
+         route->image-type)
 
 (defn original-request->file
   [request system image-params]
@@ -87,39 +98,47 @@
     (u/get-or-generate-thumbnail system (image-params->forced-thumb-params image-params))
     (get-original (store system) image-params)))
 
-; /lotr/3/35/Arwen.png/resize/10/10?debug=true
 (defn app-routes
   [system]
   (-> (routes
         (GET scale-to-width-route
              request
-             (image-request-handler system :thumbnail request
-                                    :thumbnail-mode "scale-to-width"
-                                    :height :auto))
+             (handle-thumbnail system
+                               (route->thumbnail-auto-height-map
+                                 (:route-params request)
+                                 request)))
         (GET window-crop-route
              request
-             (image-request-handler system :thumbnail request
-                                    :thumbnail-mode "window-crop"
-                                    :height :auto))
+             (handle-thumbnail system
+                               (route->thumbnail-auto-height-map
+                                 (:route-params request)
+                                 request)))
         (GET window-crop-fixed-route
              request
-             (image-request-handler system :thumbnail request
-                                    :thumbnail-mode "window-crop-fixed"
-                                    :height :auto))
+             (handle-thumbnail system
+                               (route->thumbnail-map
+                                 (:route-params request)
+                                 request)))
         (GET thumbnail-route
              request
-             (image-request-handler system :thumbnail request))
+             (handle-thumbnail system
+                               (route->thumbnail-map
+                                 (:route-params request)
+                                 request)))
         (GET original-route
              request
-             (image-request-handler system :original request))
+             (handle-original system
+                              (route->original-map
+                                (:route-params request)
+                                request)))
 
         ; legacy routes
         (GET alr/thumbnail-route
              request
              (let [image-params (alr/route->thumb-map (:route-params request))]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                   (create-image-response thumb image-params)
-                   (error-response 404 image-params))))
+                 (create-image-response thumb image-params)
+                 (error-response 404 image-params))))
         (GET alr/original-route
              request
              (let [image-params (alr/route->original-map (:route-params request))]
@@ -164,19 +183,6 @@
       (request-timer)
       (add-headers)))
 
-(declare handle-thumbnail
-         handle-original
-         get-image-params
-         route-params->image-type)
-
-(defn image-request-handler
-  [system request-type request &{:keys [thumbnail-mode height] :or {thumbnail-mode nil height nil} :as params}]
-  (let [image-params (get-image-params request request-type)
-        image-params (if params (merge image-params params) image-params)]
-    (condp = request-type
-      :thumbnail (handle-thumbnail system image-params)
-      :original (handle-original system image-params))))
-
 (defn handle-thumbnail
   [system image-params]
   (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
@@ -189,13 +195,6 @@
     (create-image-response file image-params)
     (error-response 404 image-params)))
 
-(defn get-image-params
-  [request request-type]
-  (let [route-params (assoc (:route-params request) :request-type request-type)
-        options (extract-query-opts request)]
-    (assoc route-params :options options
-                        :image-type (route-params->image-type route-params))))
-
 (defn route-params->image-type
   [route-params]
   (if (clojure.string/blank? (:image-type route-params))
@@ -203,3 +202,32 @@
     (clojure.string/replace (:image-type route-params)
                             #"^\/(.*)"
                             "$1")))
+
+(defn route->image-type
+  [request-map]
+  (assoc request-map :image-type (route-params->image-type request-map)))
+
+(defn route->original-map
+  [request-map request]
+  (-> request-map
+      (assoc :request-type :original)
+      (route->image-type)
+      (route->options request)))
+
+(defn route->thumbnail-map
+  [request-map request &[options]]
+  (-> request-map
+      (assoc :request-type :thumbnail)
+      (route->image-type)
+      (route->options request)
+      (cond->
+        options (merge options))))
+
+(defn route->thumbnail-auto-height-map
+  [request-map request]
+  (route->thumbnail-map request-map request {:height :auto}))
+
+(defn route->options
+  "Extracts the query options and moves them to 'request-map'"
+  [request-map request]
+  (assoc request-map :options (extract-query-opts request)))

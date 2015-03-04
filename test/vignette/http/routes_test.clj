@@ -13,19 +13,6 @@
             [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
 
-(facts :image-request-handler
-  (image-request-handler {} :foo {}) => (throws IllegalArgumentException)
-
-  (image-request-handler ..system.. :thumbnail ..request..) => ..response..
-  (provided
-    (get-image-params ..request.. :thumbnail) => ..params..
-    (handle-thumbnail ..system.. ..params..) => ..response..)
-
-  (image-request-handler ..system.. :original ..request..) => ..response..
-  (provided
-    (get-image-params ..request.. :original) => ..params..
-    (handle-original ..system.. ..params..) => ..response..))
-
 (facts :handle-thumbnail
   (handle-thumbnail ..system.. ..params..) => ..response..
   (provided
@@ -161,11 +148,13 @@
         :middle-dir "40"
         :original "JohnvanBruggen.jpg"
         :revision "latest"
+        :thumbnail-mode "window-crop"
         :width "200"
         :x-offset "0"
         :y-offset "29"
         :window-width "206"
         :window-height "103"}
+
        (route-matches window-crop-route
                       (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/-1/y-offset/29/window-width/206/window-height/103")) =>
        {:wikia "muppet"
@@ -174,6 +163,7 @@
         :middle-dir "40"
         :original "JohnvanBruggen.jpg"
         :revision "latest"
+        :thumbnail-mode "window-crop"
         :width "200"
         :x-offset "-1"
         :y-offset "29"
@@ -189,6 +179,7 @@
         :middle-dir "58"
         :original "Door_4.jpg"
         :revision "latest"
+        :thumbnail-mode "window-crop-fixed"
         :width "400"
         :height "400"
         :x-offset "400"
@@ -205,6 +196,7 @@
         :middle-dir "40"
         :original "JohnvanBruggen.jpg"
         :revision "latest"
+        :thumbnail-mode "scale-to-width"
         :width "200"})
 
 (facts :avatar-request
@@ -216,6 +208,7 @@
         :middle-dir "7c"
         :original "1271044.png"
         :revision "latest"
+        :thumbnail-mode "scale-to-width"
         :width "150"})
 
 (facts :route-params->image-type
