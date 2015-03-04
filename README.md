@@ -23,6 +23,7 @@ A Clojure library for thumbnail generation and storage.
             - [window-crop-fixed](#window-crop-fixed)
             - [zoom-crop](#zoom-crop)
             - [zoom-crop-down](#zoom-crop-down)
+        - [Note Regarding Legacy Compatibility](#note-regarding-legacy-compatibility)
 - [License](#license)
 - [Contributors](#contributors)
 
