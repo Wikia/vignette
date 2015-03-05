@@ -23,6 +23,7 @@
                                      [javax.servlet/servlet-api "2.5"]
                                      [org.clojure/tools.namespace "0.2.5"]
                                      [org.clojure/tools.trace "0.7.8"]
+                                     [clj-http "1.0.1"]
                                      [ring-mock "0.1.5"]]}}
   :main vignette.core
   :aot [vignette.core
