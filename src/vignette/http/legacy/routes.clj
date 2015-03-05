@@ -1,8 +1,14 @@
 (ns vignette.http.legacy.routes
   (:require [clout.core :refer [route-compile route-matches]]
+            [compojure.core :refer [routes GET]]
             [useful.experimental :refer [cond-let]]
             [vignette.media-types :refer [archive-dir]]
-            [vignette.util.regex :refer :all])
+            [vignette.protocols :refer :all]
+            [vignette.storage.protocols :refer :all]
+            [vignette.util.regex :refer :all]
+            [vignette.util.external-hotlinking :refer :all]
+            [vignette.util.image-response :refer :all]
+            [vignette.util.thumbnail :as u])
   (:import [java.net URLDecoder]))
 
 (def default-width 200)
@@ -11,7 +17,13 @@
          route->dimensions
          route->offset
          route->thumb-mode
-         route->options)
+         route->options
+         route->thumb-map
+         route->original-map
+         route->interactive-maps-map
+         route->interactive-maps-thumbnail-map
+         route->timeline-map
+         original-request->file)
 
 (def path-prefix-regex #"\/[/a-z-]+|")
 (def dimension-regex #"\d+px-|\d+x\d+-|\d+x\d+x\d+-|mid-|")
@@ -81,6 +93,52 @@
   (route-compile "/:wikia/:original"
                  {:wikia interactive-maps-marker-regex
                   :original original-regex}))
+
+(defn legacy-routes
+  [system]
+  [(GET thumbnail-route
+         request
+         (let [image-params (route->thumb-map (:route-params request))]
+           (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+             (create-image-response thumb image-params)
+             (error-response 404 image-params))))
+   (GET original-route
+        request
+        (let [image-params (route->original-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET timeline-route
+        request
+        (let [image-params (route->timeline-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET math-route
+        request
+        (let [image-params (route->original-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET interactive-maps-route
+        request
+        (let [image-params (route->interactive-maps-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET interactive-maps-marker-route
+        request
+        (let [image-params (route->interactive-maps-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET interactive-maps-thumbnail-route
+        request
+        (let [image-params (route->interactive-maps-thumbnail-map (:route-params request))]
+          (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+            (create-image-response thumb image-params)
+            (error-response 404 image-params))))])
+
 
 
 (defn archive? [map]
@@ -204,3 +262,9 @@
                  :window-width (str window-width)
                  :window-height (str window-height)))
     map))
+
+(defn original-request->file
+  [request system image-params]
+  (if (force-thumb? request)
+    (u/get-or-generate-thumbnail system (image-params->forced-thumb-params image-params))
+    (get-original (store system) image-params)))
