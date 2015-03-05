@@ -82,7 +82,8 @@
                   :thumbnail-mode "scale-to-width"
                   :width size-regex}))
 
-(declare handle-thumbnail
+(declare original-request->file
+         handle-thumbnail
          handle-original
          route->offset
          route->thumbnail-map
@@ -92,96 +93,104 @@
          route-params->image-type
          route->image-type)
 
+(defn app-routes
+  [system]
+  [(GET scale-to-width-route
+        request
+        (handle-thumbnail system
+                          (route->thumbnail-auto-height-map
+                            (:route-params request)
+                            request)))
+   (GET window-crop-route
+        request
+        (handle-thumbnail system
+                          (route->thumbnail-auto-height-map
+                            (:route-params request)
+                            request)))
+   (GET window-crop-fixed-route
+        request
+        (handle-thumbnail system
+                          (route->thumbnail-map
+                            (:route-params request)
+                            request)))
+   (GET thumbnail-route
+        request
+        (handle-thumbnail system
+                          (route->thumbnail-map
+                            (:route-params request)
+                            request)))
+   (GET original-route
+        request
+        (handle-original system
+                         (route->original-map
+                           (:route-params request)
+                           request)))])
+
+(defn legacy-routes
+  [system]
+  [(GET hlr/thumbnail-route
+         request
+         (let [image-params (hlr/route->thumb-map (:route-params request))]
+           (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+             (create-image-response thumb image-params)
+             (error-response 404 image-params))))
+   (GET hlr/original-route
+        request
+        (let [image-params (hlr/route->original-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET hlr/timeline-route
+        request
+        (let [image-params (hlr/route->timeline-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET hlr/math-route
+        request
+        (let [image-params (hlr/route->original-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET hlr/interactive-maps-route
+        request
+        (let [image-params (hlr/route->interactive-maps-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET hlr/interactive-maps-marker-route
+        request
+        (let [image-params (hlr/route->interactive-maps-map (:route-params request))]
+          (if-let [file (original-request->file request system image-params)]
+            (create-image-response file image-params)
+            (error-response 404 image-params))))
+   (GET hlr/interactive-maps-thumbnail-route
+        request
+        (let [image-params (hlr/route->interactive-maps-thumbnail-map (:route-params request))]
+          (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+            (create-image-response thumb image-params)
+            (error-response 404 image-params))))])
+
+(defn all-routes
+  [system]
+  (-> (apply routes
+             (concat (app-routes system)
+                     (legacy-routes system)
+                     (list
+                       (GET "/ping" [] "pong")
+                       (files "/static/")
+                       (bad-request-path))))
+      (wrap-params)
+      (exception-catcher)
+      (request-timer)
+      (add-headers)))
+
 (defn original-request->file
   [request system image-params]
   (if (force-thumb? request)
     (u/get-or-generate-thumbnail system (image-params->forced-thumb-params image-params))
     (get-original (store system) image-params)))
 
-(defn app-routes
-  [system]
-  (-> (routes
-        (GET scale-to-width-route
-             request
-             (handle-thumbnail system
-                               (route->thumbnail-auto-height-map
-                                 (:route-params request)
-                                 request)))
-        (GET window-crop-route
-             request
-             (handle-thumbnail system
-                               (route->thumbnail-auto-height-map
-                                 (:route-params request)
-                                 request)))
-        (GET window-crop-fixed-route
-             request
-             (handle-thumbnail system
-                               (route->thumbnail-map
-                                 (:route-params request)
-                                 request)))
-        (GET thumbnail-route
-             request
-             (handle-thumbnail system
-                               (route->thumbnail-map
-                                 (:route-params request)
-                                 request)))
-        (GET original-route
-             request
-             (handle-original system
-                              (route->original-map
-                                (:route-params request)
-                                request)))
-
-        ; legacy routes
-        (GET hlr/thumbnail-route
-             request
-             (let [image-params (hlr/route->thumb-map (:route-params request))]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb image-params)
-                 (error-response 404 image-params))))
-        (GET hlr/original-route
-             request
-             (let [image-params (hlr/route->original-map (:route-params request))]
-               (if-let [file (original-request->file request system image-params)]
-                 (create-image-response file image-params)
-                 (error-response 404 image-params))))
-        (GET hlr/timeline-route
-             request
-             (let [image-params (hlr/route->timeline-map (:route-params request))]
-               (if-let [file (original-request->file request system image-params)]
-                 (create-image-response file image-params)
-                 (error-response 404 image-params))))
-        (GET hlr/math-route
-             request
-             (let [image-params (hlr/route->original-map (:route-params request))]
-               (if-let [file (original-request->file request system image-params)]
-                 (create-image-response file image-params)
-                 (error-response 404 image-params))))
-        (GET hlr/interactive-maps-route
-             request
-             (let [image-params (hlr/route->interactive-maps-map (:route-params request))]
-               (if-let [file (original-request->file request system image-params)]
-                 (create-image-response file image-params)
-                 (error-response 404 image-params))))
-        (GET hlr/interactive-maps-marker-route
-             request
-             (let [image-params (hlr/route->interactive-maps-map (:route-params request))]
-               (if-let [file (original-request->file request system image-params)]
-                 (create-image-response file image-params)
-                 (error-response 404 image-params))))
-        (GET hlr/interactive-maps-thumbnail-route
-             request
-             (let [image-params (hlr/route->interactive-maps-thumbnail-map (:route-params request))]
-               (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
-                 (create-image-response thumb image-params)
-                 (error-response 404 image-params))))
-        (GET "/ping" [] "pong")
-        (files "/static/")
-        (bad-request-path))
-      (wrap-params)
-      (exception-catcher)
-      (request-timer)
-      (add-headers)))
 
 (defn handle-thumbnail
   [system image-params]
