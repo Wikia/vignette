@@ -5,6 +5,7 @@
             [vignette.http.routes :as r]
             [vignette.http.route-helpers :as rh]
             [vignette.http.legacy.routes :as hlr]
+            [vignette.http.legacy.route-helpers :as hlrh]
             [vignette.media-types :refer :all]))
 
 (def original-map {:wikia "batman"
@@ -98,7 +99,7 @@
                          (request :get "/happywheels/images/b/bb/SuperMario64_20.png/revision/latest/scale-to-width/185"))
           {})
         legacy-thumbnail-map
-        (hlr/route->thumb-map
+        (hlrh/route->thumb-map
           (route-matches hlr/thumbnail-route
                          (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.png")))]
     (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
@@ -110,7 +111,7 @@
                          (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/74"))
           {})
         legacy-thumbnail-map
-        (hlr/route->thumb-map
+        (hlrh/route->thumb-map
           (route-matches hlr/thumbnail-route
                          (request :get "/happywheels/images/thumb/4/40/JohnvanBruggen.jpg/200px-0,206,29,103-JohnvanBruggen.jpg")))]
     (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
@@ -122,7 +123,7 @@
                          (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/0/y-offset/29/window-width/206/window-height/74"))
           {})
         legacy-thumbnail-map
-        (hlr/route->thumb-map
+        (hlrh/route->thumb-map
           (route-matches hlr/thumbnail-route
                          (request :get "/happywheels/images/thumb/4/40/JohnvanBruggen.jpg/200x200-0,206,29,103-JohnvanBruggen.jpg")))]
     (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
