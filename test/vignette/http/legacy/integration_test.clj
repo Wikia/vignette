@@ -38,13 +38,13 @@
   (fn [actual]
     (< actual max)))
 
-(facts :legacy-requests
+(facts :legacy-requests :integration
        (parse-request-log "legacy/request.log") => (less-than 0.01))
 
 (with-state-changes [(before :facts (start system-local default-port))
                      (after :facts (stop system-local))]
 
-  (facts :legacy-requests :integration
+  (facts :legacy-requests :thumbnail-integration
     (let [response (client/get (format "http://localhost:%d/bucket/images/thumb/a/ab/beach.jpg/200px-beach.jpg" default-port) {:as :byte-array})]
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
