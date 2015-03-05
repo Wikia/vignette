@@ -13,30 +13,6 @@
             [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
 
-(facts :handle-thumbnail
-  (handle-thumbnail ..system.. ..params..) => ..response..
-  (provided
-    (u/get-or-generate-thumbnail ..system.. ..params..) => ..thumb..
-    (create-image-response ..thumb.. ..params..) => ..response..)
-
-  (handle-thumbnail ..system.. ..params..) => ..error..
-  (provided
-    (u/get-or-generate-thumbnail ..system.. ..params..) => nil
-    (error-response 404 ..params..) => ..error..))
-
-(facts :handle-original
-  (handle-original ..system.. ..params..) => ..response..
-  (provided
-    (store ..system..) => ..store..
-    (sp/get-original ..store.. ..params..) => ..original..
-    (create-image-response ..original.. ..params..) => ..response..)
-
-  (handle-original ..system.. ..params..) => ..error..
-  (provided
-    (store ..system..) => ..store..
-    (sp/get-original ..store.. ..params..) => nil
-    (error-response 404 ..params..) => ..error..))
-
 (facts :original-route
   (route-matches original-route (request :get "/swift/v1")) => falsey
   (route-matches
@@ -210,8 +186,3 @@
         :revision "latest"
         :thumbnail-mode "scale-to-width"
         :width "150"})
-
-(facts :route-params->image-type
-       (route-params->image-type {:image-type ""}) => "images"
-       (route-params->image-type {:image-type "/images"}) => "images"
-       (route-params->image-type {:image-type "/avatars"}) => "avatars")
