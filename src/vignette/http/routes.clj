@@ -8,7 +8,7 @@
             [ring.middleware.params :refer [wrap-params]]
             [ring.util.response :refer [response status charset header]]
             [slingshot.slingshot :refer [try+ throw+]]
-            [vignette.api.legacy.routes :as alr]
+            [vignette.http.legacy.routes :as hlr]
             [vignette.http.middleware :refer :all]
             [vignette.protocols :refer :all]
             [vignette.storage.core :refer :all]
@@ -133,45 +133,45 @@
                                 request)))
 
         ; legacy routes
-        (GET alr/thumbnail-route
+        (GET hlr/thumbnail-route
              request
-             (let [image-params (alr/route->thumb-map (:route-params request))]
+             (let [image-params (hlr/route->thumb-map (:route-params request))]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                  (create-image-response thumb image-params)
                  (error-response 404 image-params))))
-        (GET alr/original-route
+        (GET hlr/original-route
              request
-             (let [image-params (alr/route->original-map (:route-params request))]
+             (let [image-params (hlr/route->original-map (:route-params request))]
                (if-let [file (original-request->file request system image-params)]
                  (create-image-response file image-params)
                  (error-response 404 image-params))))
-        (GET alr/timeline-route
+        (GET hlr/timeline-route
              request
-             (let [image-params (alr/route->timeline-map (:route-params request))]
+             (let [image-params (hlr/route->timeline-map (:route-params request))]
                (if-let [file (original-request->file request system image-params)]
                  (create-image-response file image-params)
                  (error-response 404 image-params))))
-        (GET alr/math-route
+        (GET hlr/math-route
              request
-             (let [image-params (alr/route->original-map (:route-params request))]
+             (let [image-params (hlr/route->original-map (:route-params request))]
                (if-let [file (original-request->file request system image-params)]
                  (create-image-response file image-params)
                  (error-response 404 image-params))))
-        (GET alr/interactive-maps-route
+        (GET hlr/interactive-maps-route
              request
-             (let [image-params (alr/route->interactive-maps-map (:route-params request))]
+             (let [image-params (hlr/route->interactive-maps-map (:route-params request))]
                (if-let [file (original-request->file request system image-params)]
                  (create-image-response file image-params)
                  (error-response 404 image-params))))
-        (GET alr/interactive-maps-marker-route
+        (GET hlr/interactive-maps-marker-route
              request
-             (let [image-params (alr/route->interactive-maps-map (:route-params request))]
+             (let [image-params (hlr/route->interactive-maps-map (:route-params request))]
                (if-let [file (original-request->file request system image-params)]
                  (create-image-response file image-params)
                  (error-response 404 image-params))))
-        (GET alr/interactive-maps-thumbnail-route
+        (GET hlr/interactive-maps-thumbnail-route
              request
-             (let [image-params (alr/route->interactive-maps-thumbnail-map (:route-params request))]
+             (let [image-params (hlr/route->interactive-maps-thumbnail-map (:route-params request))]
                (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
                  (create-image-response thumb image-params)
                  (error-response 404 image-params))))

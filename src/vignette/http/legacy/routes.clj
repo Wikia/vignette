@@ -1,4 +1,4 @@
-(ns vignette.api.legacy.routes
+(ns vignette.http.legacy.routes
   (:require [clout.core :refer [route-compile route-matches]]
             [useful.experimental :refer [cond-let]]
             [vignette.media-types :refer [archive-dir]]
