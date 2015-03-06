@@ -3,6 +3,7 @@
             [midje.sweet :refer :all]
             [ring.mock.request :refer :all]
             [vignette.http.routes :refer :all]
+            [vignette.http.route-helpers :refer :all]
             [vignette.util.external-hotlinking :refer :all]))
 
 (def original-url "/wikiaglobal/images/5/58/Wikia-Visualization-Main,croatiaempire.png/revision/latest")

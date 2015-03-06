@@ -9,7 +9,7 @@
             [midje.repl :refer :all]
             [pantomime.mime :refer [mime-type-of]]
             [ring.mock.request :refer :all]
-            [vignette.api.legacy.routes :as alr]
+            [vignette.http.legacy.routes :as hlr]
             [vignette.http.routes :as r]
             [vignette.media-types :as mt]
             [vignette.protocols :refer :all]

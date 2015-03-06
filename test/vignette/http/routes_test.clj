@@ -13,30 +13,6 @@
             [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
 
-(facts :handle-thumbnail
-  (handle-thumbnail ..system.. ..params..) => ..response..
-  (provided
-    (u/get-or-generate-thumbnail ..system.. ..params..) => ..thumb..
-    (create-image-response ..thumb.. ..params..) => ..response..)
-
-  (handle-thumbnail ..system.. ..params..) => ..error..
-  (provided
-    (u/get-or-generate-thumbnail ..system.. ..params..) => nil
-    (error-response 404 ..params..) => ..error..))
-
-(facts :handle-original
-  (handle-original ..system.. ..params..) => ..response..
-  (provided
-    (store ..system..) => ..store..
-    (sp/get-original ..store.. ..params..) => ..original..
-    (create-image-response ..original.. ..params..) => ..response..)
-
-  (handle-original ..system.. ..params..) => ..error..
-  (provided
-    (store ..system..) => ..store..
-    (sp/get-original ..store.. ..params..) => nil
-    (error-response 404 ..params..) => ..error..))
-
 (facts :original-route
   (route-matches original-route (request :get "/swift/v1")) => falsey
   (route-matches
@@ -85,10 +61,10 @@
                                             :width "10"
                                             :height "10"}))
 
-(facts :app-routes
-  ((app-routes nil) (request :get "/not-a-valid-route")) => (contains {:status 404}))
+(facts :all-routes
+  ((all-routes nil) (request :get "/not-a-valid-route")) => (contains {:status 404}))
 
-(facts :app-routes-thumbnail
+(facts :all-routes-thumbnail
   (let [route-params {:request-type :thumbnail
                       :image-type "images"
                       :original "ropes.jpg"
@@ -100,21 +76,21 @@
                       :height "10"
                       :width "10"
                       :options {}}]
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 200})
+    ((all-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 200})
     (provided
      (u/get-or-generate-thumbnail ..system.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 404})
+    ((all-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 404})
     (provided
      (u/get-or-generate-thumbnail ..system.. route-params) => nil
      (ir/error-image route-params) => ..thumb..
      (ir/create-image-response ..thumb.. route-params) => {})
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 500})
+    ((all-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 500})
     (provided
       (u/get-or-generate-thumbnail ..system.. route-params) =throws=> (NullPointerException.))))
 
-(facts :app-routes-original
+(facts :all-routes-original
 
   (let [route-params {:request-type :original
                       :image-type "images"
@@ -124,17 +100,17 @@
                       :revision "12345"
                       :wikia "lotr"
                       :options {}} ]
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 200})
+    ((all-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 200})
     (provided
      (store ..system..) => ..store..
      (sp/get-original ..store.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 404})
+    ((all-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 404})
     (provided
      (store ..system..) => ..store..
      (sp/get-original ..store.. route-params) => nil)
 
-    ((app-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 500})
+    ((all-routes ..system..) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 500})
     (provided
       (store ..system..) => ..store..
       (sp/get-original ..store.. route-params) =throws=> (NullPointerException.))))
@@ -210,8 +186,3 @@
         :revision "latest"
         :thumbnail-mode "scale-to-width"
         :width "150"})
-
-(facts :route-params->image-type
-       (route-params->image-type {:image-type ""}) => "images"
-       (route-params->image-type {:image-type "/images"}) => "images"
-       (route-params->image-type {:image-type "/avatars"}) => "avatars")

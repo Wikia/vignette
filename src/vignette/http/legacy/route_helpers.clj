@@ -1,8 +1,10 @@
-(ns vignette.api.legacy.routes
-  (:require [clout.core :refer [route-compile route-matches]]
-            [useful.experimental :refer [cond-let]]
+(ns vignette.http.legacy.route-helpers
+  (:require [useful.experimental :refer [cond-let]]
+            [vignette.util.external-hotlinking :refer :all]
+            [vignette.protocols :refer :all]
+            [vignette.storage.protocols :refer :all]
             [vignette.media-types :refer [archive-dir]]
-            [vignette.util.regex :refer :all])
+            [vignette.util.thumbnail :as u])
   (:import [java.net URLDecoder]))
 
 (def default-width 200)
@@ -11,77 +13,13 @@
          route->dimensions
          route->offset
          route->thumb-mode
-         route->options)
-
-(def path-prefix-regex #"\/[/a-z-]+|")
-(def dimension-regex #"\d+px-|\d+x\d+-|\d+x\d+x\d+-|mid-|")
-(def offset-regex #"(?i)-{0,1}\d+,\d+,-{0,1}\d+,\d+-|-{0,1}\d+%2c\d+%2c-{0,1}\d+%2c\d+-|")
-(def thumbname-regex #".*?")
-(def video-params-regex #"(?i)v,\d{6},|v%2c\d{6}%2c|")
-(def zone-regex #"\/[a-z]+|") ; includes "archive"
-(def interactive-maps-regex #"intmap_tile_set_\d+")
-(def interactive-maps-marker-regex #"intmap_markers_\d+")
-
-(def thumbnail-route
-  (route-compile "/:wikia:path-prefix/:image-type/thumb:zone/:top-dir/:middle-dir/:original/:videoparams:dimension:offset:thumbname"
-                 {:wikia wikia-regex
-                  :path-prefix path-prefix-regex
-                  :image-type #"images|avatars"
-                  :zone zone-regex
-                  :top-dir top-dir-regex
-                  :middle-dir middle-dir-regex
-                  :original original-regex
-                  :videoparams video-params-regex
-                  :dimension dimension-regex
-                  :offset offset-regex
-                  :thumbname thumbname-regex}))
-
-(def original-route
-  (route-compile "/:wikia:path-prefix/:image-type:zone/:top-dir/:middle-dir/:original"
-                 {:wikia wikia-regex
-                  :path-prefix path-prefix-regex
-                  :image-type #"images|avatars"
-                  :zone zone-regex
-                  :top-dir top-dir-regex
-                  :middle-dir middle-dir-regex
-                  :original original-regex}))
-
-(def timeline-route
-  (route-compile "/:wikia:path-prefix/:image-type/timeline/:original"
-                 {:wikia wikia-regex
-                  :path-prefix path-prefix-regex
-                  :image-type #"images"
-                  :original original-regex}))
-
-(def math-route
-  (route-compile "/:wikia:path-prefix/:image-type/:zone/:top-dir/:middle-dir/:original"
-                 {:wikia wikia-regex
-                  :path-prefix path-prefix-regex
-                  :image-type "images"
-                  :zone "math"
-                  :top-dir top-dir-regex
-                  :middle-dir #"\w\/\w"
-                  :original original-regex}))
-
-(def interactive-maps-route
-  (route-compile "/:wikia:path-prefix/:original"
-                 {:wikia interactive-maps-regex
-                  :path-prefix #"/\d+/\d+|"
-                  :original original-regex}))
-
-(def interactive-maps-thumbnail-route
-  (route-compile "/:wikia/thumb/:original/:dimension:offset:thumbname"
-                 {:wikia interactive-maps-regex
-                  :original original-regex
-                  :dimension dimension-regex
-                  :offset offset-regex
-                  :thumbname thumbname-regex}))
-
-(def interactive-maps-marker-route
-  (route-compile "/:wikia/:original"
-                 {:wikia interactive-maps-marker-regex
-                  :original original-regex}))
-
+         route->options
+         route->thumb-map
+         route->original-map
+         route->interactive-maps-map
+         route->interactive-maps-thumbnail-map
+         route->timeline-map
+         original-request->file)
 
 (defn archive? [map]
   (= (:zone map) (str "/" archive-dir)))
@@ -204,3 +142,9 @@
                  :window-width (str window-width)
                  :window-height (str window-height)))
     map))
+
+(defn original-request->file
+  [request system image-params]
+  (if (force-thumb? request)
+    (u/get-or-generate-thumbnail system (image-params->forced-thumb-params image-params))
+    (get-original (store system) image-params)))

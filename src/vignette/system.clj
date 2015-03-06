@@ -1,7 +1,7 @@
 (ns vignette.system
   (:require [environ.core :refer [env]]
             [ring.adapter.jetty9 :as jetty]
-            [vignette.http.routes :refer [app-routes]]
+            [vignette.http.routes :refer [all-routes]]
             [vignette.http.jetty :refer [configure-jetty]]
             [vignette.protocols :refer :all])
   (:import [java.util.concurrent ArrayBlockingQueue]))
@@ -18,7 +18,7 @@
     (swap! (:running (:state this))
            (fn [_]
              (jetty/run-jetty
-               (app-routes this)
+               (all-routes this)
                {:port port
                 :configurator configure-jetty
                 :join? false
