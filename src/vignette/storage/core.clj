@@ -20,6 +20,12 @@
               (mt/wikia object-map)
               (get-path object-map)))
 
+(defn exists?
+  [store object-map get-path]
+  (object-exists? store
+                  (mt/wikia object-map)
+                  (get-path object-map)))
+
 (defrecord ImageStorage [store]
   ImageStorageProtocol
 
@@ -43,7 +49,12 @@
   (get-original [this original-map]
     (get* (:store this)
           original-map
-          mt/original-path)))
+          mt/original-path))
+
+  (original-exists? [this image-map]
+    (exists? (:store this)
+             image-map
+             mt/original-path)))
 
 (defn create-image-storage
   [store]

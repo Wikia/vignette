@@ -32,6 +32,10 @@
          false
          true))))
 
+  (object-exists? [this bucket path]
+    (let [real-file (io/file (resolve-local-path (:directory this) bucket path))]
+      (file-exists? real-file)))
+
   (list-buckets [this])
   (list-objects [this bucket]))
 
