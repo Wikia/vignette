@@ -28,9 +28,10 @@
 
 (defn error-response
   ([code map]
-   (if-let [image (error-image map)]
-     (status (create-image-response image map) code)
-     (not-found "Unable to fetch or generate image")))
+   (let [resp (if-let [image (error-image map)]
+                (status (create-image-response image map) code)
+                (not-found "Unable to fetch or generate image"))]
+     (add-surrogate-header resp map)))
   ([code]
    (error-response code nil)))
 
@@ -40,27 +41,38 @@
        (header "Content-Type" (content-type image))
        (header "Content-Length" (content-length image))
        (header "X-Thumbnailer" "Vignette")
-       (cond->
-         (original image-map) (add-content-disposition-header image-map)
-         (and (wikia image-map)
-              (original image-map)
-              (image-type image-map)) (add-surrogate-header image-map))))
+       (add-content-disposition-header image-map)
+       (add-surrogate-header image-map)))
   ([image]
     (create-image-response image nil)))
 
+(defn create-head-response
+  [image-map]
+  (-> (response "")
+       ;(header "Content-Type" (content-type image))
+       (header "X-Thumbnailer" "Vignette")
+       (add-content-disposition-header image-map)
+       (add-surrogate-header image-map)))
+
 (defn add-content-disposition-header
   [response-map image-map]
-  (let [requested-format (query-opt image-map :format)
-        filename (cond-> (original image-map)
-                         requested-format (str "." requested-format))]
-    (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" filename))))
+  (if (original image-map)
+    (let [requested-format (query-opt image-map :format)
+          filename (cond-> (original image-map)
+                     requested-format (str "." requested-format))]
+      (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" filename)))
+    response-map))
 
 (defn add-surrogate-header
   [response-map image-map]
-  (let [sk (surrogate-key image-map)]
-    (-> response-map
-        (header "Surrogate-Key" sk)
-        (header "X-Surrogate-Key" sk))))
+  (if (and (wikia image-map)
+           (original image-map)
+           (image-type image-map))
+    (let [sk (surrogate-key image-map)]
+      (-> response-map
+          (header "Surrogate-Key" sk)
+          (header "X-Surrogate-Key" sk)))
+    response-map))
 
 (defn surrogate-key
   [image-map]

@@ -2,7 +2,7 @@
   (:require [cheshire.core :refer :all]
             [clojure.java.io :as io]
             [clout.core :refer [route-compile route-matches]]
-            [compojure.core :refer [routes GET ANY]]
+            [compojure.core :refer [routes GET ANY HEAD]]
             [compojure.route :refer [files]]
             [environ.core :refer [env]]
             [ring.middleware.params :refer [wrap-params]]
@@ -76,38 +76,30 @@
                   :thumbnail-mode "scale-to-width"
                   :width size-regex}))
 
+(defn create-request-handlers
+  "Creates request handlers for a given route for GET & HEAD using the given route and
+  map generation function."
+  [system route get-handler route->map-fn]
+  ; NOTE: HEAD needs to be first, otherwise compojure will match the GET and set the body to nil
+  [(HEAD route
+         request
+         (handle-head system
+                  (route->map-fn (:route-params request)
+                                 request)))
+   (GET route
+        request
+        (get-handler system
+                     (route->map-fn (:route-params request)
+                                    request)))])
+
 (defn app-routes
   [system]
-  [(GET scale-to-width-route
-        request
-        (handle-thumbnail system
-                          (route->thumbnail-auto-height-map
-                            (:route-params request)
-                            request)))
-   (GET window-crop-route
-        request
-        (handle-thumbnail system
-                          (route->thumbnail-auto-height-map
-                            (:route-params request)
-                            request)))
-   (GET window-crop-fixed-route
-        request
-        (handle-thumbnail system
-                          (route->thumbnail-map
-                            (:route-params request)
-                            request)))
-   (GET thumbnail-route
-        request
-        (handle-thumbnail system
-                          (route->thumbnail-map
-                            (:route-params request)
-                            request)))
-   (GET original-route
-        request
-        (handle-original system
-                         (route->original-map
-                           (:route-params request)
-                           request)))])
+  (flatten
+    [(create-request-handlers system scale-to-width-route handle-thumbnail route->thumbnail-auto-height-map)
+     (create-request-handlers system window-crop-route handle-thumbnail route->thumbnail-auto-height-map)
+     (create-request-handlers system window-crop-fixed-route handle-thumbnail route->thumbnail-map)
+     (create-request-handlers system thumbnail-route handle-thumbnail route->thumbnail-map)
+     (create-request-handlers system original-route handle-original route->original-map)]))
 
 (defn all-routes
   [system]
