@@ -61,9 +61,8 @@ cat <<EOF
     --height         INT    the height
     --width          INT    the width
 
-    --still                 only use the first frame of the image
+    --frame                 only use this frame of the image (for animated gifs)
     --fill                  pad or fill color for the image background. only used with --mode fixed-aspect-ratio
-    --animated              treat this as an animated gif
 
     --fuzz           PERC   fuzz factor as percentage. give --fuzz 2% as an example
                              colors within this distance are considered equal.
@@ -101,7 +100,7 @@ function contains() {
 
 OS=$(uname)
 SHORTOPTS="h"
-LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,still,mode:,animated,x-offset:,window-width:,y-offset:,window-height:"
+LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,frame:,mode:,x-offset:,window-width:,y-offset:,window-height:"
 
 ARGS=$($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@")
 
@@ -110,8 +109,8 @@ OUT=''
 HEIGHT=''
 WIDTH=''
 FILL="white"
-ANIMATED=0
 STILL=0
+STILL_FRAME=0
 MODE='thumbnail-down'
 X_OFFSET=''
 Y_OFFSET=''
@@ -129,9 +128,6 @@ while true; do
 		--help)
 			usage
 			exit 1
-			;;
-		--animated)
-			ANIMATED=1
 			;;
 		--in)
 			shift
@@ -177,8 +173,10 @@ while true; do
 			shift
 			FILL="'$1'" # see http://www.imagemagick.org/script/command-line-options.php#background for the supported parameters
 			;;
-		--still)
+		--frame)
+		  shift
 			STILL=1
+			STILL_FRAME=$1
 			;;
 		--)
 			shift
@@ -426,7 +424,7 @@ function thumb() {
 	fi
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
-		magick="${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
+		magick="${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[${STILL_FRAME}]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
 		echo ${magick}
 		exec ${magick}
 	else

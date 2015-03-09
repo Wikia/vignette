@@ -11,6 +11,7 @@
 ; regex of valid inputs for query arg
 (def query-opts-map {:fill (create-query-opt #"^#[a-g0-9]+$|^\w+$" true true)
                      :format (create-query-opt #"^\w+$")
+                     :frame (create-query-opt #"[0-9]+" true true)
                      :path-prefix (create-query-opt #"[\w\.\/-]+" false)
                      :replace (create-query-opt #"^true$" false)
                      :zone (create-query-opt #"\w+")})
