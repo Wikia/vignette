@@ -243,7 +243,7 @@
                              (request :get "/intmap_tile_set_4823/thumb/20150205173220%21phpZDfa00.jpg/1110x300x5-20150205173220%21phpZDfa00.jpg")))]
     (:width map) => "1110"
     (:height map) => "300"
-    (:original map) => "20150205173220!phpZDfa00.jpg"
+    (:original map) => "20150205173220%21phpZDfa00.jpg"
     (:image-type map) => "arbitrary"))
 
 (facts :image-format
