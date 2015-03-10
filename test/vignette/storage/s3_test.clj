@@ -48,3 +48,14 @@
     (file-stream ..resource..) => ..file..
     (content-type ..resource..) => ..content-type..
     (s3/put-object ..timeout-creds.. "bucket" "a/ab/image.jpg" ..file.. {:content-type ..content-type..}) => nil))
+
+(facts :s3 :object-exists
+  (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => true
+  (provided
+    (add-timeouts :head ..creds..) => ..timeout-creds..
+    (s3/object-exists? ..timeout-creds.. ..bucket.. ..path..) => true)
+
+  (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => false
+  (provided
+    (add-timeouts :head ..creds..) => ..timeout-creds..
+    (s3/object-exists? ..timeout-creds.. ..bucket.. ..path..) => false))

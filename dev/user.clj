@@ -64,12 +64,13 @@
   )
 
 (defn re-init-dev
-  ([port]
+  ([s port]
    (do
-     (stop system-s3)
-     (start system-s3 port)))
+     (stop s)
+     (start s port)))
   ([]
-   (re-init-dev 8080)))
+   (re-init-dev system-local 8080)))
+
 
 (defn mime-stats [path]
   (defn benchmark [file]

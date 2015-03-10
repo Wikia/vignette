@@ -101,6 +101,10 @@
                                                               {:content-type mime-type}))]
         response)))
   (delete-object [this bucket path])
+  (object-exists? [this bucket path]
+    (s3/object-exists? (add-timeouts :head (:creds this))
+                       bucket
+                       path))
   (list-buckets [this])
   (list-objects [this bucket]))
 

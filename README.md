@@ -24,6 +24,8 @@ A Clojure library for thumbnail generation and storage.
             - [zoom-crop](#zoom-crop)
             - [zoom-crop-down](#zoom-crop-down)
         - [Note Regarding Legacy Compatibility](#note-regarding-legacy-compatibility)
+    - [Other HTTP Methods Supported](#other-http-methods-supported)
+        - [HEAD](#head)
 - [License](#license)
 - [Contributors](#contributors)
 
@@ -226,6 +228,15 @@ is `x-offset`, `b` is `x-endpoint` (which is not specified at all in Vignette UR
 and `c,d` are the same but for `y`. In Vignette URLs, we specify the `x-offset`,
 which is the same as a above, but we specify window-width instead of `x-endpoint`
 (where `window-width` is `x-endpoint - x-offset`).
+
+## Other HTTP Methods Supported
+
+### HEAD
+
+Limited support for `HEAD` is provided. Given that any request for an
+object will need to go to storage `HEAD` requests currently only check for
+object existence. As a result, `HEAD` requests will not include the
+`Content-Type` in the response.
 
 # License
 

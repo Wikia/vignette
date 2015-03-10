@@ -19,6 +19,12 @@
     (create-image-response file image-params)
     (error-response 404 image-params)))
 
+(defn handle-head
+  [system image-params]
+  (if (original-exists? (store system) image-params)
+    (create-head-response image-params)
+    (error-response 404 image-params)))
+
 (defn route-params->image-type
   [route-params]
   (if (clojure.string/blank? (:image-type route-params))

@@ -72,11 +72,14 @@
     (let [local (create-local-storage-system local-path)
           image-store (create-image-storage local)
           resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
-      (save-original image-store resource sample-media-hash) => truthy))
+      (save-original image-store resource sample-media-hash) => truthy
+      (original-exists? image-store sample-media-hash) => true
+      (original-exists? image-store {:image-type "images"}) => false))
 
   (facts :get-original :integration
     (let [local (create-local-storage-system local-path)
           image-store (create-image-storage local)
           resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
       (save-original image-store resource sample-media-hash) => truthy
+      (original-exists? image-store sample-media-hash) => true
       (get-original image-store sample-media-hash) => truthy)))
