@@ -112,5 +112,6 @@
                        (bad-request-path))))
       (wrap-params)
       (exception-catcher)
+      (multiple-slash->single-slash)
       (request-timer)
       (add-headers)))
