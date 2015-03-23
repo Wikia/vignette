@@ -68,10 +68,12 @@
 
       :else (header response cache-control-header (format "public, max-age=%d"
                                                     (/ (hours-to-seconds 1) 2))))))
+(defn uri-multiple-slash-replacement [uri]
+  (string/replace uri #"(\/{2,})" "/"))
 
 (defn multiple-slash->single-slash [handler]
   (fn [request]
-    (let [uri (string/replace (:uri request) #"(\/{2,})" "/")]
+    (let [uri (uri-multiple-slash-replacement (:uri request))]
       (handler (assoc request :uri uri)))))
 
 (defn hours-to-seconds
