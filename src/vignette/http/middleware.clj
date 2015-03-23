@@ -1,6 +1,7 @@
 (ns vignette.http.middleware
   (:require [environ.core :refer [env]]
             [compojure.response :refer [render]]
+            [clojure.string :as string]
             [ring.util.response :refer [response status charset header get-header]]
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.util.image-response :refer :all]
@@ -67,6 +68,13 @@
 
       :else (header response cache-control-header (format "public, max-age=%d"
                                                     (/ (hours-to-seconds 1) 2))))))
+(defn uri-multiple-slash-replacement [uri]
+  (string/replace uri #"(\/{2,})" "/"))
+
+(defn multiple-slash->single-slash [handler]
+  (fn [request]
+    (let [uri (uri-multiple-slash-replacement (:uri request))]
+      (handler (assoc request :uri uri)))))
 
 (defn hours-to-seconds
   [hours]

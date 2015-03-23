@@ -11,3 +11,8 @@
   (get (:headers (add-cache-control-header {:status 404})) "Cache-Control") => "public, max-age=3600"
   (get (:headers (add-cache-control-header {:status 200})) "Cache-Control") => "public, s-maxage=31536000, max-age=86400"
   (get (:headers (add-cache-control-header {:status 201})) "Cache-Control") => "public, s-maxage=31536000, max-age=86400")
+
+(facts :multiple-slash->single-slash
+       (uri-multiple-slash-replacement "/a/b/c/d") => "/a/b/c/d"
+       (uri-multiple-slash-replacement "/a//b/c/d") => "/a/b/c/d"
+       (uri-multiple-slash-replacement "//a///b////c/////d") => "/a/b/c/d")
