@@ -20,3 +20,8 @@
         response-headers (:headers response)]
     (get response-headers "Surrogate-Key") => "7d1d24f2c2af364882953e8c97bf90092c2f7a08"
     (get response-headers "Content-Disposition") => "inline; filename=\"ropes.jpg\""))
+
+(facts :add-content-disposition-header
+       (add-content-disposition-header {} {:original "some-file.png"}) => {:headers {"Content-Disposition" "inline; filename=\"some-file.png\""}}
+       (add-content-disposition-header {} {:original "some-\"file\".png"}) => {:headers {"Content-Disposition" "inline; filename=\"some-\\\"file\\\".png\""}}
+       (add-content-disposition-header {} {:original "some-\"file,_with_comma!\".png"}) => {:headers {"Content-Disposition" "inline; filename=\"some-\\\"file,_with_comma!\\\".png\""}})
