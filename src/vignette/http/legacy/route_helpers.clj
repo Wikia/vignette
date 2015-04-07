@@ -1,10 +1,8 @@
 (ns vignette.http.legacy.route-helpers
   (:require [useful.experimental :refer [cond-let]]
-            [vignette.util.external-hotlinking :refer :all]
             [vignette.protocols :refer :all]
             [vignette.storage.protocols :refer :all]
-            [vignette.media-types :refer [archive-dir]]
-            [vignette.util.thumbnail :as u])
+            [vignette.media-types :refer [archive-dir]])
   (:import [java.net URLDecoder]))
 
 (def default-width 200)
@@ -18,8 +16,7 @@
          route->original-map
          route->interactive-maps-map
          route->interactive-maps-thumbnail-map
-         route->timeline-map
-         original-request->file)
+         route->timeline-map)
 
 (defn archive? [map]
   (= (:zone map) (str "/" archive-dir)))
@@ -142,9 +139,3 @@
                  :window-width (str window-width)
                  :window-height (str window-height)))
     map))
-
-(defn original-request->file
-  [request system image-params]
-  (if (force-thumb? request)
-    (u/get-or-generate-thumbnail system (image-params->forced-thumb-params image-params))
-    (get-original (store system) image-params)))

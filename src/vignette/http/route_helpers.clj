@@ -1,5 +1,6 @@
 (ns vignette.http.route-helpers
-  (:require [vignette.util.image-response :refer :all]
+  (:require [vignette.util.external-hotlinking :refer [original-request->file]]
+            [vignette.util.image-response :refer :all]
             [vignette.util.query-options :refer :all]
             [vignette.protocols :refer :all]
             [vignette.storage.core :refer :all]
@@ -8,14 +9,14 @@
 
 
 (defn handle-thumbnail
-  [system image-params]
+  [system image-params request]
   (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
     (create-image-response thumb image-params)
     (error-response 404 image-params)))
 
 (defn handle-original
-  [system image-params]
-  (if-let [file (get-original (store system) image-params)]
+  [system image-params request]
+  (if-let [file (original-request->file request system image-params)]
     (create-image-response file image-params)
     (error-response 404 image-params)))
 
