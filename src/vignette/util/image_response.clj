@@ -1,5 +1,6 @@
 (ns vignette.util.image-response
   (:require [clojure.java.io :refer [file]]
+            [clojure.string :as string]
             [compojure.route :refer [not-found]]
             [ring.util.response :refer [response status header]]
             [digest :as digest]
@@ -58,7 +59,7 @@
   [response-map image-map]
   (if (original image-map)
     (let [requested-format (query-opt image-map :format)
-          filename (cond-> (original image-map)
+          filename (cond-> (string/replace (original image-map) "\"" "\\\"")
                      requested-format (str "." requested-format))]
       (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" filename)))
     response-map))
