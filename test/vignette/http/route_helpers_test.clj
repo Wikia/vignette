@@ -11,24 +11,24 @@
   (:import java.io.FileNotFoundException))
 
 (facts :handle-thumbnail
-  (handle-thumbnail ..system.. ..params..) => ..response..
+  (handle-thumbnail ..system.. ..params.. ..request..) => ..response..
   (provided
     (u/get-or-generate-thumbnail ..system.. ..params..) => ..thumb..
     (create-image-response ..thumb.. ..params..) => ..response..)
 
-  (handle-thumbnail ..system.. ..params..) => ..error..
+  (handle-thumbnail ..system.. ..params.. ..request..) => ..error..
   (provided
     (u/get-or-generate-thumbnail ..system.. ..params..) => nil
     (error-response 404 ..params..) => ..error..))
 
 (facts :handle-original
-  (handle-original ..system.. ..params..) => ..response..
+  (handle-original ..system.. ..params.. ..request..) => ..response..
   (provided
     (store ..system..) => ..store..
     (sp/get-original ..store.. ..params..) => ..original..
     (create-image-response ..original.. ..params..) => ..response..)
 
-  (handle-original ..system.. ..params..) => ..error..
+  (handle-original ..system.. ..params.. ..request..) => ..error..
   (provided
     (store ..system..) => ..store..
     (sp/get-original ..store.. ..params..) => nil
