@@ -90,7 +90,8 @@
         request
         (get-handler system
                      (route->map-fn (:route-params request)
-                                    request)))])
+                                    request)
+                     request))])
 
 (defn app-routes
   [system]

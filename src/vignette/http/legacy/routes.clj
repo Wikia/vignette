@@ -4,6 +4,7 @@
             [vignette.http.legacy.route-helpers :refer :all]
             [vignette.protocols :refer :all]
             [vignette.storage.protocols :refer :all]
+            [vignette.util.external-hotlinking :refer [original-request->file]]
             [vignette.util.regex :refer :all]
             [vignette.util.image-response :refer :all]
             [vignette.util.thumbnail :as u]))
