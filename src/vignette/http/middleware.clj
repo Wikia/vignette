@@ -58,9 +58,8 @@
   (let [status (get response :status 0)]
     (cond
       (and (>= status 200) (< status 300))
-      (header response cache-control-header (format "public, s-maxage=%d, max-age=%d",
-                                                    (hours-to-seconds (* 24 365))
-                                                    (hours-to-seconds 24)))
+      (header response cache-control-header (format "public, max-age=%d",
+                                                    (hours-to-seconds (* 14 24))))
 
       (and (>= status 400) (< status 500))
       (header response cache-control-header (format "public, max-age=%d"
