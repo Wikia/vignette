@@ -247,4 +247,5 @@ Distributed under the Eclipse Public License either version 1.0 or (at your opti
 # Contributors
 
  * [Damon Snyder](https://github.com/drsnyder)
+ * [Maciej Brencz](https://github.com/macbre)
  * [Nelson Monterroso](https://github.com/nmonterroso)
