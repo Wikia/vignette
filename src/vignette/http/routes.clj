@@ -76,6 +76,17 @@
                   :thumbnail-mode "scale-to-width"
                   :width size-regex}))
 
+(def scale-to-width-down-route
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/:width"
+                 {:wikia wikia-regex
+                  :image-type image-type-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :revision revision-regex
+                  :thumbnail-mode "scale-to-width-down"
+                  :width size-regex}))
+
 (defn create-request-handlers
   "Creates request handlers for a given route for GET & HEAD using the given route and
   map generation function."
