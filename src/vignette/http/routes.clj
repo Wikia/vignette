@@ -76,7 +76,7 @@
                   :thumbnail-mode "scale-to-width"
                   :width size-regex}))
 
-(def scale-to-width-down-route
+(def scale-only-down-route
   (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/:width"
                  {:wikia wikia-regex
                   :image-type image-type-regex
@@ -84,7 +84,7 @@
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
-                  :thumbnail-mode "scale-to-width-down"
+                  :thumbnail-mode "scale-only-down"
                   :width size-regex}))
 
 (defn create-request-handlers

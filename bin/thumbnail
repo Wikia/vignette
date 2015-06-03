@@ -38,7 +38,7 @@ MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"fixed-aspect-ratio-down"
 	"scale-to-width"
-	"scale-to-width-down"
+	"scale-only-down"
 	"thumbnail"
 	"thumbnail-down"
 	"top-crop"
@@ -203,7 +203,7 @@ if [ "$OUT"X = "X" ]; then
 	exit 1
 fi
 
-MODES_REQUIRING_WIDTH=("${MODE_OPTIONS[@]/"scale-to-width-down"}")
+MODES_REQUIRING_WIDTH=("${MODE_OPTIONS[@]/"scale-only-down"}")
 MODES_REQUIRING_HEIGHT=("fixed-aspect-ratio" "fixed-aspect-ratio-down" "thumbnail" "thumbnail-down" "top-crop" "top-crop-down" "window-crop-fixed" "zoom-crop" "zoom-crop-down")
 
 if [ "$HEIGHT"X = "X" ]; then
@@ -318,7 +318,7 @@ function thumb_params() {
 		"scale-to-width")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}"
 			;;
-		"scale-to-width-down")
+		"scale-only-down")
 			# get height and width
 			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
 			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
