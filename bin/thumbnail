@@ -203,7 +203,9 @@ if [ "$OUT"X = "X" ]; then
 	exit 1
 fi
 
+MODES_REQUIRING_WIDTH=("${MODE_OPTIONS[@]/"scale-to-width-down"}")
 MODES_REQUIRING_HEIGHT=("fixed-aspect-ratio" "fixed-aspect-ratio-down" "thumbnail" "thumbnail-down" "top-crop" "top-crop-down" "window-crop-fixed" "zoom-crop" "zoom-crop-down")
+
 if [ "$HEIGHT"X = "X" ]; then
 	if [ $(contains "${MODES_REQUIRING_HEIGHT[@]}" "${MODE}") == "y" ]; then
 		echo "--height required for mode ${MODE}"
@@ -213,9 +215,11 @@ if [ "$HEIGHT"X = "X" ]; then
 fi
 
 if [ "$WIDTH"X = "X" ]; then
-	echo "--width required"
-	usage
-	exit 1
+	if [ $(contains "${MODES_REQUIRING_WIDTH[@]}" "${MODE}") == "y" ]; then
+		echo "--width required"
+		usage
+		exit 1
+	fi
 fi
 
 valid_mode=0
