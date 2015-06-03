@@ -2,7 +2,7 @@
 # Wrapper for imagemagick that encapsulates our thumbnail logic.
 # @author Damon Snyder (damon@huddler-inc.com) 
 
-IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local/"}
+IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local"}
 CONVERT=$IMAGEMAGICK_BASE/bin/convert
 IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
 
@@ -38,6 +38,7 @@ MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"fixed-aspect-ratio-down"
 	"scale-to-width"
+	"scale-to-width-down"
 	"thumbnail"
 	"thumbnail-down"
 	"top-crop"
@@ -312,6 +313,17 @@ function thumb_params() {
 			;;
 		"scale-to-width")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}"
+			;;
+		"scale-to-width-down")
+			# get height and width
+			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
+
+			if [[ $HEIGHT -gt $origheight || $WIDTH -gt $origwidth ]]; then # requested is bigger on either side, so we keep the original dimensions
+				THUMB_PARAMS="${QUALITY}"
+			else # original is smaller or equal on both sides, so we can proceed just like --fixed-aspect-ratio
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
+			fi
 			;;
 		"thumbnail")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}"
