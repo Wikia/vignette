@@ -38,7 +38,8 @@ MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"fixed-aspect-ratio-down"
 	"scale-to-width"
-	"scale-only-down"
+	"scale-to-width-down"
+	"scale-to-height-down"
 	"thumbnail"
 	"thumbnail-down"
 	"top-crop"
@@ -203,8 +204,8 @@ if [ "$OUT"X = "X" ]; then
 	exit 1
 fi
 
-MODES_REQUIRING_WIDTH=("${MODE_OPTIONS[@]/"scale-only-down"}")
-MODES_REQUIRING_HEIGHT=("fixed-aspect-ratio" "fixed-aspect-ratio-down" "thumbnail" "thumbnail-down" "top-crop" "top-crop-down" "window-crop-fixed" "zoom-crop" "zoom-crop-down")
+MODES_REQUIRING_WIDTH=("${MODE_OPTIONS[@]/"scale-to-height-down"}")
+MODES_REQUIRING_HEIGHT=("fixed-aspect-ratio" "fixed-aspect-ratio-down" "thumbnail" "thumbnail-down" "top-crop" "top-crop-down" "window-crop-fixed" "zoom-crop" "zoom-crop-down" "scale-to-height-down")
 
 if [ "$HEIGHT"X = "X" ]; then
 	if [ $(contains "${MODES_REQUIRING_HEIGHT[@]}" "${MODE}") == "y" ]; then
@@ -318,15 +319,24 @@ function thumb_params() {
 		"scale-to-width")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}"
 			;;
-		"scale-only-down")
-			# get height and width
-			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+		"scale-to-width-down")
+			# get width
 			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
 
-			if [[ "$WIDTH$HEIGHT"X = "X" || $HEIGHT -gt $origheight || $WIDTH -gt $origwidth ]]; then # requested is bigger on either side, so we keep the original dimensions
+			if [[ "$WIDTH"X = "X" || $WIDTH = 0 || $WIDTH -gt $origwidth ]]; then # requested is bigger, keep the original size
 				THUMB_PARAMS="${QUALITY}"
 			else # original is smaller or equal on both sides, so we can proceed just like --fixed-aspect-ratio
-				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT} -gravity center -background ${FILL} -extent ${WIDTH}x${HEIGHT}!"
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}"
+			fi
+			;;
+		"scale-to-height-down")
+			# get height
+			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+
+			if [[ "$HEIGHT"X = "X" || $HEIGHT = 0 || $HEIGHT -gt $origheight ]]; then # requested is bigger, keep the original size
+				THUMB_PARAMS="${QUALITY}"
+			else
+				THUMB_PARAMS="${QUALITY} -thumbnail x${HEIGHT}"
 			fi
 			;;
 		"thumbnail")
