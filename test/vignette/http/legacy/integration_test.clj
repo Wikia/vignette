@@ -50,5 +50,5 @@
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
       (get (:headers response) "Content-Length") => "16341"
       (get (:headers response) "Connection") => "close"
-      (get (:headers response) "Cache-Control") => "public, s-maxage=31536000, max-age=86400"
+      (get (:headers response) "Cache-Control") => "public, max-age=31536000"
       (digest/sha1 (:body response)) => "ffd6e8e3b5fc7eb3100857f273d6d1e6e19df51c")))
