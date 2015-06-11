@@ -95,7 +95,7 @@
                   :middle-dir middle-dir-regex
                   :original original-regex
                   :revision revision-regex
-                  :thumbnail-mode "scale-to-width-down"
+                  :thumbnail-mode "scale-to-height-down"
                   :height size-regex}))
 
 (defn create-request-handlers
