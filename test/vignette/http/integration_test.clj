@@ -19,7 +19,7 @@
 (def system-local (create-system lis))
 
 (with-state-changes [(before :facts (start system-local default-port))
-                     (after :facts (do (stop system-local)))]
+                     (after :facts (stop system-local))]
 
   (facts :requests :thumbnail-integration :scale-to-width
     (let [response (client/get (format "http://localhost:%d/bucket/a/ab/boat.jpg/revision/latest/scale-to-width/200" default-port) {:as :byte-array})]
