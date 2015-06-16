@@ -62,3 +62,7 @@
 (defn route->thumbnail-auto-height-map
   [request-map request]
   (route->thumbnail-map request-map request {:height :auto}))
+
+(defn route->thumbnail-auto-width-map
+  [request-map request]
+  (route->thumbnail-map request-map request {:width :auto}))

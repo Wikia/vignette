@@ -76,6 +76,28 @@
                   :thumbnail-mode "scale-to-width"
                   :width size-regex}))
 
+(def scale-to-width-down-route
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/:width"
+                 {:wikia wikia-regex
+                  :image-type image-type-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :revision revision-regex
+                  :thumbnail-mode "scale-to-width-down"
+                  :width size-regex}))
+
+(def scale-to-height-down-route
+  (route-compile "/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision/:thumbnail-mode/:height"
+                 {:wikia wikia-regex
+                  :image-type image-type-regex
+                  :top-dir top-dir-regex
+                  :middle-dir middle-dir-regex
+                  :original original-regex
+                  :revision revision-regex
+                  :thumbnail-mode "scale-to-height-down"
+                  :height size-regex}))
+
 (defn create-request-handlers
   "Creates request handlers for a given route for GET & HEAD using the given route and
   map generation function."
@@ -97,6 +119,8 @@
   [system]
   (flatten
     [(create-request-handlers system scale-to-width-route handle-thumbnail route->thumbnail-auto-height-map)
+     (create-request-handlers system scale-to-width-down-route handle-thumbnail route->thumbnail-auto-height-map)
+     (create-request-handlers system scale-to-height-down-route handle-thumbnail route->thumbnail-auto-width-map)
      (create-request-handlers system window-crop-route handle-thumbnail route->thumbnail-auto-height-map)
      (create-request-handlers system window-crop-fixed-route handle-thumbnail route->thumbnail-map)
      (create-request-handlers system thumbnail-route handle-thumbnail route->thumbnail-map)

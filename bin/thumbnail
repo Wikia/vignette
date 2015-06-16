@@ -2,7 +2,7 @@
 # Wrapper for imagemagick that encapsulates our thumbnail logic.
 # @author Damon Snyder (damon@huddler-inc.com) 
 
-IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local/"}
+IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local"}
 CONVERT=$IMAGEMAGICK_BASE/bin/convert
 IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
 
@@ -38,6 +38,8 @@ MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"fixed-aspect-ratio-down"
 	"scale-to-width"
+	"scale-to-width-down"
+	"scale-to-height-down"
 	"thumbnail"
 	"thumbnail-down"
 	"top-crop"
@@ -202,7 +204,9 @@ if [ "$OUT"X = "X" ]; then
 	exit 1
 fi
 
-MODES_REQUIRING_HEIGHT=("fixed-aspect-ratio" "fixed-aspect-ratio-down" "thumbnail" "thumbnail-down" "top-crop" "top-crop-down" "window-crop-fixed" "zoom-crop" "zoom-crop-down")
+MODES_REQUIRING_WIDTH=("${MODE_OPTIONS[@]/"scale-to-height-down"}")
+MODES_REQUIRING_HEIGHT=("fixed-aspect-ratio" "fixed-aspect-ratio-down" "thumbnail" "thumbnail-down" "top-crop" "top-crop-down" "window-crop-fixed" "zoom-crop" "zoom-crop-down" "scale-to-height-down")
+
 if [ "$HEIGHT"X = "X" ]; then
 	if [ $(contains "${MODES_REQUIRING_HEIGHT[@]}" "${MODE}") == "y" ]; then
 		echo "--height required for mode ${MODE}"
@@ -212,9 +216,11 @@ if [ "$HEIGHT"X = "X" ]; then
 fi
 
 if [ "$WIDTH"X = "X" ]; then
-	echo "--width required"
-	usage
-	exit 1
+	if [ $(contains "${MODES_REQUIRING_WIDTH[@]}" "${MODE}") == "y" ]; then
+		echo "--width required"
+		usage
+		exit 1
+	fi
 fi
 
 valid_mode=0
@@ -312,6 +318,26 @@ function thumb_params() {
 			;;
 		"scale-to-width")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}"
+			;;
+		"scale-to-width-down")
+			# get width
+			origwidth=$($IDENTIFY -format "%w\n" "$IN" | head -1)
+
+			if [[ "$WIDTH"X = "X" || $WIDTH = 0 || $WIDTH -gt $origwidth ]]; then # requested is bigger, keep the original size
+				THUMB_PARAMS="${QUALITY}"
+			else # original is smaller or equal on both sides, so we can proceed just like --fixed-aspect-ratio
+				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}"
+			fi
+			;;
+		"scale-to-height-down")
+			# get height
+			origheight=$($IDENTIFY -format "%h\n" "$IN" | head -1)
+
+			if [[ "$HEIGHT"X = "X" || $HEIGHT = 0 || $HEIGHT -gt $origheight ]]; then # requested is bigger, keep the original size
+				THUMB_PARAMS="${QUALITY}"
+			else
+				THUMB_PARAMS="${QUALITY} -thumbnail x${HEIGHT}"
+			fi
 			;;
 		"thumbnail")
 			THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}"

@@ -175,6 +175,30 @@
         :thumbnail-mode "scale-to-width"
         :width "200"})
 
+(facts :scale-to-width-down-route
+        (route-matches scale-to-width-down-route
+                        (request :get "/muppet/4/40/JohnvanBruggen.jpg/revision/latest/scale-to-width-down/200")) =>
+        {:wikia "muppet"
+         :image-type ""
+         :top-dir "4"
+         :middle-dir "40"
+         :original "JohnvanBruggen.jpg"
+         :revision "latest"
+         :thumbnail-mode "scale-to-width-down"
+         :width "200"})
+
+(facts :scale-to-height-down-route
+        (route-matches scale-to-height-down-route
+                        (request :get "/muppet/4/40/JohnvanBruggen.jpg/revision/latest/scale-to-height-down/200")) =>
+        {:wikia "muppet"
+         :image-type ""
+         :top-dir "4"
+         :middle-dir "40"
+         :original "JohnvanBruggen.jpg"
+         :revision "latest"
+         :thumbnail-mode "scale-to-height-down"
+         :height "200"})
+
 (facts :avatar-request
        (route-matches scale-to-width-route
                       (request :get "/common/avatars/7/7c/1271044.png/revision/latest/scale-to-width/150")) =>
