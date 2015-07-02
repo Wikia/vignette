@@ -82,7 +82,9 @@
   (assert-original-mime-type (get thumb-map :original) thumb-map)
   (if-let [thumb (and (not (q/query-opt thumb-map :replace))
                       (get-thumbnail (store system) thumb-map))]
-    thumb
+    (do
+      (perf/publish  {:thumbnail-cache-hit 1})
+      thumb)
     (when-let [thumb (generate-thumbnail system thumb-map)]
       thumb)))
 
@@ -95,6 +97,7 @@
     (when-let [local-original (original->local original thumb-map)]
       (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
+          (perf/publish  {:generate-thumbail 1})
           (ls/create-stored-object thumb (fn [stored-object]
                                            (background-save-thumbnail (store system)
                                                                       stored-object
