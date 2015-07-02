@@ -69,6 +69,19 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `CONVERT_CONSTRAINTS`          universal options to pass to ImageMagick. see bin/thumbnail
  * `UNSUPPORTED_REDIRECT_HOST`    on an unsupported legacy thumbnail request, host to redirect
 
+## Command Line Options
+
+To see the command line options available execute `lein run -- -h`. The notable
+command line options are the following:
+
+ * -C,--cache-thumbnails: enable thumbnail caching. When this option is provided
+   thumbnails will be written to and read from the backing storage provided. The
+   default is false.
+ * -m,mode <MODE>:        the storage mode. Options are s3 or local. See above
+   for the environment variables toggling these settings. The default is s3.
+ * -p,port <PORT>:        the port the HTTP server will listen on. The default
+   is 8080.
+
 ## Testing
 
 All testing is done using [Midje](https://github.com/marick/Midje). Running `lein midje` will run all of the tests.

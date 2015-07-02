@@ -12,6 +12,8 @@
   (:gen-class))
 
 (def cli-specs [["-h" "--help" "Show help"]
+                ["-C" "--cache-thumbnails" "Enable thumbnail caching"
+                 :default false]
                 ["-m" "--mode running mode" "Object storage to use (s3 or local)"
                  :default "local"
                  :validate [#(contains? #{"local" "s3"} %) "Supported modes are \"local\" and \"s3\""]]
@@ -38,7 +40,7 @@
                              (i/create-integration-env)
                              (create-local-storage-system i/integration-path))
                            (create-s3-storage-system storage-creds))
-          image-store (create-image-storage object-storage)
+          image-store (create-image-storage object-storage (:cache-thumbnails opts))
           system (create-system image-store)]
       (println (format "Mode: %s. Starting server on %d..." (:mode opts) (:port opts)))
       (start system (:port opts)))))
