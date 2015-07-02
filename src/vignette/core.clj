@@ -12,7 +12,7 @@
   (:gen-class))
 
 (def cli-specs [["-h" "--help" "Show help"]
-                ["-C" "--cache-thumbnails" "Turns thumbnail caching on"]
+                ["-C" "--cache-thumbnails" "Enable thumbnail caching"]
                 ["-m" "--mode running mode" "Object storage to use (s3 or local)"
                  :default "local"
                  :validate [#(contains? #{"local" "s3"} %) "Supported modes are \"local\" and \"s3\""]]
