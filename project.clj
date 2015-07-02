@@ -6,7 +6,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.cli "0.3.1"]
                  [cheshire "5.3.1"]
-                 [clj-aws-s3 "0.3.10" :exclusions [joda-time]]
+                 [clj-aws-s3 "0.3.10"]
                  [clout "2.1.0"]
                  [compojure "1.3.2"]
                  [com.novemberain/pantomime "2.3.0"]
