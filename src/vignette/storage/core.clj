@@ -26,19 +26,21 @@
                   (mt/wikia object-map)
                   (get-path object-map)))
 
-(defrecord ImageStorage [store]
+(defrecord ImageStorage [store cache-thumbnails]
   ImageStorageProtocol
 
   (save-thumbnail [this resource thumb-map]
-    (put* (:store this)
-          resource
-          thumb-map
-          mt/thumbnail-path))
+    (when (:cache-thumbnails this)
+      (put* (:store this)
+            resource
+            thumb-map
+            mt/thumbnail-path)))
 
   (get-thumbnail [this thumb-map]
-    (get* (:store this)
-          thumb-map
-          mt/thumbnail-path))
+    (when (:cache-thumbnails this)
+      (get* (:store this)
+            thumb-map
+            mt/thumbnail-path)))
 
   (save-original [this resource original-map]
     (put* (:store this)
@@ -57,5 +59,7 @@
              mt/original-path)))
 
 (defn create-image-storage
-  [store]
-  (->ImageStorage store))
+  ([store cache-thumbnails]
+   (->ImageStorage store cache-thumbnails))
+  ([store]
+   (create-image-storage store true)))

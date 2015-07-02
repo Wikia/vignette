@@ -59,6 +59,14 @@
       image-store => truthy
       (save-thumbnail image-store resource sample-thumbnail-hash) => truthy))
 
+  (facts :save-thumbnail :not :cache-thumbnails
+    (let [local (create-local-storage-system local-path)
+          image-store (create-image-storage local false)
+          resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
+      local => truthy
+      image-store => truthy
+      (save-thumbnail image-store resource sample-thumbnail-hash) => falsey))
+
   (facts :get-thumbnail :integration
     (let [local (create-local-storage-system local-path)
           image-store (create-image-storage local)
@@ -66,6 +74,14 @@
       (get-thumbnail image-store sample-thumbnail-hash) => falsey
       (save-thumbnail image-store resource sample-thumbnail-hash) => truthy
       (get-thumbnail image-store sample-thumbnail-hash) => truthy))
+
+  (facts :get-thumbnail :not :cache-thumbnails
+    (let [local (create-local-storage-system local-path)
+          image-store (create-image-storage local false)
+          resource (create-stored-object (io/file "image-samples/ropes.jpg"))]
+      (get-thumbnail image-store sample-thumbnail-hash) => falsey
+      (save-thumbnail image-store resource sample-thumbnail-hash) => falsey
+      (get-thumbnail image-store sample-thumbnail-hash) => falsey))
 
 
   (facts :save-original :integration
