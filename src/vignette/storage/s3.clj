@@ -116,6 +116,8 @@
     (:content-length (:meta-data this)))
   (content-type [this]
     (:content-type (:meta-data this)))
+  (etag [this]
+    (:etag (:meta-data this)))
   (->response-object [this]
     (file-stream this))
   (transfer! [this to]

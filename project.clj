@@ -14,6 +14,7 @@
                  [environ "0.5.0"]
                  [info.sunng/ring-jetty9-adapter "0.8.1"]
                  [ring "1.3.2"]
+                 [digest "1.4.4"]
                  [slingshot "0.10.3"]
                  [useful "0.8.8"]
                  [wikia/commons "0.1.3-SNAPSHOT"]]

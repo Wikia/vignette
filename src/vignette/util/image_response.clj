@@ -41,6 +41,7 @@
    (-> (response (->response-object image))
        (header "Content-Type" (content-type image))
        (header "Content-Length" (content-length image))
+       (header "ETag" (etag image))
        (header "X-Thumbnailer" "Vignette")
        (add-content-disposition-header image-map)
        (add-surrogate-header image-map)))
@@ -63,6 +64,7 @@
                      requested-format (str "." requested-format))]
       (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" filename)))
     response-map))
+
 
 (defn add-surrogate-header
   [response-map image-map]
