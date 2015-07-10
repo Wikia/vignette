@@ -3,6 +3,7 @@
             [clojure.java.shell :as sh]
             [pantomime.mime :refer [mime-type-of]]
             [vignette.media-types :as mt]
+            [digest]
             [vignette.storage.protocols :refer :all]
             [vignette.util.filesystem :refer :all])
   (:import  (java.io FileInputStream)))
@@ -47,6 +48,8 @@
     (file-length (file-stream this)))
   (content-type [this]
     (mime-type-of (file-stream this)))
+  (etag [this]
+    (digest/md5 (file-stream this)))
   (->response-object [this]
     (let [file (file-stream this)
           stored-object this]
