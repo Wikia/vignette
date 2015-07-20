@@ -263,3 +263,4 @@ Distributed under the Eclipse Public License either version 1.0 or (at your opti
  * [Maciej Brencz](https://github.com/macbre)
  * [Michał Roszka](https://github.com/michalroszka)
  * [Nelson Monterroso](https://github.com/nmonterroso)
+ * [Pawel Chojnacki](https://github.com/pchojnacki)
