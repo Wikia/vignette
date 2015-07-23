@@ -54,12 +54,12 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `STORAGE_SECRET_KEY`           S3 secret key
  * `STORAGE_ENDPOINT`             S3 HTTP endpoint
  * `STORAGE_PROXY`                S3 Proxy
+ * `STORAGE_MAX_CONNS`            S3 max simultaneous connections; defaults to 150
  * `STORAGE_MAX_RETRIES`          S3 max error retry count; defaults to 0
  * `STORAGE_PROXY_PORT`           S3 Proxy port
  * `VIGNETTE_TEMP_FILE_LOCATION`  temporary file location. This is used for thumbnail generation. [/tmp/vignette]
  * `VIGNETTE_THUMBNAIL_BIN`       path to the thumbnail script [/usr/local/bin/thumbnail, bin/thumbnail]
  * `VIGNETTE_INTEGRATION_ROOT`    path to use for integration testing files [/tmp/integration]
- * `VIGNETTE_SERVER_MIN_THREADS`  minimum number of threads to allocate for jetty [50]
  * `VIGNETTE_SERVER_MAX_THREADS`  minimum number of threads to allocate for jetty [150]
  * `VIGNETTE_SERVER_QUEUE_SIZE`   queue size to allocate for jetty [9000]
  * `ENABLE_ACCESS_LOG`            enable the NCSA access log [false]
