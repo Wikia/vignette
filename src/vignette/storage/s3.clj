@@ -125,7 +125,7 @@
   (transfer! [this to]
     (with-open [in-stream (io/input-stream (file-stream this))
                 out-stream (io/output-stream to)]
-      (io/copy in-stream out-stream :buffer-size 1000000))
+      (io/copy in-stream out-stream))
     (file-exists? to)))
 
 (defn create-s3-storage-system
