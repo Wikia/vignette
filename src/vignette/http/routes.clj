@@ -1,8 +1,7 @@
 (ns vignette.http.routes
   (:require [cheshire.core :refer :all]
-            [clojure.java.io :as io]
             [clout.core :refer [route-compile route-matches]]
-            [compojure.core :refer [routes GET ANY HEAD]]
+            [vignette.http.dup :refer [context routes GET ANY HEAD]]
             [compojure.route :refer [files]]
             [environ.core :refer [env]]
             [ring.middleware.params :refer [wrap-params]]
@@ -11,6 +10,7 @@
             [vignette.http.legacy.routes :as hlr]
             [vignette.http.middleware :refer :all]
             [vignette.http.route-helpers :refer :all]
+            [vignette.http.proto-routes :as proto]
             [vignette.util.regex :refer :all]))
 
 (def original-route
@@ -115,26 +115,47 @@
                                     request)
                      request))])
 
+
+;(defmacro expand-contexts [path & rest] (context ~(eval path) '~rest))
+
+(defmacro wiki-context [routes]
+  `(context ["/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
+   :wikia wikia-regex
+   :image-type image-type-regex
+   :top-dir top-dir-regex
+   :middle-dir middle-dir-regex] [] ~routes))
+
+(def mosdef ["/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
+             :wikia wikia-regex
+             :image-type image-type-regex
+             :top-dir top-dir-regex
+             :middle-dir middle-dir-regex])
+
+(defmacro eval-context [ctx routes]
+  `(context ~(resolve ctx) [] ~routes))
+
 (defn app-routes
   [system]
   (flatten
-    [(create-request-handlers system scale-to-width-route handle-thumbnail route->thumbnail-auto-height-map)
-     (create-request-handlers system scale-to-width-down-route handle-thumbnail route->thumbnail-auto-height-map)
-     (create-request-handlers system scale-to-height-down-route handle-thumbnail route->thumbnail-auto-width-map)
-     (create-request-handlers system window-crop-route handle-thumbnail route->thumbnail-auto-height-map)
-     (create-request-handlers system window-crop-fixed-route handle-thumbnail route->thumbnail-map)
-     (create-request-handlers system thumbnail-route handle-thumbnail route->thumbnail-map)
-     (create-request-handlers system original-route handle-original route->original-map)]))
+    [(create-request-handlers system proto/scale-to-width-route handle-thumbnail route->thumbnail-auto-height-map)
+     (create-request-handlers system proto/scale-to-width-down-route handle-thumbnail route->thumbnail-auto-height-map)
+     (create-request-handlers system proto/scale-to-height-down-route handle-thumbnail route->thumbnail-auto-width-map)
+     (create-request-handlers system proto/window-crop-route handle-thumbnail route->thumbnail-auto-height-map)
+     (create-request-handlers system proto/window-crop-fixed-route handle-thumbnail route->thumbnail-map)
+     (create-request-handlers system proto/thumbnail-route handle-thumbnail route->thumbnail-map)
+     (create-request-handlers system proto/original-route handle-original route->original-map)]))
 
 (defn all-routes
   [system]
-  (-> (apply routes
-             (concat (app-routes system)
-                     (hlr/legacy-routes system)
-                     (list
-                       (GET "/ping" [] "pong")
-                       (files "/static/")
-                       (bad-request-path))))
+  (-> (apply routes (concat
+                      (hlr/legacy-routes system)
+                      (list
+                        ;(context (wiki-context) [] (apply routes (app-routes system)))
+                        ;(wiki-context (apply routes (app-routes system)))
+                        (eval-context mosdef (apply routes (app-routes system)))
+                        (GET "/ping" [] "pong")
+                        (files "/static/")
+                        (bad-request-path))))
       (wrap-params)
       (exception-catcher)
       (multiple-slash->single-slash)

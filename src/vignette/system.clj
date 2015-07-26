@@ -3,7 +3,8 @@
             [qbits.jet.server :as jet]
             [vignette.http.routes :refer [all-routes]]
             [vignette.http.jetty :refer [configure-jetty]]
-            [vignette.protocols :refer :all])
+            [vignette.protocols :refer :all]
+            [ring.middleware.reload :refer [wrap-reload]])
   (:import [java.util.concurrent ArrayBlockingQueue]))
 
 (def default-max-threads 150)
@@ -18,7 +19,7 @@
            (fn [_]
              (jet/run-jetty
                {
-                :ring-handler (all-routes this)
+                :ring-handler (wrap-reload (all-routes this))
                 :port port
                 :configurator configure-jetty
                 :join? false
