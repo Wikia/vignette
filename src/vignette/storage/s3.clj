@@ -44,6 +44,7 @@
 (def default-storage-connection-timeout 100)
 (def default-storage-get-socket-timeout 500)
 (def default-storage-put-socket-timeout 10000)
+(def default-storage-max-conns 150)
 (def default-storage-max-retries 0)
 
 (declare create-stored-object)
@@ -52,6 +53,7 @@
                                 :secret-key  (env :storage-secret-key)
                                 :endpoint    (env :storage-endpoint)
                                 :max-retries (env :storage-max-retries default-storage-max-retries)
+                                :max-conns (env :storage-max-conns default-storage-max-conns)
                                 :proxy {:host (env :storage-proxy)}}]
                      (if-let [port (env :storage-proxy-port)]
                        (assoc-in creds [:proxy :port] (Integer/parseInt port))
