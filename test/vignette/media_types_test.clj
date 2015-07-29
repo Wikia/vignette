@@ -1,8 +1,9 @@
 (ns vignette.media-types-test
   (:require [midje.sweet :refer :all]
-            [clout.core :refer (route-compile route-matches)]
+            [clout.core :refer [route-compile route-matches]]
             [ring.mock.request :refer :all]
-            [vignette.http.routes :as r]
+            [vignette.test.helper :refer [context-route-matches]]
+            [vignette.http.routes]
             [vignette.http.proto-routes :as proto]
             [vignette.http.route-helpers :as rh]
             [vignette.http.legacy.routes :as hlr]
@@ -27,6 +28,8 @@
                   :width "200"
                   :height "300"
                   :options {}})
+
+(def in-wiki-context-route-matches (partial context-route-matches vignette.http.routes/wiki-context))
 
 (def latest-map (assoc archive-map :revision "latest"))
 
@@ -93,31 +96,11 @@
   (original-path timeline-map) => (str "es/images/timeline/" timeline-file)
   (fully-qualified-original-path timeline-map) => (str "television/es/images/timeline/" timeline-file))
 
-(defn matches-context [ctx url compiledroute]
-  (let [outer (route-matches
-                (route-compile (str (first ctx) ":__rest") (merge (apply hash-map (rest ctx)) {:__rest #"|/.*"}))
-                (request :get url))]
-    (merge (route-matches compiledroute
-                          (request :get (:__rest outer))) outer)
-    ))
-
-(def in-wiki-context-match (partial matches-context r/wiki-context))
-
-(defn matches-context-2 [ctx compiledroute match-request]
-  (let [outer (route-matches
-                (route-compile (str (first ctx) ":__rest") (merge (apply hash-map (rest ctx)) {:__rest #"|/.*"}))
-                match-request)]
-    (merge (route-matches compiledroute
-                          (request :get (:__rest outer))) outer)
-    ))
-
-(def in-wiki-context-route-matches (partial matches-context-2 r/wiki-context))
-
 (facts :scale-to-width-thumbnail-path
   (let [new-thumbnail-map
         (rh/route->thumbnail-auto-height-map
           (in-wiki-context-route-matches
-            r/scale-to-width-route
+            proto/scale-to-width-route
             (request :get "/happywheels/images/b/bb/SuperMario64_20.png/revision/latest/scale-to-width/185"))
           {})
         legacy-thumbnail-map
