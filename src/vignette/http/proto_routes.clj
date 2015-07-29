@@ -8,9 +8,6 @@
             [vignette.util.regex :refer :all]
             [vignette.util.image-response :refer :all]
             [vignette.util.thumbnail :as u]))
-;
-;(def original-route
-;  (route-compile "/" ))
 
 (def original-route
   (route-compile "/"))

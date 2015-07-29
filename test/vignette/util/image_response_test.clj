@@ -4,7 +4,7 @@
            [midje.sweet :refer :all]
            [ring.mock.request :refer :all]
            [vignette.http.route-helpers :refer :all]
-           [vignette.http.routes :refer :all]
+           [vignette.http.proto-routes :refer :all]
            [vignette.util.image-response :refer :all]
            [vignette.storage.core :refer :all]
            [vignette.storage.local :refer [create-stored-object]]
