@@ -3,6 +3,7 @@
            [clout.core :refer (route-compile route-matches)]
            [midje.sweet :refer :all]
            [ring.mock.request :refer :all]
+           [vignette.test.helper :refer [context-route-matches]]
            [vignette.http.route-helpers :refer :all]
            [vignette.http.proto-routes :refer :all]
            [vignette.util.image-response :refer :all]
@@ -10,9 +11,11 @@
            [vignette.storage.local :refer [create-stored-object]]
            [vignette.util.image-response :as ir]))
 
+(def in-wiki-context-route-matches (partial context-route-matches vignette.http.routes/wiki-context))
+
 (facts :create-image-response
   (let [image-map 
-        (route->original-map (route-matches
+        (route->original-map (in-wiki-context-route-matches
                                original-route
                                (request :get "/lotr/3/35/ropes.jpg/revision/latest"))
                              {})

@@ -10,19 +10,22 @@
             [vignette.storage.local :as ls]
             [vignette.storage.protocols :as sp]
             [vignette.util.image-response :as ir]
-            [vignette.util.thumbnail :as u])
-  (:import java.io.FileNotFoundException))
+            [vignette.test.helper :refer [context-route-matches]]
+            [vignette.util.thumbnail :as u]))
+
+(def in-wiki-context-route-matches (partial context-route-matches vignette.http.routes/wiki-context))
+
 
 (facts :original-route
-  (route-matches original-route (request :get "/swift/v1")) => falsey
-  (route-matches
+       (route-matches original-route (request :get "/swift/v1")) => falsey
+       (in-wiki-context-route-matches
     original-route
     (request :get "/lotr/3/35/Arwen_Sword.PNG/revision/latest")) => (contains {:wikia "lotr"
                                                                                :top-dir "3"
                                                                                :middle-dir "35"
                                                                                :original "Arwen_Sword.PNG"
                                                                                :revision "latest"})
-  (route-matches
+       (in-wiki-context-route-matches
     original-route
     (request :get "/lotr/3/35/Arwen_Sword.PNG/revision/123456")) => (contains {:wikia "lotr"
                                                                                :top-dir "3"
@@ -30,7 +33,7 @@
                                                                                :original "Arwen_Sword.PNG"
                                                                                :revision "123456"})
 
-  (route-matches
+       (in-wiki-context-route-matches
     original-route
     (request :get "/bucket/a/ab/ropes.jpg/revision/latest")) => (contains {:wikia "bucket"
                                                                            :top-dir "a"
@@ -39,7 +42,7 @@
 
 (facts :thumbnail-route
   (route-matches thumbnail-route (request :get "something")) => falsey
-  (route-matches thumbnail-route
+       (in-wiki-context-route-matches thumbnail-route
                  (request :get
                           "/lotr/3/35/Arwen_Sword.PNG/revision/latest/resize/width/250/height/250")) =>
                             (contains {:wikia "lotr"
@@ -50,7 +53,7 @@
                                        :revision "latest"
                                        :width "250"
                                        :height "250"})
-  (route-matches thumbnail-route
+       (in-wiki-context-route-matches thumbnail-route
                  (request :get "/bucket/a/ab/ropes.jpg/revision/12345/resize/width/10/height/10")) =>
                                  (contains {:wikia "bucket"
                                             :top-dir "a"
@@ -90,8 +93,8 @@
     (provided
       (u/get-or-generate-thumbnail ..system.. route-params) =throws=> (NullPointerException.))))
 
-(facts :all-routes-original
 
+(facts :all-routes-original
   (let [route-params {:request-type :original
                       :image-type "images"
                       :original "ropes.jpg"
@@ -116,7 +119,7 @@
       (sp/get-original ..store.. route-params) =throws=> (NullPointerException.))))
 
 (facts :window-crop-route
-       (route-matches window-crop-route
+       (in-wiki-context-route-matches window-crop-route
                       (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/103")) =>
        {:wikia "muppet"
         :image-type "/images"
@@ -131,7 +134,7 @@
         :window-width "206"
         :window-height "103"}
 
-       (route-matches window-crop-route
+       (in-wiki-context-route-matches window-crop-route
                       (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/-1/y-offset/29/window-width/206/window-height/103")) =>
        {:wikia "muppet"
         :image-type "/images"
@@ -147,7 +150,7 @@
         :window-height "103"})
 
 (facts :window-crop-fixed-route
-       (route-matches window-crop-fixed-route
+       (in-wiki-context-route-matches window-crop-fixed-route
                       (request :get "/thelastofus/images/5/58/Door_4.jpg/revision/latest/window-crop-fixed/width/400/height/400/x-offset/400/y-offset/200/window-width/200/window-height/400")) =>
        {:wikia "thelastofus"
         :image-type "/images"
@@ -164,7 +167,7 @@
         :window-height "400"})
 
 (facts :scale-to-width-route
-       (route-matches scale-to-width-route
+       (in-wiki-context-route-matches scale-to-width-route
                       (request :get "/muppet/4/40/JohnvanBruggen.jpg/revision/latest/scale-to-width/200")) =>
        {:wikia "muppet"
         :image-type ""
@@ -176,7 +179,7 @@
         :width "200"})
 
 (facts :scale-to-width-down-route
-        (route-matches scale-to-width-down-route
+       (in-wiki-context-route-matches scale-to-width-down-route
                         (request :get "/muppet/4/40/JohnvanBruggen.jpg/revision/latest/scale-to-width-down/200")) =>
         {:wikia "muppet"
          :image-type ""
@@ -188,7 +191,7 @@
          :width "200"})
 
 (facts :scale-to-height-down-route
-        (route-matches scale-to-height-down-route
+       (in-wiki-context-route-matches scale-to-height-down-route
                         (request :get "/muppet/4/40/JohnvanBruggen.jpg/revision/latest/scale-to-height-down/200")) =>
         {:wikia "muppet"
          :image-type ""
@@ -200,7 +203,7 @@
          :height "200"})
 
 (facts :avatar-request
-       (route-matches scale-to-width-route
+       (in-wiki-context-route-matches scale-to-width-route
                       (request :get "/common/avatars/7/7c/1271044.png/revision/latest/scale-to-width/150")) =>
        {:wikia "common"
         :image-type "/avatars"

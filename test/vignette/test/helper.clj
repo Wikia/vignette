@@ -8,7 +8,9 @@
   (let [outer (route-matches
                 (route-compile (str (first ctx) ":__rest") (merge (apply hash-map (rest ctx)) {:__rest #"|/.*"}))
                 match-request)]
-    (merge (route-matches compiledroute
-                          (request :get (:__rest outer))) outer)
+    (merge
+      (route-matches compiledroute
+                     (request :get (:__rest outer)))
+      (dissoc outer :__rest))
     ))
 
