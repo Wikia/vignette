@@ -5,7 +5,7 @@
            [ring.mock.request :refer :all]
            [vignette.test.helper :refer [context-route-matches]]
            [vignette.http.route-helpers :refer :all]
-           [vignette.http.proto-routes :refer :all]
+           [vignette.http.proto-routes :as proto]
            [vignette.util.image-response :refer :all]
            [vignette.storage.core :refer :all]
            [vignette.storage.local :refer [create-stored-object]]
@@ -16,7 +16,7 @@
 (facts :create-image-response
   (let [image-map 
         (route->original-map (in-wiki-context-route-matches
-                               original-route
+                               proto/original-route
                                (request :get "/lotr/3/35/ropes.jpg/revision/latest"))
                              {})
         response (create-image-response (create-stored-object "image-samples/ropes.jpg")  image-map)
