@@ -8,6 +8,7 @@
                  [cheshire "5.3.1"]
                  [clj-aws-s3 "0.3.10"]
                  [compojure "1.4.0"]
+                 [consul-clojure "0.1.0-SNAPSHOT"]
                  [com.novemberain/pantomime "2.3.0"]
                  [digest "1.4.4"]
                  [environ "0.5.0"]

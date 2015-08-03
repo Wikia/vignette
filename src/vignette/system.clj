@@ -4,6 +4,7 @@
             [vignette.http.routes :refer [all-routes]]
             [vignette.http.jetty :refer [configure-jetty]]
             [vignette.protocols :refer :all]
+            [vignette.util.consul :refer []]
             [ring.middleware.reload :refer [wrap-reload]])
   (:import [java.util.concurrent ArrayBlockingQueue]))
 
@@ -33,5 +34,5 @@
       (.stop server))))
 
 (defn create-system
-  [store]
-  (->VignetteSystem {:store store :running (atom nil)}))
+  [store & [consul]]
+  (->VignetteSystem {:store store :running (atom nil)}) )
