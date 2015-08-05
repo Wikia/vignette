@@ -79,7 +79,6 @@
 
 (defn get-or-generate-thumbnail
   [system thumb-map]
-  (assert-original-mime-type (get thumb-map :original) thumb-map)
   (if-let [thumb (and (not (q/query-opt thumb-map :replace))
                       (get-thumbnail (store system) thumb-map))]
     (do
@@ -112,9 +111,8 @@
 
 (defn original->local
   "Take the original and make it local."
-  [original thumb-map]
-  (let [temp-file (io/file (temp-filename (str (wikia thumb-map) "_original")
-                                          (file-extension (:original thumb-map))))]
+  [original _]
+  (let [temp-file (io/file (temp-filename))]
     (when (transfer! original temp-file)
       temp-file)))
 

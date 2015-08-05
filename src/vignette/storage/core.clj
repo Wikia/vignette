@@ -1,7 +1,8 @@
 (ns vignette.storage.core
   (:require [vignette.media-types :as mt]
             [vignette.storage.protocols :refer :all]
-            [vignette.util.query-options :as q]))
+            [vignette.util.query-options :as q]
+            [vignette.storage.static-assets :as sa]))
 
 (defn- join-slash
   [& s]
@@ -26,7 +27,7 @@
                   (mt/wikia object-map)
                   (get-path object-map)))
 
-(defrecord ImageStorage [store cache-thumbnails]
+(defrecord ImageStorage [store static-assets-store cache-thumbnails]
   ImageStorageProtocol
 
   (save-thumbnail [this resource thumb-map]
@@ -49,9 +50,12 @@
           mt/original-path))
 
   (get-original [this original-map]
+    (println original-map "dupa")
+    (if-let [uuid (:uuid original-map)]
+      (get-object (:static-assets-store this) uuid)
     (get* (:store this)
           original-map
-          mt/original-path))
+          mt/original-path)))
 
   (original-exists? [this image-map]
     (exists? (:store this)
@@ -60,6 +64,6 @@
 
 (defn create-image-storage
   ([store cache-thumbnails]
-   (->ImageStorage store cache-thumbnails))
+   (->ImageStorage store (sa/->StaticAssetsStorageSystem {}) cache-thumbnails))
   ([store]
    (create-image-storage store true)))

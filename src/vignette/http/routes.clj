@@ -37,6 +37,8 @@
              :top-dir top-dir-regex
              :middle-dir middle-dir-regex])
 
+(def uuid-context ["/:uuid"
+                   :uuid uuid-regex])
 
 (defmacro eval-context [ctx args routes]
   `(context ~(eval ctx) ~args ~routes))
@@ -58,6 +60,7 @@
                       (hlr/legacy-routes system)
                       (list
                         (eval-context wiki-context [] (apply routes (app-routes system)))
+                        (eval-context uuid-context [] (apply routes (app-routes system)))
                         (GET "/ping" [] "pong")
                         (files "/static/")
                         (bad-request-path))))

@@ -18,6 +18,7 @@
                  [ring/ring-devel "1.4.0"]
                  [useful "0.8.8"]
                  [wikia/commons "0.1.3-SNAPSHOT"]
+                 [http-kit "2.1.18"]
                  [org.slf4j/slf4j-log4j12 "1.7.12"]]
   :profiles  {:dev  {:source-paths  ["dev"]
                      :plugins [[lein-midje "3.1.1"]]

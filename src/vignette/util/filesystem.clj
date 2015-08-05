@@ -22,7 +22,9 @@
      (create-local-path (get-parent filename))
      filename))
   ([prefix]
-   (temp-filename prefix nil)))
+   (temp-filename prefix nil))
+  ([]
+   (temp-filename nil nil)))
 
 
 (defn create-local-path
