@@ -38,13 +38,14 @@
 
 (defn create-image-response
   ([image image-map]
-   (-> (response (->response-object image))
-       (header "Content-Type" (content-type image))
-       (header "Content-Length" (content-length image))
-       (header "ETag" (etag image))
-       (header "X-Thumbnailer" "Vignette")
-       (add-content-disposition-header image-map)
-       (add-surrogate-header image-map)))
+
+   (as-> (response (->response-object image)) resp
+         (if-let [ct (content-type image)] (header resp "Content-Type" ct) resp)
+         (if-let [cl (content-length image)] (header resp "Content-Length" cl) resp)
+         (if-let [etag (etag image)] (header resp "ETag" etag) resp)
+         (header resp "X-Thumbnailer" "Vignette")
+         (add-content-disposition-header resp image-map)
+         (add-surrogate-header resp image-map)))
   ([image]
     (create-image-response image nil)))
 

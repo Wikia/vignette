@@ -10,18 +10,15 @@
     (consul/->uri
       (consul/find-service
         consul/create-consul "static-assets" "production")) "/image/" oid))
-;(defn cast-to-integer)
-;
-(defn response-is-valid? [response]
 
-  ;
+(defn response-is-valid? [response]
   (and
     (-> response :status (= 200))))
 
 
 (defrecord AsyncResponseStoredObject [response] StoredObjectProtocol
   (file-stream [this] (-> this :response :body))
-  (content-length [this] (or (-> this :response :content-length) -1))
+  (content-length [this] (-> this :response :content-length))
   (content-type [this] (-> this :response :headers :content-type))
   (etag [this] (-> this :response :headers :etag))
   (transfer! [this to]
