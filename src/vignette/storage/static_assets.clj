@@ -13,7 +13,7 @@
 
 (defn- parse-content-disp
   [header]
-  (when-let [m (re-find #"(?i)Filename=\"(.*)\"" header)]
+  (when-let [m (if header (re-find #"(?i)filename=\"(.*)\"" header))]
     (second m)))
 
 (defrecord AsyncResponseStoredObject [response] StoredObjectProtocol
@@ -21,7 +21,7 @@
   (content-length [this] (-> this :response :content-length))
   (content-type [this] (-> this :response :headers :content-type))
   (etag [this] (-> this :response :headers :etag))
-  (filename [this] (let [x (-> this :response :content-disposition parse-content-disp)] x)
+  (filename [this] (-> this :response :headers :content-disposition parse-content-disp))
   (transfer! [this to]
     (with-open [in-stream (io/input-stream (file-stream this))
                 out-stream (io/output-stream to)]

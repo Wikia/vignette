@@ -58,15 +58,19 @@
        (add-surrogate-header image-map)))
 
 (defn- base-filename [image-map object]
-  (or ((if object (filename object)) (string/replace (original image-map) "\"" "\\\""))))
+  (or (if-let [orig (if image-map (original image-map))]
+        (string/replace orig "\"" "\\\""))
+      (if object (filename object))))
 
 (defn add-content-disposition-header
   ([response-map image-map object]
-   (if (original image-map)
-     (let [requested-format (query-opt image-map :format)
-           filename (cond-> (base-filename image-map object)
-                            requested-format (str "." requested-format))]
-       (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" filename)))
+   (println (filename object))
+   (if-let [filename (base-filename image-map object)]
+     (let [target-filename
+           (if-let [requested-path
+                    (query-opt image-map :format)] (str filename "." requested-path)
+                                                   filename)]
+       (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" target-filename)))
      response-map))
   ([response-map image-map]
    (add-content-disposition-header response-map image-map nil)))
