@@ -93,7 +93,7 @@
   The original will be removed after the thumbnailing is completed."
   [system thumb-map]
   (if-let [original (get-original (store system) thumb-map)]
-    (when-let [local-original (original->local original thumb-map)]
+    (when-let [local-original (original->local original)]
       (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
           (perf/publish  {:generate-thumbail 1})
@@ -111,7 +111,7 @@
 
 (defn original->local
   "Take the original and make it local."
-  [original _]
+  [original]
   (let [temp-file (io/file (temp-filename))]
     (when (transfer! original temp-file)
       temp-file)))

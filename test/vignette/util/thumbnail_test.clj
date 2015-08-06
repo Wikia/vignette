@@ -42,7 +42,7 @@
   (provided
     (store ..system..) => ..store..
     (get-original ..store.. beach-map) => ..original..
-    (original->local ..original.. beach-map) => ..local..
+    (original->local ..original..) => ..local..
     (original->thumbnail ..local.. beach-map) => ..thumb..
     (background-delete-file ..local..) => true
     (create-stored-object ..thumb.. & anything) => ..object..)
@@ -56,7 +56,7 @@
   (provided
     (store ..system..) => ..store..
     (get-original ..store.. beach-map) => ..original..
-    (original->local ..original.. beach-map) => ..local..
+    (original->local ..original..) => ..local..
     (background-delete-file ..local..) => true
     (original->thumbnail ..local.. beach-map) => nil)) 
 
