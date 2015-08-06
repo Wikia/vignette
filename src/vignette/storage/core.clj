@@ -63,6 +63,6 @@
 
 (defn create-image-storage
   ([store cache-thumbnails]
-   (->ImageStorage store (sa/->StaticAssetsStorageSystem {}) cache-thumbnails))
+   (->ImageStorage store (sa/->StaticAssetsStorageSystem) cache-thumbnails))
   ([store]
    (create-image-storage store true)))

@@ -26,13 +26,13 @@
     (with-open [in-stream (io/input-stream (file-stream this))
                 out-stream (io/output-stream to)]
       (io/copy in-stream out-stream))
-    (fs/file-exists? to)
-    )
-  (->response-object [this] (file-stream this))  )
+    (fs/file-exists? to))
+  (->response-object [this] (file-stream this)))
 
-(defrecord StaticAssetsStorageSystem [creds] StorageSystemProtocol
-  (get-object [this oid]
-    (let [response @(http/get (build-url oid) {:as :stream})]
-      (if (-> response :status (= 200))
-        (do
-          (->AsyncResponseStoredObject response))))))
+(defn create-async-response-stored-object [oid]
+  (let [response @(http/get (build-url oid) {:as :stream})]
+    (if (-> response :status (= 200))
+      (->AsyncResponseStoredObject response))))
+
+(defrecord StaticAssetsStorageSystem [] StorageSystemProtocol
+  (get-object [_ oid] (create-async-response-stored-object oid)))
