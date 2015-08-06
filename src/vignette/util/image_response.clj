@@ -44,7 +44,7 @@
          (if-let [cl (content-length image)] (header resp "Content-Length" cl) resp)
          (if-let [etag (etag image)] (header resp "ETag" etag) resp)
          (header resp "X-Thumbnailer" "Vignette")
-         (add-content-disposition-header resp image-map)
+         (add-content-disposition-header resp image-map image)
          (add-surrogate-header resp image-map)))
   ([image]
     (create-image-response image nil)))
@@ -57,14 +57,19 @@
        (add-content-disposition-header image-map)
        (add-surrogate-header image-map)))
 
+(defn- base-filename [image-map object]
+  (or ((if object (filename object)) (string/replace (original image-map) "\"" "\\\""))))
+
 (defn add-content-disposition-header
-  [response-map image-map]
-  (if (original image-map)
-    (let [requested-format (query-opt image-map :format)
-          filename (cond-> (string/replace (original image-map) "\"" "\\\"")
-                     requested-format (str "." requested-format))]
-      (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" filename)))
-    response-map))
+  ([response-map image-map object]
+   (if (original image-map)
+     (let [requested-format (query-opt image-map :format)
+           filename (cond-> (base-filename image-map object)
+                            requested-format (str "." requested-format))]
+       (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" filename)))
+     response-map))
+  ([response-map image-map]
+   (add-content-disposition-header response-map image-map nil)))
 
 
 (defn add-surrogate-header

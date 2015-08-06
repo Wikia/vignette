@@ -20,6 +20,7 @@
   (file-stream [this])
   (content-length [this])
   (content-type [this])
+  (filename [this])
   (etag [this])
   (transfer! [this to])
   (->response-object [this]))

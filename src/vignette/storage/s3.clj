@@ -120,6 +120,7 @@
     (:content-type (:meta-data this)))
   (etag [this]
     (:etag (:meta-data this)))
+  (filename [_] nil)
   (->response-object [this]
     (file-stream this))
   (transfer! [this to]
