@@ -64,7 +64,6 @@
 
 (defn add-content-disposition-header
   ([response-map image-map object]
-   (println (filename object))
    (if-let [filename (base-filename image-map object)]
      (let [target-filename
            (if-let [requested-path
