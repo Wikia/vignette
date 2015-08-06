@@ -50,7 +50,6 @@
           mt/original-path))
 
   (get-original [this original-map]
-    (println original-map "dupa")
     (if-let [uuid (:uuid original-map)]
       (get-object (:static-assets-store this) uuid)
     (get* (:store this)
