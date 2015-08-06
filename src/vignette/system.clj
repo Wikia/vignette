@@ -4,7 +4,6 @@
             [vignette.http.routes :refer [all-routes]]
             [vignette.http.jetty :refer [configure-jetty]]
             [vignette.protocols :refer :all]
-            [vignette.util.consul :refer []]
             [ring.middleware.reload :refer [wrap-reload]])
   (:import [java.util.concurrent ArrayBlockingQueue]))
 
@@ -20,19 +19,23 @@
            (fn [_]
              (jet/run-jetty
                {
-                :ring-handler (wrap-reload (all-routes this))
-                :port port
+                :ring-handler (if (boolean (Boolean/valueOf (env :reload-on-request)))
+                                (do
+                                  (println "Code will be reloaded on each request")
+                                  (wrap-reload (all-routes this)))
+                                (all-routes this))
+                :port         port
                 :configurator configure-jetty
-                :join? false
+                :join?        false
                 ; FIXME: update the readme
-                :max-threads (Integer. (env :vignette-server-max-threads default-max-threads))
+                :max-threads  (Integer. (env :vignette-server-max-threads default-max-threads))
                 ; see https://wiki.eclipse.org/Jetty/Howto/High_Load#Thread_Pool
-                :job-queue (ArrayBlockingQueue.
-                             (Integer. (env :vignette-server-queue-size default-queue-size)))}))))
+                :job-queue    (ArrayBlockingQueue.
+                                (Integer. (env :vignette-server-queue-size default-queue-size)))}))))
   (stop [this]
     (when-let [server @(:running (:state this))]
       (.stop server))))
 
 (defn create-system
-  [store & [consul]]
+  [store]
   (->VignetteSystem {:store store :running (atom nil)}) )
