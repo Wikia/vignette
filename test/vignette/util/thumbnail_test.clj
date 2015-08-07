@@ -38,23 +38,20 @@
          (mime-type-of ..file..) => "video/ogg"))
 
 (facts :generate-thumbnail
-  (generate-thumbnail ..system.. beach-map) => ..object..
+  (generate-thumbnail ..store.. beach-map) => ..object..
   (provided
-    (store ..system..) => ..store..
     (get-original ..store.. beach-map) => ..original..
     (original->local ..original..) => ..local..
     (original->thumbnail ..local.. beach-map) => ..thumb..
     (background-delete-file ..local..) => true
     (create-stored-object ..thumb.. & anything) => ..object..)
 
-  (generate-thumbnail ..system.. beach-map) => (throws ExceptionInfo)
+  (generate-thumbnail ..store.. beach-map) => (throws ExceptionInfo)
   (provided
-    (store ..system..) => ..store..
     (get-original ..store.. beach-map) => nil)
 
-  (generate-thumbnail ..system.. beach-map) => falsey
+  (generate-thumbnail ..store.. beach-map) => falsey
   (provided
-    (store ..system..) => ..store..
     (get-original ..store.. beach-map) => ..original..
     (original->local ..original..) => ..local..
     (background-delete-file ..local..) => true
@@ -62,31 +59,28 @@
 
 (facts :get-or-generate-thumbnail
        ; get existing
-       (get-or-generate-thumbnail ..system.. beach-map) => ..thumb..
+       (get-or-generate-thumbnail ..store.. beach-map) => ..thumb..
        (provided
-         (store ..system..) => ..store..
          (get-thumbnail ..store.. beach-map) => ..thumb..)
 
        ; generate new - success
-       (get-or-generate-thumbnail ..system.. beach-map) => ..thumb..
+       (get-or-generate-thumbnail ..store.. beach-map) => ..thumb..
        (provided
-         (store ..system..) => ..store..
          (get-thumbnail ..store.. beach-map) => false
-         (generate-thumbnail ..system.. beach-map) => ..thumb..)
+         (generate-thumbnail ..store.. beach-map) => ..thumb..)
 
        ; generate new - fail
        (let [image-dne (assoc beach-map :original "doesnotexist.jpg")]
-         (get-or-generate-thumbnail ..system.. image-dne) => (throws ExceptionInfo)
+         (get-or-generate-thumbnail ..store.. image-dne) => (throws ExceptionInfo)
          (provided
-           (store ..system..) => ..store..
            (get-thumbnail ..store.. image-dne) => false
            (get-original ..store.. image-dne) => false))
 
        ; fall through when :replace is set
        (let [option-map (assoc-in beach-map [:options :replace] "true")]
-         (get-or-generate-thumbnail ..system.. option-map) => ..new-thumb..
+         (get-or-generate-thumbnail ..store.. option-map) => ..new-thumb..
          (provided
-           (generate-thumbnail ..system.. option-map) => ..new-thumb..)))
+           (generate-thumbnail ..store.. option-map) => ..new-thumb..)))
 
 (facts :route-map->thumb-args
        (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
