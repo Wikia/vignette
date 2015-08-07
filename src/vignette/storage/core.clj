@@ -1,8 +1,6 @@
 (ns vignette.storage.core
   (:require [vignette.media-types :as mt]
-            [vignette.storage.protocols :refer :all]
-            [vignette.util.query-options :as q]
-            [vignette.storage.static-assets :as sa]))
+            [vignette.storage.protocols :refer :all]))
 
 (defn get*
   [store object-map get-path]
