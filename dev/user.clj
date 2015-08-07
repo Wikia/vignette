@@ -22,7 +22,8 @@
             [vignette.util.thumbnail :as u]
             [vignette.util.query-options :as q]
             [wikia.common.logger :as log]
-            [wikia.common.perfmonitoring.core :as perf])
+            [wikia.common.perfmonitoring.core :as perf]
+            [vignette.storage.static-assets :as sa])
   (:use [environ.core]))
 
 (def sample-original-hash {:wikia "bucket"
@@ -43,12 +44,12 @@
 (def los  (create-local-storage-system itg/integration-path))
 (def lis  (create-image-storage los))
 
-(def system-local (create-system lis))
+(def system-local (create-system lis (sa/->StaticImageStorage)))
 
 (def s3os  (create-s3-storage-system storage-creds))
 (def s3s   (create-image-storage s3os))
 
-(def system-s3 (create-system s3s))
+(def system-s3 (create-system s3s (sa/->StaticImageStorage)))
 
 (comment
   (start S 8080)

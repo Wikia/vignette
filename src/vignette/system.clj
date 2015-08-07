@@ -12,8 +12,8 @@
 
 (defrecord VignetteSystem [state]
   SystemAPI
-  (store [this]
-    (:store (:state this)))
+  (stores [this]
+    (-> this :state :stores))
   (start [this port]
     (swap! (:running (:state this))
            (fn [_]
@@ -22,8 +22,8 @@
                 :ring-handler (if (boolean (Boolean/valueOf (env :reload-on-request)))
                                 (do
                                   (println "Code will be reloaded on each request")
-                                  (wrap-reload (all-routes this)))
-                                (all-routes this))
+                                  (wrap-reload (all-routes (:wikia-store (stores this)) (:static-store (stores this)))))
+                                (all-routes (:wikia-store (stores this)) (:static-store (stores this))))
                 :port         port
                 :configurator configure-jetty
                 :join?        false
@@ -37,5 +37,7 @@
       (.stop server))))
 
 (defn create-system
-  [store]
-  (->VignetteSystem {:store store :running (atom nil)}) )
+  [store static-image-store]
+  (->VignetteSystem {:stores {:wikia-store store :static-store static-image-store} :running (atom nil)}))
+
+(defn x [] (let [x (->VignetteSystem {})] all-routes))

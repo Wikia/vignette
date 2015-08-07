@@ -9,20 +9,20 @@
 
 
 (defn handle-thumbnail
-  [system image-params request]
-  (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+  [store image-params request]
+  (if-let [thumb (u/get-or-generate-thumbnail store image-params)]
     (create-image-response thumb image-params)
     (error-response 404 image-params)))
 
 (defn handle-original
-  [system image-params request]
-  (if-let [file (original-request->file request system image-params)]
+  [store image-params request]
+  (if-let [file (original-request->file request store image-params)]
     (create-image-response file image-params)
     (error-response 404 image-params)))
 
 (defn handle-head
-  [system image-params]
-  (if (original-exists? (store system) image-params)
+  [store image-params]
+  (if (original-exists? store image-params)
     (create-head-response image-params)
     (error-response 404 image-params)))
 

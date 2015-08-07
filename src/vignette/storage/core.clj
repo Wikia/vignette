@@ -4,10 +4,6 @@
             [vignette.util.query-options :as q]
             [vignette.storage.static-assets :as sa]))
 
-(defn- join-slash
-  [& s]
-  (clojure.string/join "/" s))
-
 (defn get*
   [store object-map get-path]
   (get-object store
@@ -27,7 +23,7 @@
                   (mt/wikia object-map)
                   (get-path object-map)))
 
-(defrecord ImageStorage [store static-assets-store cache-thumbnails]
+(defrecord ImageStorage [store cache-thumbnails]
   ImageStorageProtocol
 
   (save-thumbnail [this resource thumb-map]
@@ -50,11 +46,9 @@
           mt/original-path))
 
   (get-original [this original-map]
-    (if-let [uuid (:uuid original-map)]
-      (get-object (:static-assets-store this) uuid)
     (get* (:store this)
           original-map
-          mt/original-path)))
+          mt/original-path))
 
   (original-exists? [this image-map]
     (exists? (:store this)
@@ -63,6 +57,6 @@
 
 (defn create-image-storage
   ([store cache-thumbnails]
-   (->ImageStorage store (sa/->StaticAssetsStorageSystem) cache-thumbnails))
+   (->ImageStorage store cache-thumbnails))
   ([store]
    (create-image-storage store true)))

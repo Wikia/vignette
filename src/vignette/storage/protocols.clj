@@ -1,7 +1,7 @@
 (ns vignette.storage.protocols)
 
 (defprotocol StorageSystemProtocol
-  (get-object [this bucket path] [this protocol])
+  (get-object [this bucket path])
   (put-object [this resource bucket path])
   (delete-object [this bucket path])
   (object-exists? [this bucket path])

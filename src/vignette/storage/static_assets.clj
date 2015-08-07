@@ -9,7 +9,7 @@
   (str
     (consul/->uri
       (consul/find-service
-        consul/create-consul "static-assets" "production")) "/image/" oid))
+        consul/create-consul "static-assets" consul/service-query-tag)) "/image/" oid))
 
 (defn- parse-content-disp
   [header]
@@ -34,5 +34,15 @@
     (if (-> response :status (= 200))
       (->AsyncResponseStoredObject response))))
 
-(defrecord StaticAssetsStorageSystem [] StorageSystemProtocol
-  (get-object [_ oid] (create-async-response-stored-object oid)))
+(defrecord StaticImageStorage [] ImageStorageProtocol
+  (save-thumbnail [_ _ _] nil)
+  (get-thumbnail [_ _] nil)
+  (save-original [_ _ _] nil)
+
+  (get-original [_ original-map]
+    (if-let [uuid (:uuid original-map)]
+      (create-async-response-stored-object uuid)))
+
+  (original-exists? [_ image-map] nil
+    (if-let [uuid (:uuid image-map)]
+      (let [response @(http/head (build-url uuid))] (-> response :status (= 200))))))

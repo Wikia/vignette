@@ -79,46 +79,46 @@
                   :original original-regex}))
 
 (defn legacy-routes
-  [system]
+  [store]
   [(GET thumbnail-route
          request
          (let [image-params (route->thumb-map (:route-params request))]
-           (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+           (if-let [thumb (u/get-or-generate-thumbnail store image-params)]
              (create-image-response thumb image-params)
              (error-response 404 image-params))))
    (GET original-route
         request
         (let [image-params (route->original-map (:route-params request))]
-          (if-let [file (original-request->file request system image-params)]
+          (if-let [file (original-request->file request store image-params)]
             (create-image-response file image-params)
             (error-response 404 image-params))))
    (GET timeline-route
         request
         (let [image-params (route->timeline-map (:route-params request))]
-          (if-let [file (original-request->file request system image-params)]
+          (if-let [file (original-request->file request store image-params)]
             (create-image-response file image-params)
             (error-response 404 image-params))))
    (GET math-route
         request
         (let [image-params (route->original-map (:route-params request))]
-          (if-let [file (original-request->file request system image-params)]
+          (if-let [file (original-request->file request store image-params)]
             (create-image-response file image-params)
             (error-response 404 image-params))))
    (GET interactive-maps-route
         request
         (let [image-params (route->interactive-maps-map (:route-params request))]
-          (if-let [file (original-request->file request system image-params)]
+          (if-let [file (original-request->file request store image-params)]
             (create-image-response file image-params)
             (error-response 404 image-params))))
    (GET interactive-maps-marker-route
         request
         (let [image-params (route->interactive-maps-map (:route-params request))]
-          (if-let [file (original-request->file request system image-params)]
+          (if-let [file (original-request->file request store image-params)]
             (create-image-response file image-params)
             (error-response 404 image-params))))
    (GET interactive-maps-thumbnail-route
         request
         (let [image-params (route->interactive-maps-thumbnail-map (:route-params request))]
-          (if-let [thumb (u/get-or-generate-thumbnail system image-params)]
+          (if-let [thumb (u/get-or-generate-thumbnail store image-params)]
             (create-image-response thumb image-params)
             (error-response 404 image-params))))])
