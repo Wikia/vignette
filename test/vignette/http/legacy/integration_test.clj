@@ -17,7 +17,7 @@
 (def default-port 8888)
 (def los  (create-local-storage-system integration-path))
 (def lis  (create-image-storage los))
-(def system-local (create-system lis))
+(def system-local (create-system lis nil))
 
 ; parses legacy request log, spitting out URLs we don't understand
 (defn parse-request-log
