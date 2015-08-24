@@ -42,10 +42,7 @@
 (def uuid-context ["/:uuid"
                    :uuid uuid-regex])
 
-(defmacro eval-context [ctx args routes]
-  `(context ~(eval ctx) ~args ~routes))
-
-(defn app-routes
+(defn api-routes
   [store]
   (flatten
     [(create-request-handlers store proto/scale-to-width-route handle-thumbnail route->thumbnail-auto-height-map)
@@ -56,13 +53,16 @@
      (create-request-handlers store proto/thumbnail-route handle-thumbnail route->thumbnail-map)
      (create-request-handlers store proto/original-route handle-original route->original-map)]))
 
+(defmacro def-api-context [ctx store]
+  `(context ~(eval ctx) [] (apply routes (api-routes ~store))))
+
 (defn all-routes
   [wiki-store static-store]
   (-> (apply routes (concat
                       (hlr/legacy-routes wiki-store)
                       (list
-                        (eval-context wiki-context [] (apply routes (app-routes wiki-store)))
-                        (eval-context uuid-context [] (apply routes (app-routes static-store)))
+                        (def-api-context wiki-context wiki-store)
+                        (def-api-context uuid-context static-store)
                         (GET "/ping" [] "pong")
                         (files "/static/")
                         (bad-request-path))))
