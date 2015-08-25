@@ -33,15 +33,6 @@
                                     request)
                      request))])
 
-(def wiki-context ["/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
-             :wikia wikia-regex
-             :image-type image-type-regex
-             :top-dir top-dir-regex
-             :middle-dir middle-dir-regex])
-
-(def uuid-context ["/:uuid"
-                   :uuid uuid-regex])
-
 (defn api-routes
   [store]
   (flatten
@@ -52,6 +43,15 @@
      (create-request-handlers store proto/window-crop-fixed-route handle-thumbnail route->thumbnail-map)
      (create-request-handlers store proto/thumbnail-route handle-thumbnail route->thumbnail-map)
      (create-request-handlers store proto/original-route handle-original route->original-map)]))
+
+(def wiki-context ["/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
+                   :wikia wikia-regex
+                   :image-type image-type-regex
+                   :top-dir top-dir-regex
+                   :middle-dir middle-dir-regex])
+
+(def uuid-context ["/:uuid"
+                   :uuid uuid-regex])
 
 (defmacro def-api-context [ctx store]
   `(context ~(eval ctx) [] (apply routes (api-routes ~store))))
