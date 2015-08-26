@@ -10,7 +10,7 @@
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.http.middleware :refer :all]))
 
-(defn all-routes
+(defn create-routes
   [image-serving-routes]
   (-> (apply routes (concat
                       image-serving-routes

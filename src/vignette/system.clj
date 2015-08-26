@@ -1,7 +1,7 @@
 (ns vignette.system
   (:require [environ.core :refer [env]]
             [qbits.jet.server :as jet]
-            [vignette.http.routes :refer [all-routes]]
+            [vignette.http.routes :refer [create-routes]]
             [vignette.http.jetty :refer [configure-jetty]]
             [vignette.protocols :refer :all]
             [vignette.setup :refer [image-routes]]
@@ -23,8 +23,8 @@
                 :ring-handler (if (boolean (Boolean/valueOf (env :reload-on-request)))
                                 (do
                                   (println "Code will be reloaded on each request")
-                                  (wrap-reload (all-routes (image-routes (stores this)))))
-                                (all-routes (image-routes (stores this))))
+                                  (wrap-reload (create-routes (image-routes (stores this)))))
+                                (create-routes (image-routes (stores this))))
                 :port         port
                 :configurator configure-jetty
                 :join?        false
