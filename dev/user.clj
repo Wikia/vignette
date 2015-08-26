@@ -21,6 +21,7 @@
             [vignette.util.integration :as itg]
             [vignette.util.thumbnail :as u]
             [vignette.util.query-options :as q]
+            [vignette.setup :refer [create-stores]]
             [wikia.common.logger :as log]
             [wikia.common.perfmonitoring.core :as perf]
             [vignette.storage.static-assets :as sa])
@@ -43,7 +44,6 @@
 
 (def los (create-local-storage-system itg/integration-path))
 (def lis (create-image-storage los))
-(defn create-stores [wikia-store] {:wikia-store wikia-store :static-store (sa/->StaticImageStorage)})
 
 (def system-local (create-stores lis))
 

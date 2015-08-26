@@ -40,3 +40,6 @@
   (original-exists? [_ image-map] nil
     (if-let [uuid (:uuid image-map)]
       (let [response @(http/head (create-url uuid))] (-> response :status (= 200))))))
+
+(defn create-static-image-storage [create-url]
+  (->StaticImageStorage create-url))

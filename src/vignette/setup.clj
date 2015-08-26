@@ -7,7 +7,7 @@
             [vignette.storage.core :refer [create-image-storage]]
             [vignette.storage.local :refer [create-local-storage-system]]
             [vignette.util.consul :refer [build-static-asset-url]]
-            [vignette.storage.static-assets :as sa]))
+            [vignette.storage.static-assets :refer [create-static-image-storage]]))
 
 
 (defn- create-object-storage [opts]
@@ -19,7 +19,7 @@
 
 (defn create-stores [opts]
   {:wikia-store  (create-image-storage (create-object-storage opts) (:cache-thumbnails opts))
-   :static-store (sa/->StaticImageStorage build-static-asset-url)
+   :static-store (create-static-image-storage build-static-asset-url)
    })
 
 (defn image-routes [stores]
