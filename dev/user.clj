@@ -26,30 +26,31 @@
             [vignette.storage.static-assets :as sa])
   (:use [environ.core]))
 
-(def sample-original-hash {:wikia "bucket"
-                           :top-dir "a"
-                           :middle-dir "ab"
+(def sample-original-hash {:wikia        "bucket"
+                           :top-dir      "a"
+                           :middle-dir   "ab"
                            :request-type :original
-                           :original "ropes.jpg"})
+                           :original     "ropes.jpg"})
 
-(def sample-thumbnail-hash {:wikia "bucket"
-                            :top-dir "a"
-                            :middle-dir "ab"
+(def sample-thumbnail-hash {:wikia        "bucket"
+                            :top-dir      "a"
+                            :middle-dir   "ab"
                             :request-type :thumbnail
-                            :original "ropes.jpg"
-                            :mode "resize"
-                            :height "10"
-                            :width "10"})
+                            :original     "ropes.jpg"
+                            :mode         "resize"
+                            :height       "10"
+                            :width        "10"})
 
-(def los  (create-local-storage-system itg/integration-path))
-(def lis  (create-image-storage los))
+(def los (create-local-storage-system itg/integration-path))
+(def lis (create-image-storage los))
+(defn create-stores [wikia-store] {:wikia-store wikia-store :static-store (sa/->StaticImageStorage)})
 
-(def system-local (create-system lis (sa/->StaticImageStorage)))
+(def system-local (create-stores lis))
 
-(def s3os  (create-s3-storage-system storage-creds))
-(def s3s   (create-image-storage s3os))
+(def s3os (create-s3-storage-system storage-creds))
+(def s3s (create-image-storage s3os))
 
-(def system-s3 (create-system s3s (sa/->StaticImageStorage)))
+(def system-s3 (create-system (create-stores s3s)))
 
 (comment
   (start S 8080)

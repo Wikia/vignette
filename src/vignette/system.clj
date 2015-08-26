@@ -4,6 +4,7 @@
             [vignette.http.routes :refer [all-routes]]
             [vignette.http.jetty :refer [configure-jetty]]
             [vignette.protocols :refer :all]
+            [vignette.setup :refer [image-routes]]
             [ring.middleware.reload :refer [wrap-reload]])
   (:import [java.util.concurrent ArrayBlockingQueue]))
 
@@ -22,8 +23,8 @@
                 :ring-handler (if (boolean (Boolean/valueOf (env :reload-on-request)))
                                 (do
                                   (println "Code will be reloaded on each request")
-                                  (wrap-reload (all-routes (:wikia-store (stores this)) (:static-store (stores this)))))
-                                (all-routes (:wikia-store (stores this)) (:static-store (stores this))))
+                                  (wrap-reload (all-routes (image-routes (stores this)))))
+                                (all-routes (image-routes (stores this))))
                 :port         port
                 :configurator configure-jetty
                 :join?        false
@@ -37,7 +38,5 @@
       (.stop server))))
 
 (defn create-system
-  [store static-image-store]
-  (->VignetteSystem {:stores {:wikia-store store :static-store static-image-store} :running (atom nil)}))
-
-(defn x [] (let [x (->VignetteSystem {})] all-routes))
+  [stores]
+  (->VignetteSystem {:stores stores :running (atom nil)}))

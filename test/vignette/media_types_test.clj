@@ -29,7 +29,7 @@
                   :height "300"
                   :options {}})
 
-(def in-wiki-context-route-matches (partial context-route-matches vignette.http.routes/wiki-context))
+(def in-wiki-context-route-matches (partial context-route-matches vignette.http.api-routes/wiki-context))
 
 (def latest-map (assoc archive-map :revision "latest"))
 

@@ -11,7 +11,7 @@
            [vignette.storage.local :refer [create-stored-object]]
            [vignette.util.image-response :as ir]))
 
-(def in-wiki-context-route-matches (partial context-route-matches vignette.http.routes/wiki-context))
+(def in-wiki-context-route-matches (partial context-route-matches vignette.http.api-routes/wiki-context))
 
 (facts :create-image-response
   (let [image-map 
@@ -25,7 +25,6 @@
     (get response-headers "Content-Disposition") => "inline; filename=\"ropes.jpg\""
     (get response-headers "Content-Length") => "23"
     (get response-headers "ETag") => "c1cfdb01ca32d56c29cf349af37a6779"))
-
 
 (facts :add-content-disposition-header
        (add-content-disposition-header {} {:original "some-file.png"}) => {:headers {"Content-Disposition" "inline; filename=\"some-file.png\""}}
