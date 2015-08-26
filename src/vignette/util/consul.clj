@@ -41,3 +41,9 @@
 ))
 
 (defn ->uri [service] (str "http://" (service :address) ":" (service :port)))
+
+(defn build-static-asset-url [oid]
+  (str
+    (->uri
+      (find-service
+        create-consul "static-assets" service-query-tag)) "/image/" oid))
