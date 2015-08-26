@@ -60,7 +60,7 @@
 (defn- base-filename [image-map object]
   (or (if-let [orig (if image-map (original image-map))]
         (string/replace orig "\"" "\\\""))
-      (if object (filename object))))
+      (when object (filename object))))
 
 (defn add-content-disposition-header
   ([response-map image-map object]
