@@ -15,6 +15,11 @@
          add-surrogate-header
          surrogate-key)
 
+(defmacro when-header-val
+  ([resp key val]
+   `(if val
+     (header ~resp ~key ~val) ~resp)))
+
 (def error-image-file (file "public/brokenImage.jpg"))
 
 (defmulti error-image (fn [map]
@@ -38,11 +43,10 @@
 
 (defn create-image-response
   ([image image-map]
-
    (as-> (response (->response-object image)) resp
-         (if-let [ct (content-type image)] (header resp "Content-Type" ct) resp)
-         (if-let [cl (content-length image)] (header resp "Content-Length" cl) resp)
-         (if-let [etag (etag image)] (header resp "ETag" etag) resp)
+         (when-header-val resp "Content-Type" (content-type image))
+         (when-header-val resp "Content-Length" (content-length image))
+         (when-header-val resp "ETag" (etag image))
          (header resp "X-Thumbnailer" "Vignette")
          (add-content-disposition-header resp image-map image)
          (add-surrogate-header resp image-map)))
@@ -52,7 +56,6 @@
 (defn create-head-response
   [image-map]
   (-> (response "")
-       ;(header "Content-Type" (content-type image))
        (header "X-Thumbnailer" "Vignette")
        (add-content-disposition-header image-map)
        (add-surrogate-header image-map)))
