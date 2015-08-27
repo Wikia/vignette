@@ -1,7 +1,6 @@
 (ns vignette.util.consul
   (:require [consul.core :as consul]
-            [environ.core :refer [env]]
-            ))
+            [environ.core :refer [env]]))
 
 (def default-consul-hostname "localhost")
 (def default-consul-http-port 8500)
@@ -40,9 +39,3 @@
    (response->address (query-service consul service tag))))
 
 (defn ->uri [service] (str "http://" (service :address) ":" (service :port)))
-
-(defn build-static-asset-url [oid]
-  (str
-    (->uri
-      (find-service
-        create-consul "static-assets" service-query-tag)) "/image/" oid))
