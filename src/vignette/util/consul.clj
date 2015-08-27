@@ -17,11 +17,12 @@
 (def pick-service-entry-fn rand-nth)
 
 (defn- response->address [response]
-  (let [entry (pick-service-entry-fn response)]
-    (let [address (-> entry :Node :Address)
-          port (-> entry :Service :Port)]
-      (if (not (or (nil? address) (nil? port)))
-        {:address address, :port port}))))
+  (when (not-empty response)
+    (let [entry (pick-service-entry-fn response)]
+      (let [address (-> entry :Node :Address)
+            port (-> entry :Service :Port)]
+        (if (not (or (nil? address) (nil? port)))
+          {:address address, :port port})))))
 
 (defprotocol Consul
   (query-service [this service tag]))

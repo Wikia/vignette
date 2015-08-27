@@ -76,3 +76,5 @@
         => {:address "10.8.62.63", :port 31834}))
 
 (fact (c/->uri {:address "10.8.62.63", :port 31834}) => "http://10.8.62.63:31834")
+
+(fact (c/find-service (MockConsul. []) "static-assets" " tag") => nil)
