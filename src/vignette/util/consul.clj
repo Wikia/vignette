@@ -1,4 +1,3 @@
-(set! *warn-on-reflection* true)
 (ns vignette.util.consul
   (:require [consul.core :as consul]
             [environ.core :refer [env]]
