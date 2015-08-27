@@ -66,8 +66,8 @@
       (when object (filename object))))
 
 (defn add-content-disposition-header
-  ([response-map image-map object]
-   (if-let [filename (base-filename image-map object)]
+  ([response-map image-map image-object]
+   (if-let [filename (base-filename image-map image-object)]
      (let [target-filename
            (if-let [requested-path
                     (query-opt image-map :format)] (str filename "." requested-path)
