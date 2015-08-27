@@ -37,8 +37,7 @@
   ([consul service]
    (find-service consul service service-query-tag))
   ([consul service tag]
-   (response->address (query-service consul service tag))
-))
+   (response->address (query-service consul service tag))))
 
 (defn ->uri [service] (str "http://" (service :address) ":" (service :port)))
 

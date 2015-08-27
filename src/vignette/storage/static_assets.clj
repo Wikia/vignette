@@ -1,7 +1,6 @@
 (ns vignette.storage.static-assets
   (:require [vignette.storage.protocols :refer :all]
             [org.httpkit.client :as http]
-            [vignette.util.consul :as consul]
             [vignette.util.filesystem :as fs]
             [clojure.java.io :as io]))
 
