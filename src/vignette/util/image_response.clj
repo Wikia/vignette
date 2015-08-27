@@ -17,7 +17,7 @@
 
 (defmacro when-header-val
   ([resp key val]
-   `(if val
+   `(if ~val
      (header ~resp ~key ~val) ~resp)))
 
 (def error-image-file (file "public/brokenImage.jpg"))

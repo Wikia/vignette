@@ -30,3 +30,7 @@
        (add-content-disposition-header {} {:original "some-file.png"}) => {:headers {"Content-Disposition" "inline; filename=\"some-file.png\""}}
        (add-content-disposition-header {} {:original "some-\"file\".png"}) => {:headers {"Content-Disposition" "inline; filename=\"some-\\\"file\\\".png\""}}
        (add-content-disposition-header {} {:original "some-\"file,_with_comma!\".png"}) => {:headers {"Content-Disposition" "inline; filename=\"some-\\\"file,_with_comma!\\\".png\""}})
+
+(facts :when-header-val
+       (when-header-val {} "Content-Type" nil) => {}
+       (when-header-val {} "Content-Type" "type") => {:headers {"Content-Type" "type"}})
