@@ -78,28 +78,27 @@
                     "thumbnailing error"))))
 
 (defn get-or-generate-thumbnail
-  [system thumb-map]
-  (assert-original-mime-type (get thumb-map :original) thumb-map)
+  [store thumb-map]
   (if-let [thumb (and (not (q/query-opt thumb-map :replace))
-                      (get-thumbnail (store system) thumb-map))]
+                      (get-thumbnail store thumb-map))]
     (do
       (perf/publish  {:thumbnail-cache-hit 1})
       thumb)
-    (when-let [thumb (generate-thumbnail system thumb-map)]
+    (when-let [thumb (generate-thumbnail store thumb-map)]
       thumb)))
 
 (defn generate-thumbnail
   "Generate a thumbnail from the original specified in thumb-map.
   This function will download the original locally and thumbnail it.
   The original will be removed after the thumbnailing is completed."
-  [system thumb-map]
-  (if-let [original (get-original (store system) thumb-map)]
-    (when-let [local-original (original->local original thumb-map)]
+  [store thumb-map]
+  (if-let [original (get-original store thumb-map)]
+    (when-let [local-original (original->local original)]
       (try+
         (when-let [thumb (original->thumbnail local-original thumb-map)]
           (perf/publish  {:generate-thumbail 1})
           (ls/create-stored-object thumb (fn [stored-object]
-                                           (background-save-thumbnail (store system)
+                                           (background-save-thumbnail store
                                                                       stored-object
                                                                       thumb-map))))
         (catch Object _ (throw+))
@@ -112,9 +111,8 @@
 
 (defn original->local
   "Take the original and make it local."
-  [original thumb-map]
-  (let [temp-file (io/file (temp-filename (str (wikia thumb-map) "_original")
-                                          (file-extension (:original thumb-map))))]
+  [original]
+  (let [temp-file (io/file (temp-filename))]
     (when (transfer! original temp-file)
       temp-file)))
 

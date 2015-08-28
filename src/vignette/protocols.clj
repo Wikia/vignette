@@ -1,6 +1,6 @@
 (ns vignette.protocols)
 
 (defprotocol SystemAPI
-  (store [this])
+  (stores [this])
   (start [this port])
   (stop [this]))

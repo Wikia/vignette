@@ -10,3 +10,4 @@
 (def size-regex #"\d+")
 (def size-regex-allow-negative #"-{0,1}\d+")
 (def image-type-regex #"\/images|\/avatars|")
+(def uuid-regex #"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")

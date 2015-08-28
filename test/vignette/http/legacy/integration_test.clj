@@ -15,9 +15,9 @@
 (create-integration-env)
 
 (def default-port 8888)
-(def los  (create-local-storage-system integration-path))
-(def lis  (create-image-storage los))
-(def system-local (create-system lis))
+(def los (create-local-storage-system integration-path))
+(def lis (create-image-storage los))
+(def system-local (create-system {:wikia-store lis}))
 
 ; parses legacy request log, spitting out URLs we don't understand
 (defn parse-request-log

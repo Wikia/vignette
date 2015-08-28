@@ -16,7 +16,7 @@
 (def default-port 8888)
 (def los  (create-local-storage-system integration-path))
 (def lis  (create-image-storage los))
-(def system-local (create-system lis))
+(def system-local (create-system {:wikia-store lis}))
 
 (with-state-changes [(before :facts (start system-local default-port))
                      (after :facts (stop system-local))]

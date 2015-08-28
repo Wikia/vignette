@@ -46,6 +46,7 @@ Vignette should now be running on localhost:8080
 
 Below is a list of environment variables that will affect the vignette runtime.
 
+ * `RELOAD_ON_REQUEST`            development option that enables reloading code on each request [false] 
  * `LOGGER_APPLICATION`           this is primarily for wikia-commons. Set this to “vignette”.
  * `LOGGER_TYPE`                  where to log. [file, syslog]
  * `LOGGER_SYSLOG_HOST`           Syslog host:port to log to when LOGGER_TYPE=syslog. [127.0.0.1]
@@ -65,6 +66,9 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `ENABLE_ACCESS_LOG`            enable the NCSA access log [false]
  * `ACCESS_LOG_FILE`              NCSA acces log file [/tmp/Vignette-access.log]
  * `IMAGEMAGICK_BASE`             path to the root of the ImageMagick installation [/usr/local]
+ * `CONSUL_HOSTNAME`              Consul Agent's address [localhost]
+ * `CONSUL_HTTP_PORT`             Consul Agent's port [8500]
+ * `CONSUL_QUERY_TAG`             Default tag that will be used to query instances [prod]
  * `GETOPT`                       when running on osx, install gnu-getopt using brew. see bin/thumbnail
  * `CONVERT_CONSTRAINTS`          universal options to pass to ImageMagick. see bin/thumbnail
  * `UNSUPPORTED_REDIRECT_HOST`    on an unsupported legacy thumbnail request, host to redirect

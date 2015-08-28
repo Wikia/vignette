@@ -15,6 +15,11 @@
          add-surrogate-header
          surrogate-key)
 
+(defn when-header-val
+  ([resp key val]
+   (if val
+     (header resp key val) resp)))
+
 (def error-image-file (file "public/brokenImage.jpg"))
 
 (defmulti error-image (fn [map]
@@ -39,31 +44,38 @@
 (defn create-image-response
   ([image image-map]
    (-> (response (->response-object image))
-       (header "Content-Type" (content-type image))
-       (header "Content-Length" (content-length image))
-       (header "ETag" (etag image))
-       (header "X-Thumbnailer" "Vignette")
-       (add-content-disposition-header image-map)
-       (add-surrogate-header image-map)))
+         (when-header-val "Content-Type" (content-type image))
+         (when-header-val "Content-Length" (content-length image))
+         (when-header-val "ETag" (etag image))
+         (header "X-Thumbnailer" "Vignette")
+         (add-content-disposition-header image-map image)
+         (add-surrogate-header image-map)))
   ([image]
     (create-image-response image nil)))
 
 (defn create-head-response
   [image-map]
   (-> (response "")
-       ;(header "Content-Type" (content-type image))
        (header "X-Thumbnailer" "Vignette")
        (add-content-disposition-header image-map)
        (add-surrogate-header image-map)))
 
+(defn- base-filename [image-map object]
+  (or (if-let [orig (if image-map (original image-map))]
+        (string/replace orig "\"" "\\\""))
+      (when object (filename object))))
+
 (defn add-content-disposition-header
-  [response-map image-map]
-  (if (original image-map)
-    (let [requested-format (query-opt image-map :format)
-          filename (cond-> (string/replace (original image-map) "\"" "\\\"")
-                     requested-format (str "." requested-format))]
-      (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" filename)))
-    response-map))
+  ([response-map image-map image-object]
+   (if-let [filename (base-filename image-map image-object)]
+     (let [target-filename
+           (if-let [requested-path
+                    (query-opt image-map :format)] (str filename "." requested-path)
+                                                   filename)]
+       (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" target-filename)))
+     response-map))
+  ([response-map image-map]
+   (add-content-disposition-header response-map image-map nil)))
 
 
 (defn add-surrogate-header

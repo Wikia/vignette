@@ -18,7 +18,7 @@
   (merge image-params force-thumb-params))
 
 (defn original-request->file
-  [request system image-params]
+  [request store image-params]
   (if (force-thumb? request)
-    (u/get-or-generate-thumbnail system (image-params->forced-thumb-params image-params))
-    (get-original (store system) image-params)))
+    (u/get-or-generate-thumbnail store (image-params->forced-thumb-params image-params))
+    (get-original store image-params)))

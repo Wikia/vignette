@@ -11,26 +11,24 @@
   (:import java.io.FileNotFoundException))
 
 (facts :handle-thumbnail
-  (handle-thumbnail ..system.. ..params.. ..request..) => ..response..
+  (handle-thumbnail ..store.. ..params.. ..request..) => ..response..
   (provided
-    (u/get-or-generate-thumbnail ..system.. ..params..) => ..thumb..
+    (u/get-or-generate-thumbnail ..store.. ..params..) => ..thumb..
     (create-image-response ..thumb.. ..params..) => ..response..)
 
-  (handle-thumbnail ..system.. ..params.. ..request..) => ..error..
+  (handle-thumbnail ..store.. ..params.. ..request..) => ..error..
   (provided
-    (u/get-or-generate-thumbnail ..system.. ..params..) => nil
+    (u/get-or-generate-thumbnail ..store.. ..params..) => nil
     (error-response 404 ..params..) => ..error..))
 
 (facts :handle-original
-  (handle-original ..system.. ..params.. ..request..) => ..response..
+  (handle-original ..store.. ..params.. ..request..) => ..response..
   (provided
-    (store ..system..) => ..store..
     (sp/get-original ..store.. ..params..) => ..original..
     (create-image-response ..original.. ..params..) => ..response..)
 
-  (handle-original ..system.. ..params.. ..request..) => ..error..
+  (handle-original ..store.. ..params.. ..request..) => ..error..
   (provided
-    (store ..system..) => ..store..
     (sp/get-original ..store.. ..params..) => nil
     (error-response 404 ..params..) => ..error..))
 

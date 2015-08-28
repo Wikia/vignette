@@ -50,6 +50,7 @@
     (mime-type-of (file-stream this)))
   (etag [this]
     (digest/md5 (file-stream this)))
+  (filename [_] nil)
   (->response-object [this]
     (let [file (file-stream this)
           stored-object this]

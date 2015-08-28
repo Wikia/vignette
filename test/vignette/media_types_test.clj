@@ -1,8 +1,10 @@
 (ns vignette.media-types-test
   (:require [midje.sweet :refer :all]
-            [clout.core :refer (route-compile route-matches)]
+            [clout.core :refer [route-compile route-matches]]
             [ring.mock.request :refer :all]
-            [vignette.http.routes :as r]
+            [vignette.test.helper :refer [context-route-matches]]
+            [vignette.http.routes]
+            [vignette.http.proto-routes :as proto]
             [vignette.http.route-helpers :as rh]
             [vignette.http.legacy.routes :as hlr]
             [vignette.http.legacy.route-helpers :as hlrh]
@@ -26,6 +28,8 @@
                   :width "200"
                   :height "300"
                   :options {}})
+
+(def in-wiki-context-route-matches (partial context-route-matches vignette.http.api-routes/wiki-context))
 
 (def latest-map (assoc archive-map :revision "latest"))
 
@@ -95,8 +99,9 @@
 (facts :scale-to-width-thumbnail-path
   (let [new-thumbnail-map
         (rh/route->thumbnail-auto-height-map
-          (route-matches r/scale-to-width-route
-                         (request :get "/happywheels/images/b/bb/SuperMario64_20.png/revision/latest/scale-to-width/185"))
+          (in-wiki-context-route-matches
+            proto/scale-to-width-route
+            (request :get "/happywheels/images/b/bb/SuperMario64_20.png/revision/latest/scale-to-width/185"))
           {})
         legacy-thumbnail-map
         (hlrh/route->thumb-map
@@ -104,11 +109,13 @@
                          (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.png")))]
     (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
 
+
 (facts :window-crop-thumbnail-path
   (let [new-thumbnail-map
         (rh/route->thumbnail-auto-height-map
-          (route-matches r/window-crop-route
-                         (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/74"))
+          (in-wiki-context-route-matches
+            proto/window-crop-route
+            (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop/width/200/x-offset/0/y-offset/29/window-width/206/window-height/74"))
           {})
         legacy-thumbnail-map
         (hlrh/route->thumb-map
@@ -116,11 +123,13 @@
                          (request :get "/happywheels/images/thumb/4/40/JohnvanBruggen.jpg/200px-0,206,29,103-JohnvanBruggen.jpg")))]
     (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
 
+
 (facts :window-crop-fixed-thumbnail-path
   (let [new-thumbnail-map
         (rh/route->thumbnail-map
-          (route-matches r/window-crop-fixed-route
-                         (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/0/y-offset/29/window-width/206/window-height/74"))
+          (in-wiki-context-route-matches
+             proto/window-crop-fixed-route
+             (request :get "/muppet/images/4/40/JohnvanBruggen.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/0/y-offset/29/window-width/206/window-height/74"))
           {})
         legacy-thumbnail-map
         (hlrh/route->thumb-map

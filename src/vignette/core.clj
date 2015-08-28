@@ -6,8 +6,10 @@
             [vignette.storage.protocols :refer :all]
             [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
             [vignette.system :refer :all]
+            [vignette.setup :refer [create-stores]]
             [vignette.util.integration :as i]
-            [wikia.common.perfmonitoring.core :as perf])
+            [wikia.common.perfmonitoring.core :as perf]
+            [vignette.storage.static-assets :as sa])
   (:use [environ.core])
   (:gen-class))
 
@@ -35,12 +37,6 @@
 
     (perf/init)
 
-    (let [object-storage (if (= (:mode opts) "local")
-                           (do
-                             (i/create-integration-env)
-                             (create-local-storage-system i/integration-path))
-                           (create-s3-storage-system storage-creds))
-          image-store (create-image-storage object-storage (:cache-thumbnails opts))
-          system (create-system image-store)]
+    (let [system (create-system (create-stores opts))]
       (println (format "Mode: %s. Starting server on %d..." (:mode opts) (:port opts)))
       (start system (:port opts)))))

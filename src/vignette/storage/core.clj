@@ -1,11 +1,6 @@
 (ns vignette.storage.core
   (:require [vignette.media-types :as mt]
-            [vignette.storage.protocols :refer :all]
-            [vignette.util.query-options :as q]))
-
-(defn- join-slash
-  [& s]
-  (clojure.string/join "/" s))
+            [vignette.storage.protocols :refer :all]))
 
 (defn get*
   [store object-map get-path]
