@@ -19,10 +19,11 @@
 (def in-wiki-context-route-matches (partial context-route-matches vignette.http.api-routes/wiki-context))
 
 (defn image-routes [stores]
+  (concat
   (list
     (def-api-context wiki-context (:wikia-store stores))
-    (def-api-context uuid-context (:static-store stores))
-    (hlr/legacy-routes (:wikia-store stores))))
+    (def-api-context uuid-context (:static-store stores)))
+  (hlr/legacy-routes (:wikia-store stores))))
 
 (facts :original-route
        (route-matches proto/original-route (request :get "/swift/v1")) => falsey
@@ -72,8 +73,11 @@
                                             :width "10"
                                             :height "10"}))
 
-(facts :all-routes
-       ((create-routes {}) (request :get "/not-a-valid-route")) => (contains {:status 404}))
+(facts :create-routes
+       ((create-routes (image-routes {})) (request :get "/not-a-valid-route")) => (contains {:status 404}))
+
+(facts :ping_pong
+       ((create-routes (image-routes {})) (request :get "/ping")) => (contains {:status 200}))
 
 (facts :all-routes-thumbnail
   (let [route-params {:request-type :thumbnail
