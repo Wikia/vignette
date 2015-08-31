@@ -14,16 +14,10 @@
             [vignette.http.proto-routes :as proto]
             [vignette.test.helper :refer [context-route-matches]]
             [vignette.util.thumbnail :as u]
+            [vignette.setup :refer [image-routes]]
             [vignette.http.legacy.routes :as hlr]))
 
 (def in-wiki-context-route-matches (partial context-route-matches vignette.http.api-routes/wiki-context))
-
-(defn image-routes [stores]
-  (concat
-  (list
-    (def-api-context wiki-context (:wikia-store stores))
-    (def-api-context uuid-context (:static-store stores)))
-  (hlr/legacy-routes (:wikia-store stores))))
 
 (facts :original-route
        (route-matches proto/original-route (request :get "/swift/v1")) => falsey
