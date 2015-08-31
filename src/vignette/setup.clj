@@ -23,7 +23,8 @@
    })
 
 (defn image-routes [stores]
-  (list
-    (def-api-context wiki-context (:wikia-store stores))
-    (def-api-context uuid-context (:static-store stores))
+  (concat
+    (list
+      (def-api-context wiki-context (:wikia-store stores))
+      (def-api-context uuid-context (:static-store stores)))
     (hlr/legacy-routes (:wikia-store stores))))
