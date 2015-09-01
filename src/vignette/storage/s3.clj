@@ -41,8 +41,8 @@
 ;"Elapsed time: 1912.641 msecs"
 
 
-(def default-storage-connection-timeout 100)
-(def default-storage-get-socket-timeout 500)
+(def default-storage-connection-timeout 500)
+(def default-storage-get-socket-timeout 5000)
 (def default-storage-put-socket-timeout 10000)
 (def default-storage-max-conns 150)
 (def default-storage-max-retries 0)
