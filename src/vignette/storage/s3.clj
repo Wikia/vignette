@@ -91,8 +91,9 @@
     (when-let [object (safe-get-object (add-timeouts :get (:creds this)) bucket path)]
       (when (valid-s3-get? object)
         (let [stream (:content object)
-              meta-data (:metadata object)]
-          (create-stored-object stream meta-data)))))
+              meta-data (:metadata object)
+              file-name (last (clojure.string/split (:key object) #"/"))]
+          (create-stored-object stream meta-data file-name)))))
   (put-object [this resource bucket path]
     (let [file (file-stream resource)
           mime-type (content-type resource)]
@@ -110,7 +111,7 @@
   (list-buckets [this])
   (list-objects [this bucket]))
 
-(defrecord S3StoredObject [stream meta-data]
+(defrecord S3StoredObject [stream meta-data file-name]
   StoredObjectProtocol
   (file-stream [this]
     (:stream this))
@@ -120,7 +121,7 @@
     (:content-type (:meta-data this)))
   (etag [this]
     (:etag (:meta-data this)))
-  (filename [_] nil)
+  (filename [this] (:file-name this))
   (->response-object [this]
     (file-stream this))
   (transfer! [this to]
@@ -134,5 +135,5 @@
   (->S3StorageSystem creds))
 
 (defn create-stored-object
-  [stream meta-data]
-  (->S3StoredObject stream meta-data))
+  [stream meta-data file-name]
+  (->S3StoredObject stream meta-data file-name))
