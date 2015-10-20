@@ -17,10 +17,9 @@
     (add-timeouts :get ..creds..) => ..timeout-creds..
     (safe-get-object ..timeout-creds.. "bucket" "a/ab/image.jpg") => {:content ..stream..
                                                                       :metadata {:content-length ..length..
-                                                                                 :content-type ..content-type..}
-                                                                      :key "a/ab/image.jpg"}
+                                                                                 :content-type ..content-type..}}
     (create-stored-object ..stream.. {:content-length ..length..
-                                          :content-type ..content-type..} "image.jpg") => ..object..)
+                                          :content-type ..content-type..}) => ..object..)
 
   (get-object (create-s3-storage-system ..creds..) "bucket" "a/ab/image.jpg") => falsey
   (provided
