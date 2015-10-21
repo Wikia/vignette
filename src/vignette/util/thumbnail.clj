@@ -112,7 +112,7 @@
 (defn original->local
   "Take the original and make it local."
   [original]
-  (let [temp-file (io/file (temp-filename))]
+  (let [temp-file (io/file (temp-filename nil (filename original)))]
     (when (transfer! original temp-file)
       temp-file)))
 
