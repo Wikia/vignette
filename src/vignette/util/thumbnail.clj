@@ -1,6 +1,7 @@
 (ns vignette.util.thumbnail
   (:require [cheshire.core :refer :all]
             [clojure.java.io :as io]
+            [clojure.string :refer [split]]
             [clojure.java.shell :refer [sh]]
             [pantomime.mime :refer [mime-type-of]]
             [slingshot.slingshot :refer [try+ throw+]]
@@ -109,10 +110,13 @@
              :response-code 404}
             "unable to get original for thumbnailing")))
 
+(defn- extract-extension [filename]
+  (last (split filename #"\.")))
+
 (defn original->local
   "Take the original and make it local."
   [original]
-  (let [temp-file (io/file (temp-filename nil (filename original)))]
+  (let [temp-file (io/file (temp-filename nil (extract-extension (filename original))))]
     (when (transfer! original temp-file)
       temp-file)))
 
