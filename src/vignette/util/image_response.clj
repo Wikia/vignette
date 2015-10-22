@@ -8,7 +8,8 @@
             [vignette.util.query-options :refer :all]
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.storage.protocols :refer :all]
-            [vignette.util.thumbnail :refer :all]))
+            [vignette.util.thumbnail :refer :all]
+            [ring.util.codec :refer [url-encode]]))
 
 (declare create-image-response
          add-content-disposition-header
@@ -72,7 +73,7 @@
            (if-let [requested-path
                     (query-opt image-map :format)] (str filename "." requested-path)
                                                    filename)]
-       (header response-map "Content-Disposition" (format "inline; filename=\"%s\"" target-filename)))
+       (header response-map "Content-Disposition" (format "inline; filename=\"%s\"; filename*=UTF-8''%s" target-filename (url-encode target-filename))))
      response-map))
   ([response-map image-map]
    (add-content-disposition-header response-map image-map nil)))
