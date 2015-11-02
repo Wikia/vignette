@@ -6,7 +6,8 @@
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.storage.protocols :refer :all]
             [vignette.util.filesystem :refer :all]
-            [vignette.util.thumbnail :refer :all])
+            [vignette.util.thumbnail :refer :all]
+            [vignette.storage.local :as ls])
   (:import [clojure.lang ExceptionInfo]))
 
 (def beach-map {:request-type :thumbnail
@@ -36,6 +37,10 @@
        (original->thumbnail ..file.. beach-map) => (throws Exception)
        (provided
          (mime-type-of ..file..) => "video/ogg"))
+
+(facts :orignal->local-maintains-file-extension
+       (.getName (original->local
+         (ls/create-stored-object (io/file "project.clj")))) => #".*.clj$")
 
 (facts :generate-thumbnail
   (generate-thumbnail ..store.. beach-map) => ..object..
