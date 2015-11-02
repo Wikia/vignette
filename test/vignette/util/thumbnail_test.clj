@@ -40,7 +40,7 @@
 
 (facts :orignal->local-maintains-file-extension
        (.getName (original->local
-         (ls/create-stored-object (io/file "project.clj")))) => #".*.clj$")
+         (ls/create-stored-object (io/file "project.clj")))) => #".*\.clj$")
 
 (facts :generate-thumbnail
   (generate-thumbnail ..store.. beach-map) => ..object..
