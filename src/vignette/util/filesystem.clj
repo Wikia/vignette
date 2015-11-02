@@ -17,7 +17,7 @@
                      (str "." suffix))
          uuid (if (not (empty? prefix))
                 (str prefix "_" (UUID/randomUUID) extension)
-                (UUID/randomUUID))
+                (str (UUID/randomUUID) extension))
          filename (resolve-local-path temp-file-location uuid)]
      (create-local-path (get-parent filename))
      filename))
