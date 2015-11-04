@@ -25,7 +25,6 @@
        ; successful run
        (original->thumbnail beach-file beach-map) => truthy
        (provided
-         (mime-type-of beach-file) => "image/jpg"
          (run-thumbnailer anything) => {:exit 0})
 
        ; failed run
@@ -33,9 +32,10 @@
        (provided
          (run-thumbnailer anything) => {:exit 1 :err 256 :out "testing failure"})
 
-       ;invalid mime type
-       (original->thumbnail ..file.. beach-map) => (throws Exception)
+       ;special mime type
+       (generate-thumbnail ..store.. beach-map) => ..file..
        (provided
+         (get-original ..store.. beach-map) => ..file..
          (mime-type-of ..file..) => "video/ogg"))
 
 (facts :orignal->local-maintains-file-extension
@@ -51,6 +51,7 @@
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
+         (is-passthrough-required ..original..) => false
          (original->thumbnail ..local.. beach-map) => ..thumb..
          (background-delete-file ..local..) => true
          (create-stored-object ..thumb.. & anything) => ..object..)
@@ -63,6 +64,7 @@
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
+         (is-passthrough-required ..original..) => false
          (background-delete-file ..local..) => true
          (original->thumbnail ..local.. beach-map) => nil))
 
@@ -95,7 +97,7 @@
        (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
                                                        "--mode" "thumbnail"] :in-any-order))
 
-(facts :assert-original-mime-type
-       (assert-original-mime-type "" {}) => nil
-       (assert-original-mime-type "file.jpg" {}) => nil
-       (assert-original-mime-type "file.ogv" {}) => (throws ExceptionInfo))
+(facts :passthrough-mime-types
+       (is-passthrough-required "") => false
+       (is-passthrough-required "file.jpg") => false
+       (is-passthrough-required "file.ogv") => true)
