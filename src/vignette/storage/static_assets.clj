@@ -11,7 +11,7 @@
 
 (defrecord AsyncResponseStoredObject [response] StoredObjectProtocol
   (file-stream [this] (-> this :response :body))
-  (content-length [this] (-> this :response :content-length))
+  (content-length [this] (-> this :response :headers :content-length))
   (content-type [this] (-> this :response :headers :content-type))
   (etag [this] (-> this :response :headers :etag))
   (filename [this] (-> this :response :headers :content-disposition parse-content-disp))
