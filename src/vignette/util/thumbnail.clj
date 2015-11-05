@@ -105,7 +105,9 @@
             "unable to get original for thumbnailing")))
 
 (defn- extract-extension [filename]
-  (last (rest (split filename #"\."))))
+  (if filename
+    (last (rest (split filename #"\.")))
+    ""))
 
 (defn original->local
   "Take the original and make it local."
