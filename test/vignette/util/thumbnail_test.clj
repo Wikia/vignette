@@ -36,7 +36,7 @@
        (generate-thumbnail ..store.. beach-map) => ..file..
        (provided
          (get-original ..store.. beach-map) => ..file..
-         (mime-type-of ..file..) => "video/ogg"))
+         (filename ..file..) => "file.ogv"))
 
 (facts :orignal->local-maintains-file-extension
        (.getName (original->local
@@ -51,7 +51,8 @@
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
-         (is-passthrough-required ..original..) => false
+         (filename ..original..) => ..filename..
+         (is-passthrough-required ..filename..) => false
          (original->thumbnail ..local.. beach-map) => ..thumb..
          (background-delete-file ..local..) => true
          (create-stored-object ..thumb.. & anything) => ..object..)
@@ -64,7 +65,8 @@
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
-         (is-passthrough-required ..original..) => false
+         (filename ..original..) => ..filename..
+         (is-passthrough-required ..filename..) => false
          (background-delete-file ..local..) => true
          (original->thumbnail ..local.. beach-map) => nil))
 

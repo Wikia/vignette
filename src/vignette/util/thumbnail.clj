@@ -86,7 +86,7 @@
   The original will be removed after the thumbnailing is completed."
   [store thumb-map]
   (if-let [original (get-original store thumb-map)]
-    (if (is-passthrough-required original)
+    (if (is-passthrough-required (filename original))
       original
       (when-let [local-original (original->local original)]
         (try+
