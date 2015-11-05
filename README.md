@@ -249,6 +249,13 @@ and `c,d` are the same but for `y`. In Vignette URLs, we specify the `x-offset`,
 which is the same as a above, but we specify window-width instead of `x-endpoint`
 (where `window-width` is `x-endpoint - x-offset`).
 
+### Media Passthrough for not certain mime-types
+
+When encountered media types:
+ - audio/ogg
+ - video/ogg
+data will be passed through as - is without applying any thumbnailing operations.
+
 ## Other HTTP Methods Supported
 
 ### HEAD

@@ -10,14 +10,14 @@
             [vignette.storage.local :as ls])
   (:import [clojure.lang ExceptionInfo]))
 
-(def beach-map {:request-type :thumbnail
-                :original "beach.jpg"
-                :middle-dir "3"
-                :top-dir "35"
-                :wikia "lotr"
+(def beach-map {:request-type   :thumbnail
+                :original       "beach.jpg"
+                :middle-dir     "3"
+                :top-dir        "35"
+                :wikia          "lotr"
                 :thumbnail-mode "thumbnail"
-                :height "100"
-                :width "100"})
+                :height         "100"
+                :width          "100"})
 
 (def beach-file (io/file "image-samples/beach.jpg"))
 
@@ -25,7 +25,6 @@
        ; successful run
        (original->thumbnail beach-file beach-map) => truthy
        (provided
-         (mime-type-of beach-file) => "image/jpg"
          (run-thumbnailer anything) => {:exit 0})
 
        ; failed run
@@ -33,34 +32,41 @@
        (provided
          (run-thumbnailer anything) => {:exit 1 :err 256 :out "testing failure"})
 
-       ;invalid mime type
-       (original->thumbnail ..file.. beach-map) => (throws Exception)
+       ;special mime type
+       (generate-thumbnail ..store.. beach-map) => ..file..
        (provided
+         (get-original ..store.. beach-map) => ..file..
          (mime-type-of ..file..) => "video/ogg"))
 
 (facts :orignal->local-maintains-file-extension
        (.getName (original->local
-         (ls/create-stored-object (io/file "project.clj")))) => #".*\.clj$")
+                   (ls/create-stored-object (io/file "project.clj")))) => (just #"[-0-9a-f]{36}\.clj"))
+
+(facts :orignal->local-handles-no-file-extension
+       (.getName (original->local
+                   (ls/create-stored-object (io/file "LICENSE")))) => (just #"[-0-9a-f]{36}"))
 
 (facts :generate-thumbnail
-  (generate-thumbnail ..store.. beach-map) => ..object..
-  (provided
-    (get-original ..store.. beach-map) => ..original..
-    (original->local ..original..) => ..local..
-    (original->thumbnail ..local.. beach-map) => ..thumb..
-    (background-delete-file ..local..) => true
-    (create-stored-object ..thumb.. & anything) => ..object..)
+       (generate-thumbnail ..store.. beach-map) => ..object..
+       (provided
+         (get-original ..store.. beach-map) => ..original..
+         (original->local ..original..) => ..local..
+         (is-passthrough-required ..original..) => false
+         (original->thumbnail ..local.. beach-map) => ..thumb..
+         (background-delete-file ..local..) => true
+         (create-stored-object ..thumb.. & anything) => ..object..)
 
-  (generate-thumbnail ..store.. beach-map) => (throws ExceptionInfo)
-  (provided
-    (get-original ..store.. beach-map) => nil)
+       (generate-thumbnail ..store.. beach-map) => (throws ExceptionInfo)
+       (provided
+         (get-original ..store.. beach-map) => nil)
 
-  (generate-thumbnail ..store.. beach-map) => falsey
-  (provided
-    (get-original ..store.. beach-map) => ..original..
-    (original->local ..original..) => ..local..
-    (background-delete-file ..local..) => true
-    (original->thumbnail ..local.. beach-map) => nil)) 
+       (generate-thumbnail ..store.. beach-map) => falsey
+       (provided
+         (get-original ..store.. beach-map) => ..original..
+         (original->local ..original..) => ..local..
+         (is-passthrough-required ..original..) => false
+         (background-delete-file ..local..) => true
+         (original->thumbnail ..local.. beach-map) => nil))
 
 (facts :get-or-generate-thumbnail
        ; get existing
@@ -89,9 +95,9 @@
 
 (facts :route-map->thumb-args
        (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
-                                                      "--mode" "thumbnail"] :in-any-order))
+                                                       "--mode" "thumbnail"] :in-any-order))
 
-(facts :assert-original-mime-type
-  (assert-original-mime-type "" {}) => nil
-  (assert-original-mime-type "file.jpg" {}) => nil
-  (assert-original-mime-type "file.ogv" {}) => (throws ExceptionInfo))
+(facts :passthrough-mime-types
+       (is-passthrough-required "") => false
+       (is-passthrough-required "file.jpg") => false
+       (is-passthrough-required "file.ogv") => true)

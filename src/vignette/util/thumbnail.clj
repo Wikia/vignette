@@ -24,25 +24,18 @@
                                                   "/usr/local/bin/thumbnail"
                                                   "bin/thumbnail")))
 
-(def options-map {:height "height"
-                  :width "width"
+(def options-map {:height         "height"
+                  :width          "width"
                   :thumbnail-mode "mode"
-                  :x-offset "x-offset"
-                  :y-offset "y-offset"
-                  :window-width "window-width"
-                  :window-height "window-height"})
+                  :x-offset       "x-offset"
+                  :y-offset       "y-offset"
+                  :window-width   "window-width"
+                  :window-height  "window-height"})
 
-(def unsupported-mime-types #{"audio/ogg"
-                              "video/ogg"})
-
-(defn assert-original-mime-type
-  [file thumb-map]
-  (let [mime-type (mime-type-of file)]
-    (when (contains? unsupported-mime-types mime-type)
-      (throw+ {:type :convert-error
-               :response-code 404
-               :content-type mime-type
-               :thumb-map thumb-map} "unsupported content type"))))
+(def passthrough-mime-types #{"audio/ogg" "video/ogg"})
+(defn is-passthrough-required
+  [file]
+  (contains? passthrough-mime-types (mime-type-of file)))
 
 (defn route-map->thumb-args
   [thumb-map]
@@ -59,7 +52,6 @@
 
 (defn original->thumbnail
   [resource thumb-map]
-  (assert-original-mime-type resource thumb-map)
   (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
@@ -73,8 +65,8 @@
       (or (zero? (:exit sh-out))
           (and (= 1 (:exit sh-out))
                (file-exists? temp-file))) (io/file temp-file)
-      :else (throw+ {:type :convert-error
-                     :error-code (:exit sh-out)
+      :else (throw+ {:type         :convert-error
+                     :error-code   (:exit sh-out)
                      :error-string (:err sh-out)}
                     "thumbnailing error"))))
 
@@ -83,7 +75,7 @@
   (if-let [thumb (and (not (q/query-opt thumb-map :replace))
                       (get-thumbnail store thumb-map))]
     (do
-      (perf/publish  {:thumbnail-cache-hit 1})
+      (perf/publish {:thumbnail-cache-hit 1})
       thumb)
     (when-let [thumb (generate-thumbnail store thumb-map)]
       thumb)))
@@ -94,24 +86,26 @@
   The original will be removed after the thumbnailing is completed."
   [store thumb-map]
   (if-let [original (get-original store thumb-map)]
-    (when-let [local-original (original->local original)]
-      (try+
-        (when-let [thumb (original->thumbnail local-original thumb-map)]
-          (perf/publish  {:generate-thumbail 1})
-          (ls/create-stored-object thumb (fn [stored-object]
-                                           (background-save-thumbnail store
-                                                                      stored-object
-                                                                      thumb-map))))
-        (catch Object _ (throw+))
-        (finally
-          (background-delete-file local-original))))
-    (throw+ {:type :convert-error
-             :thumb-map thumb-map
+    (if (is-passthrough-required original)
+      original
+      (when-let [local-original (original->local original)]
+        (try+
+          (when-let [thumb (original->thumbnail local-original thumb-map)]
+            (perf/publish {:generate-thumbail 1})
+            (ls/create-stored-object thumb (fn [stored-object]
+                                             (background-save-thumbnail store
+                                                                        stored-object
+                                                                        thumb-map))))
+          (catch Object _ (throw+))
+          (finally
+            (background-delete-file local-original)))))
+    (throw+ {:type          :convert-error
+             :thumb-map     thumb-map
              :response-code 404}
             "unable to get original for thumbnailing")))
 
 (defn- extract-extension [filename]
-  (last (split filename #"\.")))
+  (last (rest (split filename #"\."))))
 
 (defn original->local
   "Take the original and make it local."
