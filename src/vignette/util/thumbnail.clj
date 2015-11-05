@@ -35,7 +35,7 @@
 (def passthrough-mime-types #{"audio/ogg" "video/ogg"})
 (defn is-passthrough-required
   [file]
-  (contains? passthrough-mime-types (mime-type-of file)))
+  (contains? passthrough-mime-types (mime-type-of (or file ""))))
 
 (defn route-map->thumb-args
   [thumb-map]

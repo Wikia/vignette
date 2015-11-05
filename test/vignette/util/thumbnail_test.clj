@@ -100,6 +100,7 @@
                                                        "--mode" "thumbnail"] :in-any-order))
 
 (facts :passthrough-mime-types
+       (is-passthrough-required nil) => false
        (is-passthrough-required "") => false
        (is-passthrough-required "file.jpg") => false
        (is-passthrough-required "file.ogv") => true)
