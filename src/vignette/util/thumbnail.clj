@@ -35,7 +35,7 @@
 (def passthrough-mime-types #{"audio/ogg" "video/ogg"})
 (defn is-passthrough-required
   [file]
-  (contains? passthrough-mime-types (mime-type-of file)))
+  (contains? passthrough-mime-types (mime-type-of (or file ""))))
 
 (defn route-map->thumb-args
   [thumb-map]
@@ -105,7 +105,9 @@
             "unable to get original for thumbnailing")))
 
 (defn- extract-extension [filename]
-  (last (rest (split filename #"\."))))
+  (if filename
+    (last (rest (split filename #"\.")))
+    ""))
 
 (defn original->local
   "Take the original and make it local."

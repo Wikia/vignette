@@ -7,7 +7,7 @@
 (defn- parse-content-disp
   [header]
   (when-let [m (if header (re-find #"(?i)filename=\"(.*)\"" header))]
-    (second m)))
+    (or (second m) "")))
 
 (defrecord AsyncResponseStoredObject [response] StoredObjectProtocol
   (file-stream [this] (-> this :response :body))
