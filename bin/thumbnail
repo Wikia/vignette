@@ -6,6 +6,10 @@ IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local"}
 CONVERT=$IMAGEMAGICK_BASE/bin/convert
 IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
 
+# timeout - run a command with a time limit
+# After 5 min of converting we can assume we will never get result. Time is in seconds.
+TIMEOUT=${TIMEOUT:-"/usr/bin/timeout"}
+TIMEOUT_TIME=${TIMEOUT_TIME:-" 300"}
 
 # If you are running on OS X, then install the gnu-getopt. The native getopt on OS X
 # is not compatible with the options used on Centos which is where this was originally targeted.
@@ -450,18 +454,18 @@ function thumb() {
 	fi
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
-		magick="${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[${STILL_FRAME}]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
+		magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[${STILL_FRAME}]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
 		echo ${magick}
 		exec ${magick}
 	else
-		magick="${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
+		magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
 
 		if eval ${magick}; then
 			echo ${magick}
 			exit 0
 		elif [[ $animated -eq 1 ]]; then
 			# on a failed thumb due to a (probably) corrupted animated gif, try thumbnailing the first frame
-			magick="${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
+			magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
 			echo ${magick}
 			exec ${magick}
 		else
