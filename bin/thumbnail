@@ -408,7 +408,7 @@ function animated_thumb_params() {
 
 
 function is_animated() {
-	num=$($IDENTIFY -format "%n" "$1")
+	num=$($IDENTIFY -format "%n\n" "$1"|head -n 1)
 	if [[ $num -gt 1 ]]; then
 		return 1
 	else
