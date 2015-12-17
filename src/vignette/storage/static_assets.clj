@@ -23,9 +23,9 @@
   (->response-object [this] (file-stream this)))
 
 (defn create-async-response-stored-object [static-image-get image-review-get]
-  (let [response @static-image-get]
-    (if (-> response :status (= 200))
-      (->AsyncResponseStoredObject response))))
+  (let [static-image-response @static-image-get]
+    (if (and (-> static-image-response :status (= 200)) (-> @image-review-get :status (= 200)) )
+      (->AsyncResponseStoredObject static-image-response))))
 
 (defrecord StaticImageStorage [static-image-url image-review-url] ImageStorageProtocol
   (save-thumbnail [_ _ _] nil)
