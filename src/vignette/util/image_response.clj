@@ -45,21 +45,21 @@
 (defn create-image-response
   ([image image-map]
    (-> (response (->response-object image))
-         (when-header-val "Content-Type" (content-type image))
-         (when-header-val "Content-Length" (content-length image))
-         (when-header-val "ETag" (etag image))
-         (header "X-Thumbnailer" "Vignette")
-         (add-content-disposition-header image-map image)
-         (add-surrogate-header image-map)))
+       (when-header-val "Content-Type" (content-type image))
+       (when-header-val "Content-Length" (content-length image))
+       (when-header-val "ETag" (etag image))
+       (header "X-Thumbnailer" "Vignette")
+       (add-content-disposition-header image-map image)
+       (add-surrogate-header image-map)))
   ([image]
-    (create-image-response image nil)))
+   (create-image-response image nil)))
 
 (defn create-head-response
   [image-map]
   (-> (response "")
-       (header "X-Thumbnailer" "Vignette")
-       (add-content-disposition-header image-map)
-       (add-surrogate-header image-map)))
+      (header "X-Thumbnailer" "Vignette")
+      (add-content-disposition-header image-map)
+      (add-surrogate-header image-map)))
 
 (defn- base-filename [image-map object]
   (or (if-let [orig (if image-map (original image-map))]
@@ -81,9 +81,11 @@
 
 (defn add-surrogate-header
   [response-map image-map]
-  (if (and (wikia image-map)
-           (original image-map)
-           (image-type image-map))
+  (if (or
+        (and (wikia image-map)
+             (original image-map)
+             (image-type image-map))
+        (:uuid image-map))
     (let [sk (surrogate-key image-map)]
       (-> response-map
           (header "Surrogate-Key" sk)
@@ -92,7 +94,9 @@
 
 (defn surrogate-key
   [image-map]
-  (try
-    (digest/sha1 (fully-qualified-original-path image-map))
-    (catch Exception e
-      (str "vignette-"(:original image-map)))))
+  (if-let [sk (:uuid image-map)] sk
+    (try
+      (digest/sha1 (fully-qualified-original-path image-map))
+      (catch Exception e
+        (print e)
+        (str "vignette-" (:original image-map))))))
