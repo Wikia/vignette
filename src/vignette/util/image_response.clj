@@ -98,5 +98,4 @@
     (try
       (digest/sha1 (fully-qualified-original-path image-map))
       (catch Exception e
-        (print e)
         (str "vignette-" (:original image-map))))))

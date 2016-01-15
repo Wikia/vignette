@@ -40,7 +40,7 @@
 
   (original-exists? [_ image-map] nil
     (if-let [uuid (:uuid image-map)]
-      (let [static-image-response (http/head (static-image-url uuid)) image-review-response (http/get (image-review-url uuid))]
+      (let [static-image-response (http/head (static-image-url uuid)) image-review-response (http/head (image-review-url uuid))]
         (and (-> @static-image-response :status (= 200))
              (-> @image-review-response :status (= 200)))))))
 
