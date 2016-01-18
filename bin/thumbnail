@@ -298,28 +298,35 @@ function recalculate_requested_size_for_crop_down() {
 	# need to use bc for floating-point arithmetic below
 	local CODE=`cat <<EOF
 scale = 20
-define i(x) {
-    auto s
-    s = scale
+define trunc(x) {
+    auto saved_scale
+    saved_scale = scale
     scale = 0
     x /= 1   /* round x down */
-    scale = s
+    scale = saved_scale
     return (x)
 }
 
-s = 1
-u = $origwidth / $WIDTH
-if (u<s) s = u
+define round(x) {
+	x += 0.5 /* round */
+	x += 0.000000001 /* epsilon */
+	return trunc(x)
+}
 
-u = $origheight / $HEIGHT
-if (u<s) s = u
+min_acceptable_scale = 1
+candidate_scale = $origwidth / $WIDTH
+if (candidate_scale < min_acceptable_scale) min_acceptable_scale = candidate_scale
 
-i($WIDTH * s + 0.000000001)
-i($HEIGHT * s + 0.000000001)
+candidate_scale = $origheight / $HEIGHT
+if (candidate_scale < min_acceptable_scale) min_acceptable_scale = candidate_scale
 
-s
-$WIDTH * s
-$HEIGHT * s
+round($WIDTH * min_acceptable_scale)
+round($HEIGHT * min_acceptable_scale)
+
+/* debug information - ignored on production */
+min_acceptable_scale
+$WIDTH * min_acceptable_scale
+$HEIGHT * min_acceptable_scale
 EOF
 `
 	local CALCOUT=`echo "$CODE" | bc`
