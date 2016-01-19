@@ -285,6 +285,56 @@ function set_custom_type() {
 	OUT="${1}:${OUT}"
 }
 
+function recalculate_requested_size_for_crop_down() {
+	# recalculate output image dimensions in cases of "...-crop-down" modes
+	# in such a way that an output image has the same aspect ratio as request
+	# after executing imagemagick
+	local origwidth=$1
+	local origheight=$2
+	local CODE
+	local x
+	local y
+
+	# need to use bc for floating-point arithmetic below
+	local CODE=`cat <<EOF
+scale = 20
+define trunc(x) {
+    auto saved_scale
+    saved_scale = scale
+    scale = 0
+    x /= 1   /* round x down */
+    scale = saved_scale
+    return (x)
+}
+
+define round(x) {
+	x += 0.5 /* round */
+	x += 0.000000001 /* epsilon */
+	return trunc(x)
+}
+
+min_acceptable_scale = 1
+candidate_scale = $origwidth / $WIDTH
+if (candidate_scale < min_acceptable_scale) min_acceptable_scale = candidate_scale
+
+candidate_scale = $origheight / $HEIGHT
+if (candidate_scale < min_acceptable_scale) min_acceptable_scale = candidate_scale
+
+round($WIDTH * min_acceptable_scale)
+round($HEIGHT * min_acceptable_scale)
+
+/* debug information - ignored on production */
+min_acceptable_scale
+$WIDTH * min_acceptable_scale
+$HEIGHT * min_acceptable_scale
+EOF
+`
+	local CALCOUT=`echo "$CODE" | bc`
+
+	WIDTH=`echo "$CALCOUT" | head -n 1`
+	HEIGHT=`echo "$CALCOUT" | head -n 2 | tail -n 1`
+}
+
 function thumb_params() {
 	QUALITY=''
 
@@ -360,10 +410,9 @@ function thumb_params() {
 			echo "Height ${origheight} x Width ${origwidth}"
 			if [[ $origheight -gt $HEIGHT && $origwidth -gt $WIDTH ]]; then
 				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}+0+0^ -gravity north -crop ${WIDTH}x${HEIGHT}+0+0!"
-			elif [ $origheight -gt $HEIGHT ] || [ $origwidth -gt $WIDTH ]; then
-				THUMB_PARAMS="${QUALITY} -gravity north -crop ${WIDTH}x${HEIGHT}+0+0! -thumbnail ${WIDTH}x${HEIGHT}+0+0"
 			else
-				THUMB_PARAMS="${QUALITY}"
+				recalculate_requested_size_for_crop_down $origwidth $origheight
+				THUMB_PARAMS="${QUALITY} -gravity north -crop ${WIDTH}x${HEIGHT}+0+0 -thumbnail ${WIDTH}x${HEIGHT}+0+0"
 			fi
 			;;
 		"window-crop")
@@ -391,10 +440,9 @@ function thumb_params() {
 			echo "Height ${origheight} x Width ${origwidth}"
 			if [[ $origheight -gt $HEIGHT && $origwidth -gt $WIDTH ]]; then
 				THUMB_PARAMS="${QUALITY} -thumbnail ${WIDTH}x${HEIGHT}+0+0^ -gravity center -crop ${WIDTH}x${HEIGHT}+0+0!"
-			elif [ $origheight -gt $HEIGHT ] || [ $origwidth -gt $WIDTH ]; then
-				THUMB_PARAMS="${QUALITY} -gravity center -crop ${WIDTH}x${HEIGHT}+0+0! -thumbnail ${WIDTH}x${HEIGHT}+0+0"
 			else
-				THUMB_PARAMS="${QUALITY}"
+				recalculate_requested_size_for_crop_down $origwidth $origheight
+				THUMB_PARAMS="${QUALITY} -gravity center -crop ${WIDTH}x${HEIGHT}+0+0 -thumbnail ${WIDTH}x${HEIGHT}+0+0"
 			fi
 			;;
 	esac
@@ -475,4 +523,4 @@ function thumb() {
 	fi
 }
 
-thumb 
+thumb
