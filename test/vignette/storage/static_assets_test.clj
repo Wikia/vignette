@@ -15,6 +15,14 @@
          (http/get ..image-review-url..) => (future {:status 200})
          (sa/->AsyncResponseStoredObject {:status 200}) => ..object..)
        (get-original
+         (sa/create-static-image-storage --static-asset-get-- --image-review-get--) {:uuid ..uuid..}) => ..object..
+       (provided
+         (--static-asset-get-- ..uuid..) => ..static-asset-url..
+         (--image-review-get-- ..uuid..) => ..image-review-url..
+         (http/get ..static-asset-url.. {:as :stream}) => (future {:status 200})
+         (http/get ..image-review-url..) => (future {:status 404})
+         (sa/->AsyncResponseStoredObject {:status 200}) => ..object..)
+       (get-original
          (sa/create-static-image-storage --static-asset-get-- --image-review-get--) {:uuid ..uuid..}) => nil
        (provided
          (--static-asset-get-- ..uuid..) => ..static-asset-url..
@@ -27,7 +35,7 @@
          (--static-asset-get-- ..uuid..) => ..static-asset-url..
          (--image-review-get-- ..uuid..) => ..image-review-url..
          (http/get ..static-asset-url.. {:as :stream}) => (future {:status 200})
-         (http/get ..image-review-url..) => (future {:status 404})))
+         (http/get ..image-review-url..) => (future {:status 401})))
 
 (facts :static-assets :filename
        (filename
