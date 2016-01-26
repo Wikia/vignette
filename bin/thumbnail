@@ -109,8 +109,9 @@ SHORTOPTS="h"
 LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,frame:,mode:,x-offset:,window-width:,y-offset:,window-height:"
 
 # cleanup incoming options
-ARGS=( $($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@") )
-set -- "${ARGS[@]//\'}"
+# eval should be safe to use here since getopts escapes all user supplied strings
+ARGS=$($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@")
+eval set -- "${ARGS}"
 
 IN=''
 OUT=''
@@ -262,7 +263,6 @@ if [[ "$MODE" == "window-crop" || "$MODE" == "window-crop-fixed" ]]; then
 		exit 1
 	fi
 fi
-
 
 shopt -s nocasematch
 
@@ -507,10 +507,9 @@ function thumb() {
 		${magick[@]}
 	else
 		magick=(${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}")
-
-			${magick[@]}
+		echo ${magick[@]}
+		${magick[@]}
 		if [ $? == 0 ]; then
-			echo ${magick[@]}
 			exit 0
 		elif [[ $animated -eq 1 ]]; then
 			# on a failed thumb due to a (probably) corrupted animated gif, try thumbnailing the first frame
