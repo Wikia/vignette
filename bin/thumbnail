@@ -2,7 +2,7 @@
 # Wrapper for imagemagick that encapsulates our thumbnail logic.
 # @author Damon Snyder (damon@huddler-inc.com) 
 
-IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local"}
+IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr"}
 CONVERT=$IMAGEMAGICK_BASE/bin/convert
 IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
 
@@ -108,7 +108,9 @@ OS=$(uname)
 SHORTOPTS="h"
 LONGOPTS="in:,out:,width:,height:,fuzz:,help,fill:,frame:,mode:,x-offset:,window-width:,y-offset:,window-height:"
 
-ARGS=$($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@")
+# cleanup incoming options
+ARGS=( $($GETOPT -s bash --options $SHORTOPTS --longoptions $LONGOPTS -- "$@") )
+set -- "${ARGS[@]//\'}"
 
 IN=''
 OUT=''
@@ -126,8 +128,6 @@ WINDOW_HEIGHT=''
 THUMB_PARAMS=''
 THUMB_PRE_OPTIONS=''
 FUZZ=''
-
-eval set -- "$ARGS" 
 
 while true; do
 	case $1 in
@@ -502,22 +502,23 @@ function thumb() {
 	fi
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
-		magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[${STILL_FRAME}]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
-		echo ${magick}
-		exec ${magick}
+		magick=(${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[${STILL_FRAME}]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT})
+		echo ${magick[@]}
+		${magick[@]}
 	else
-		magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
+		magick=(${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}")
 
-		if eval ${magick}; then
-			echo ${magick}
+			${magick[@]}
+		if [ $? == 0 ]; then
+			echo ${magick[@]}
 			exit 0
 		elif [[ $animated -eq 1 ]]; then
 			# on a failed thumb due to a (probably) corrupted animated gif, try thumbnailing the first frame
-			magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT}"
-			echo ${magick}
-			exec ${magick}
+			magick=(${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}[0]" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} ${OUT})
+			echo ${magick[@]}
+			${magick[@]}
 		else
-		  echo ${magick}
+		  echo ${magick[@]}
 		  exit 1
 		fi
 	fi
