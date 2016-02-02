@@ -47,7 +47,7 @@
    (-> (response (->response-object image))
        (when-header-val "Content-Type" (content-type image))
        (when-header-val "Content-Length" (content-length image))
-       (when-header-val "ETag" (etag image))
+       (when-header-val "ETag" (str "\"" (etag image) "\""))
        (header "X-Thumbnailer" "Vignette")
        (add-content-disposition-header image-map image)
        (add-surrogate-header image-map)))
