@@ -25,7 +25,7 @@
          (get response-headers "Surrogate-Key") => "7d1d24f2c2af364882953e8c97bf90092c2f7a08"
          (get response-headers "Content-Disposition") => "inline; filename=\"ropes.jpg\"; filename*=UTF-8''ropes.jpg"
          (get response-headers "Content-Length") => "23"
-         (get response-headers "ETag") => "c1cfdb01ca32d56c29cf349af37a6779"))
+         (get response-headers "ETag") => "\"c1cfdb01ca32d56c29cf349af37a6779\""))
 
 (facts :add-content-disposition-header
        (add-content-disposition-header {} {:original "some-file.png"}) => {:headers {"Content-Disposition" "inline; filename=\"some-file.png\"; filename*=UTF-8''some-file.png"}}
