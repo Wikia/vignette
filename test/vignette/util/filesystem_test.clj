@@ -4,4 +4,5 @@
 
 (facts :file-extension
        (file-extension "some-file.png") => "png"
+       (file-extension "Mambo No. 5 (A Little Bit of...)") => nil
        (file-extension "some-file.png.jpg") => "jpg")

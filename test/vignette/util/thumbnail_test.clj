@@ -46,6 +46,21 @@
        (.getName (original->local
                    (ls/create-stored-object (io/file "LICENSE")))) => (just #"[-0-9a-f]{36}"))
 
+(facts :orignal->local-handles-no-file-extension-with-invalid-chars
+       (original->local ..stored-object..) => ..tmp-file..
+       (provided
+         (filename ..stored-object..) => "LICEN.S#().)_E"
+         (io/file (temp-filename nil nil)) => ..tmp-file..
+         (transfer! ..stored-object.. ..tmp-file..) => ..tmp-file..))
+
+(facts :orignal->local-handles-file-exension-with-valid-chars
+       (original->local ..stored-object..) => ..tmp-file..
+       (provided
+         (filename ..stored-object..) => "LICEN.S#().Ejpg"
+         (io/file (temp-filename nil "Ejpg")) => ..tmp-file..
+         (transfer! ..stored-object.. ..tmp-file..) => ..tmp-file..))
+
+
 (facts :generate-thumbnail
        (generate-thumbnail ..store.. beach-map) => ..object..
        (provided
