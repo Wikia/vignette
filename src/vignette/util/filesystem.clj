@@ -53,5 +53,5 @@
 
 (defn file-extension
   [filename]
-  (let [[_ extension] (re-find #"\.(\w+)$" filename)]
+  (let [[_ extension] (if filename (re-find #"\.(\w+)$" filename))]
     extension))
