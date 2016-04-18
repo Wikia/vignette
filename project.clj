@@ -3,6 +3,8 @@
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :repositories [["snapshots" "https://artifactory.wikia-inc.com/artifactory/libs-snapshot-local/"]
+                 ["releases" "https://artifactory.wikia-inc.com/artifactory/libs-release-local/"]]
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/tools.cli "0.3.1"]
                  [cheshire "5.3.1"]
@@ -17,9 +19,8 @@
                  [slingshot "0.10.3"]
                  [ring/ring-devel "1.4.0"]
                  [useful "0.8.8"]
-                 [wikia/commons "0.1.3-SNAPSHOT"]
-                 [http-kit "2.1.18"]
-                 [org.slf4j/slf4j-log4j12 "1.7.12"]]
+                 [wikia/commons "0.1.5-SNAPSHOT"]
+                 [http-kit "2.1.18"]]
   :profiles  {:dev  {:source-paths  ["dev"]
                      :plugins [[lein-midje "3.1.1"]]
                      :dependencies  [[clj-http "1.0.1"]
