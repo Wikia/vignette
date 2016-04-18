@@ -92,12 +92,6 @@
       (scale-width requested original)
       (scale-height requested original))))
 
-(defn scale-proportionally-upto-original
-  "Scales the size to the request, without upscaling,
-  and maintains the aspect ratio"
-  [requested original]
-  (scale-proportionally original (requested-size requested)))
-
 (defn scale-window-width
   "Scales the size to the requested width
   maintaining the proportions of the requested window"
@@ -105,23 +99,21 @@
   (let [window (requested-window-size requested)]
     (scale-width requested window)))
 
-(defn fit-width
-  [{bw :width bh :height :as box} {cw :width ch :height :as container}]
-  (if (> bw cw)
-    (let [dw (- bw cw)
-          ratio (/ bh bw)
-          dh (Math/round (* dw (float ratio)))]
-          {:width (- bw dw) :height (- bh dh)})
-    box))
+(defn fitter
+  "Creates a function that proportionally shrinks the given box,
+  so that its 'a' (width or height) is not grater than that of the container"
+  [a b]
+  (fn [{box-a a box-b b :as box} {container-a a container-b b :as container}]
+    (if (> box-a container-a)
+      (let [delta-a (- box-a container-a)
+            ratio (/ box-b box-a)
+            delta-b (Math/round (* delta-a (float ratio)))]
+            {a (- box-a delta-a) b (- box-b delta-b)})
+      box)))
 
-(defn fit-height
-  [{bw :width bh :height :as box} {cw :width ch :height :as container}]
-  (if (> bh ch)
-    (let [dh (- bh ch)
-          ratio (/ bw bh)
-          dw (Math/round (* dh (float ratio)))]
-          {:width (- bw dw) :height (- bh dh)})
-    box))
+(def fit-width (fitter :width :height))
+
+(def fit-height (fitter :height :width))
 
 (defn fit-in-original
   "Shrinks the requested size to fit inside the original.
@@ -146,9 +138,6 @@
 
 (def scaled-proportionally
   {:fn scale-proportionally :requires-original true})
-
-(def scaled-proportionally-upto-original
-  {:fn scale-proportionally-upto-original :requires-original true})
 
 (def scaled-window-width
   {:fn scale-window-width :requires-original false})
