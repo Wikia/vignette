@@ -1,0 +1,16 @@
+<configuration>
+    <appender name="stash" class="net.logstash.logback.appender.LogstashSocketAppender">
+        <syslogHost>localhost</syslogHost>
+        <port>1410</port>
+        <includeMdc>true</includeMdc>
+        <includeContext>true</includeContext>
+        <customFields>{"appname":"${LOGGER_APPLICATION}"}</customFields>
+        <fieldNames>
+          <message>@message</message>
+          <context>@context</context>
+        </fieldNames>
+    </appender>
+    <root level="info">
+        <appender-ref ref="stash"/>
+    </root>
+</configuration>
