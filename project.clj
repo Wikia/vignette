@@ -19,7 +19,7 @@
                  [slingshot "0.10.3"]
                  [ring/ring-devel "1.4.0"]
                  [useful "0.8.8"]
-                 [wikia/commons "0.1.5-SNAPSHOT"]
+                 [wikia/commons "0.1.5"]
                  [http-kit "2.1.18"]]
   :profiles  {:dev  {:source-paths  ["dev"]
                      :plugins [[lein-midje "3.1.1"]]
