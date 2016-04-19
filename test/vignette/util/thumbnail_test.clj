@@ -69,7 +69,7 @@
          (filename ..original..) => ..filename..
          (is-passthrough-required ..filename..) => false
          (original->thumbnail ..local.. beach-map) => ..thumb..
-         (background-delete-file ..local..) => true
+         (background-check-and-delete-original beach-map & anything) => nil
          (create-stored-object ..thumb.. & anything) => ..object..)
 
        (generate-thumbnail ..store.. beach-map) => (throws ExceptionInfo)
@@ -82,7 +82,6 @@
          (original->local ..original..) => ..local..
          (filename ..original..) => ..filename..
          (is-passthrough-required ..filename..) => false
-         (background-delete-file ..local..) => true
          (original->thumbnail ..local.. beach-map) => nil))
 
 (facts :get-or-generate-thumbnail

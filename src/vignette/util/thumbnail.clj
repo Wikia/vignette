@@ -11,6 +11,7 @@
             [vignette.storage.protocols :refer :all]
             [vignette.util.filesystem :refer :all]
             [vignette.util.query-options :as q]
+            [vignette.util.thumb-verifier :as verify]
             [wikia.common.perfmonitoring.core :as perf])
   (:use [environ.core]))
 
@@ -18,7 +19,8 @@
          file->thumbnail
          background-delete-file
          generate-thumbnail
-         background-save-thumbnail)
+         background-save-thumbnail
+         background-check-and-delete-original)
 
 (def thumbnail-bin (env :vignette-thumbnail-bin (if (file-exists? "/usr/local/bin/thumbnail")
                                                   "/usr/local/bin/thumbnail"
@@ -92,13 +94,15 @@
         (try+
           (when-let [thumb (original->thumbnail local-original thumb-map)]
             (perf/publish {:generate-thumbail 1})
+            (background-check-and-delete-original
+              thumb-map thumb local-original)
             (ls/create-stored-object thumb (fn [stored-object]
                                              (background-save-thumbnail store
                                                                         stored-object
                                                                         thumb-map))))
-          (catch Object _ (throw+))
-          (finally
-            (background-delete-file local-original)))))
+          (catch Object _
+            (background-delete-file local-original)
+            (throw+)))))
     (throw+ {:type          :convert-error
              :thumb-map     thumb-map
              :response-code 404}
@@ -120,3 +124,9 @@
 (defn background-delete-file
   [file]
   (future (io/delete-file file true)))
+
+(defn background-check-and-delete-original
+  [thumb-map thumb local-original]
+  (future
+    (verify/check-thumb-size thumb-map thumb local-original)
+    (background-delete-file local-original)))
