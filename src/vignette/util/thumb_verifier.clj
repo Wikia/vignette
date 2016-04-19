@@ -1,6 +1,7 @@
 (ns vignette.util.thumb-verifier
   (:require [wikia.common.logger :as log]
-            [clojure.java.shell :refer [sh]])
+            [clojure.java.shell :refer [sh]]
+            [clojure.string :refer [trim]])
   (:use [environ.core]))
 
 (declare
@@ -30,7 +31,8 @@
       :thumb-map thumb-map
       }))))
 
-(def identify-bin (str (env :imagemagick-base "/usr/local/bin") "/identify"))
+(def identify-bin
+  (trim (str (env :imagemagick-base "/usr/local") "/bin/identify")))
 
 (defn identify
   [file]
