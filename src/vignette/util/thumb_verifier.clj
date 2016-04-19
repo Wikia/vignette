@@ -8,10 +8,6 @@
   estimate-thumb-size
   size-of)
 
-(def thumb-size-error "thumbnail-size")
-
-(def thumb-verification-error "thumbnail-verification")
-
 (defn check-thumb-size
   "Checks if the generated thumbnail has the correct size.
   If not, an error is logged."
@@ -23,17 +19,14 @@
             estimated-size (estimate-thumb-size estimator thumb-map original)]
               (if (not= estimated-size thumb-size)
                 (log/error "Thumbnail size is incorrect!" {
-                  :type thumb-size-error
                   :thumb-map thumb-map
                   :estimated estimated-size
                   :actual thumb-size
                   })))
       (log/error "Couldn't verify thumbnail size. No estimator found." {
-        :type thumb-verification-error
         :thumb-map thumb-map
         }))
-    (catch Exception e (log/error "Thumbnail verification failed" {
-      :type thumb-verification-error
+    (catch Exception e (log/error (str "Thumbnail verification failed - " e) {
       :thumb-map thumb-map
       }))))
 
