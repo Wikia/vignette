@@ -16,6 +16,18 @@
   (verify/scale-width {:width 50} {:width 100 :height 200})
     => {:width 50 :height 100})
 
+(facts :scale-width-upto-original
+  (verify/scale-width-upto-original {:width 150} {:width 100 :height 200})
+    => {:width 100 :height 200}
+  (verify/scale-width-upto-original {:width 50} {:width 100 :height 200})
+    => {:width 50 :height 100})
+
+(facts :scale-height-upto-original
+  (verify/scale-height-upto-original {:height 250} {:width 100 :height 200})
+    => {:width 100 :height 200}
+  (verify/scale-height-upto-original {:height 50} {:width 100 :height 200})
+    => {:width 25 :height 50})
+
 (facts :scale-proportionally
   (verify/scale-proportionally {:width 60 :height 30}
                                {:width 100 :height 100})

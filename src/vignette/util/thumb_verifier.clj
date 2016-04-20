@@ -64,19 +64,31 @@
   [[numerator denominator] size]
   (/ (numerator size) (denominator size)))
 
-(defn scale-width
-  "Width is the same as requested and aspect ratio is maintained"
-  [requested original]
-  (let [width (Integer/valueOf (:width requested))
-        hw-ratio (ratio [:height :width] original)]
-        {:width width :height (Math/round (float (* width hw-ratio)))}))
+(defn scale
+  "Produces a scaling function along one dimention of a box (width or height)"
+  [dim other]
+  (fn [requested original]
+    (let [value (Integer/valueOf (dim requested))
+          ratio (ratio [other dim] original)]
+          {dim value other (Math/round (float (* value ratio)))})))
 
-(defn scale-height
-  "Height is the same as requested and aspect ratio is maintained"
-  [requested original]
-  (let [height (Integer/valueOf (:height requested))
-        wh-ratio (ratio [:width :height] original)]
-        {:height height :width (Math/round (float (* height wh-ratio)))}))
+(defn scale-upto-original
+  "Produces a scaling function bounded by the size of the original"
+  [dim other scale-fn]
+  (fn [requested original]
+    (let [requested-value (Integer/valueOf (dim requested))
+          original-value (dim original)
+          adjusted-value (min requested-value original-value)]
+          (scale-fn {dim adjusted-value} original))))
+
+(def scale-width (scale :width :height))
+
+(def scale-width-upto-original (scale-upto-original :width :height scale-width))
+
+(def scale-height (scale :height :width))
+
+(def scale-height-upto-original
+  (scale-upto-original :height :width scale-height))
 
 (defn scale-proportionally
   "Scales the size to the request and maintains the aspect ratio"
@@ -131,6 +143,12 @@
 (def scaled-width
   {:fn scale-width :requires-original true})
 
+(def scaled-width-upto-original
+  {:fn scale-width-upto-original :requires-original true})
+
+(def scaled-height-upto-original
+  {:fn scale-height-upto-original :requires-original true})
+
 (def scaled-proportionally
   {:fn scale-proportionally :requires-original true})
 
@@ -147,6 +165,8 @@
   :fixed-aspect-ratio as-requested
   :fixed-aspect-ratio-down as-requested
   :scale-to-width scaled-width
+  :scale-to-width-down scaled-width-upto-original
+  :scale-to-height-down scaled-height-upto-original
   :thumbnail scaled-proportionally
   :thumbnail-down original-proportions-upto-original
   :top-crop as-requested
