@@ -46,7 +46,7 @@ Vignette should now be running on localhost:8080
 
 Below is a list of environment variables that will affect the vignette runtime.
 
- * `RELOAD_ON_REQUEST`            development option that enables reloading code on each request [false] 
+ * `RELOAD_ON_REQUEST`            development option that enables reloading code on each request [false]
  * `LOGGER_APPLICATION`           this is primarily for wikia-commons. Set this to “vignette”.
  * `LOGGER_TYPE`                  where to log. [file, syslog]
  * `LOGGER_SYSLOG_HOST`           Syslog host:port to log to when LOGGER_TYPE=syslog. [127.0.0.1]
@@ -153,6 +153,19 @@ aspect ratio.
 
 Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-width/200](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-width/200)
 
+### scale-to-width-down
+
+Same as above but without upscaling.
+
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-width-down/1000](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-width-down/1000)
+
+### scale-to-height-down
+
+Scales an image to the specified height. The width is adjusted to maintain the
+aspect ratio.
+
+Example: [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-height-down/1000](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/scale-to-height-down/1000)
+
 #### thumbnail
 
 Returns a thumbnail that is at most width pixels wide and height pixels high. The
@@ -198,7 +211,7 @@ dimensions.
 | :--------:                                                        | :-----------: |
 | ![beach window-crop](/assets/window-crop/beach.jpg) | ![carousel window-crop](/assets/window-crop/carousel.jpg) |
 
-Examples: 
+Examples:
  * [http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop/width/200/x-offset/60/y-offset/550/window-width/200/window-height/260](http://localhost:8080/bucket/a/ab/beach.jpg/revision/latest/window-crop/width/200/x-offset/60/y-offset/550/window-width/200/window-height/260)
  * [http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop/width/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900](http://localhost:8080/bucket/a/ab/carousel.jpg/revision/latest/window-crop/width/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900)
 
