@@ -65,3 +65,39 @@
   (verify/scale-and-fit-in-original {:width 150 :height 250}
                                     {:width 100 :height 100})
     => {:width 100 :height 100})
+
+(facts :not-close-in-size
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 100 :height 100})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 101 :height 100})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 99 :height 100})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 100 :height 101})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 100 :height 99})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 101 :height 101})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 99 :height 99})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 102 :height 100})
+    => true
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 100 :height 102})
+    => true)
+
+(facts :area-ratio
+  (verify/area-ratio {} {:width 100 :height 100}) => 0.0
+  (verify/area-ratio {:width 100 :height 100} {:width 100 :height 0}) => 0.0
+  (verify/area-ratio {:width 100 :height 100} {:width 100 :height 100}) => 1.0
+  (verify/area-ratio {:width 150 :height 100} {:width 100 :height 100}) => 1.5
+  (verify/area-ratio {:width 50 :height 100} {:width 100 :height 100}) => 0.5)
