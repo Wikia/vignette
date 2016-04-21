@@ -94,3 +94,10 @@
   (verify/not-close-in-size {:width 100 :height 100}
                             {:width 100 :height 102})
     => true)
+
+(facts :area-ratio
+  (verify/area-ratio {} {:width 100 :height 100}) => 0.0
+  (verify/area-ratio {:width 100 :height 100} {:width 100 :height 0}) => 0.0
+  (verify/area-ratio {:width 100 :height 100} {:width 100 :height 100}) => 1.0
+  (verify/area-ratio {:width 150 :height 100} {:width 100 :height 100}) => 1.5
+  (verify/area-ratio {:width 50 :height 100} {:width 100 :height 100}) => 0.5)

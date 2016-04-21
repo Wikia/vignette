@@ -8,7 +8,8 @@
   thumb-size-estimators
   estimate-thumb-size
   size-of
-  not-close-in-size)
+  not-close-in-size
+  area-ratio)
 
 (defn check-thumb-size
   "Checks if the generated thumbnail has the correct size.
@@ -24,6 +25,7 @@
                   :thumb-map thumb-map
                   :estimated estimated-size
                   :actual thumb-size
+                  :area-ratio (area-ratio thumb-size estimated-size)
                   })))
       (log/error "Couldn't verify thumbnail size. No estimator found." {
         :thumb-map thumb-map
@@ -39,6 +41,16 @@
   (let [dw (Math/abs (- (:width estimated) (:width actual 0)))
         dh (Math/abs (- (:height estimated) (:height actual 0)))]
     (or (< 1 dw) (< 1 dh))))
+
+(defn area
+  [dimentions]
+  (* (:width dimentions 0) (:height dimentions 0)))
+
+(defn area-ratio
+  [actual estimated]
+  (let [actual-area (area actual)
+        estimated-area (area estimated)]
+    (if (zero? estimated-area) 0.0 (float (/ actual-area estimated-area)))))
 
 (def identify-bin
   (trim (str (env :imagemagick-base "/usr/local") "/bin/identify")))
