@@ -22,16 +22,16 @@
             estimated-size (estimate-thumb-size estimator thumb-map original)]
               (if (not-close-in-size estimated-size thumb-size)
                 (log/error "Thumbnail size is incorrect!" {
-                  :thumb-map thumb-map
+                  :thumb_map thumb-map
                   :estimated estimated-size
                   :actual thumb-size
-                  :area-ratio (area-ratio thumb-size estimated-size)
+                  :area_ratio (area-ratio thumb-size estimated-size)
                   })))
       (log/error "Couldn't verify thumbnail size. No estimator found." {
-        :thumb-map thumb-map
+        :thumb_map thumb-map
         }))
     (catch Exception e (log/error (str "Thumbnail verification failed - " e) {
-      :thumb-map thumb-map
+      :thumb_map thumb-map
       }))))
 
 (defn not-close-in-size
