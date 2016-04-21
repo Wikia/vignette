@@ -7,7 +7,8 @@
 (declare
   thumb-size-estimators
   estimate-thumb-size
-  size-of)
+  size-of
+  not-close-in-size)
 
 (defn check-thumb-size
   "Checks if the generated thumbnail has the correct size.
@@ -18,7 +19,7 @@
               (thumb-size-estimators (keyword (:thumbnail-mode thumb-map)))]
       (let [thumb-size (size-of thumb)
             estimated-size (estimate-thumb-size estimator thumb-map original)]
-              (if (not= estimated-size thumb-size)
+              (if (not-close-in-size estimated-size thumb-size)
                 (log/error "Thumbnail size is incorrect!" {
                   :thumb-map thumb-map
                   :estimated estimated-size
@@ -30,6 +31,14 @@
     (catch Exception e (log/error (str "Thumbnail verification failed - " e) {
       :thumb-map thumb-map
       }))))
+
+(defn not-close-in-size
+  "Checks if the given dimentions are different,
+  assuming there may be a rounding error"
+  [estimated actual]
+  (let [dw (Math/abs (- (:width estimated) (:width actual 0)))
+        dh (Math/abs (- (:height estimated) (:height actual 0)))]
+    (or (< 1 dw) (< 1 dh))))
 
 (def identify-bin
   (trim (str (env :imagemagick-base "/usr/local") "/bin/identify")))

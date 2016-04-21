@@ -65,3 +65,32 @@
   (verify/scale-and-fit-in-original {:width 150 :height 250}
                                     {:width 100 :height 100})
     => {:width 100 :height 100})
+
+(facts :not-close-in-size
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 100 :height 100})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 101 :height 100})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 99 :height 100})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 100 :height 101})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 100 :height 99})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 101 :height 101})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 99 :height 99})
+    => false
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 102 :height 100})
+    => true
+  (verify/not-close-in-size {:width 100 :height 100}
+                            {:width 100 :height 102})
+    => true)
