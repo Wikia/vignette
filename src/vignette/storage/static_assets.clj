@@ -36,7 +36,9 @@
     (if-let [uuid (:uuid original-map)]
       (create-async-response-stored-object
         (http/get (static-image-url uuid) {:as :stream})
-        (http/get (image-review-url uuid)))))
+        (http/get (image-review-url uuid
+                                   (get-in original-map [:options :status])
+                                   (get-in original-map [:options :fastlyBypass]))))))
 
   (original-exists? [_ image-map] nil
     (if-let [uuid (:uuid image-map)]
