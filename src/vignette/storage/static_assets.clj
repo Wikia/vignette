@@ -24,7 +24,7 @@
 
 (defn create-async-response-stored-object [static-image-get image-review-get]
   (let [static-image-response @static-image-get]
-    (if (and (-> static-image-response :status (= 200)) (some #(not (= % (:status @image-review-get))) [403]))
+    (if (and (-> static-image-response :status (= 200)) (some #(= % (:status @image-review-get)) [200 404 400]))
       (->AsyncResponseStoredObject static-image-response))))
 
 (defrecord StaticImageStorage [static-image-url image-review-url] ImageStorageProtocol
@@ -36,9 +36,7 @@
     (if-let [uuid (:uuid original-map)]
       (create-async-response-stored-object
         (http/get (static-image-url uuid) {:as :stream})
-        (http/get (image-review-url uuid
-                                   (get-in original-map [:options :status])
-                                   (get-in original-map [:options :fastlyBypass]))))))
+        (http/get (image-review-url uuid (get-in original-map [:options :status]))))))
 
   (original-exists? [_ image-map] nil
     (if-let [uuid (:uuid image-map)]

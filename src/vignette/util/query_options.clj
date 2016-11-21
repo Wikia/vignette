@@ -14,7 +14,6 @@
                      :format (create-query-opt #"^\w+$")
                      :frame (create-query-opt #"[0-9]+" true true)
                      :status (create-query-opt #"^\w+$")
-                     :fastlyBypass (create-query-opt uuid-regex)
                      :path-prefix (create-query-opt #"[\w\.\/-]+" false)
                      :replace (create-query-opt #"^true$" false)
                      :zone (create-query-opt #"\w+")})
