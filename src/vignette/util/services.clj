@@ -17,4 +17,4 @@
     (str
      (consul/->uri
       (consul/find-service
-        consul/create-consul "image-review" consul/service-query-tag)) "/image-review/image/" oid "?" statuses-params)))
+        consul/create-consul "image-review" consul/service-query-tag)) "/image-review/image/" oid "/status?" statuses-params)))
