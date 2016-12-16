@@ -14,6 +14,8 @@
 
 (def thumb-option-map (assoc thumb-map :options {:fill "purple" :lang "zh" :replace true}))
 
+(def status-option-map (assoc thumb-map :options {:status "REJECTED"}))
+
 (facts :create-query-opt
   (create-query-opt #"\w+") => (contains {:regex #"\w+" :side-effects true}))
 
@@ -22,16 +24,20 @@
                                            "unused" "foo"
                                            "unused2" "bar"}}) => {:fill "blue"}
        (extract-query-opts {:query-params {"fill" ";rm -rf *;"}}) => {}
-       (extract-query-opts {:query-params {"format" "ls -l"}}) => {})
+       (extract-query-opts {:query-params {"format" "ls -l"}}) => {}
+       (extract-query-opts {:query-params {"status" "REJECTED"}}) => {:status "REJECTED"})
 
 (facts :query-opts
        (query-opts thumb-option-map) => {:fill "purple" :lang "zh" :replace true}
        (query-opts thumb-map) => nil)
+       (query-opts status-option-map) => {:status "REJECTED"}
 
 (facts :query-opt
        (query-opt thumb-map :foo) => nil
        (query-opt thumb-option-map :fill) => "purple"
-       (query-opt thumb-option-map :foo) => nil)
+       (query-opt thumb-option-map :foo) => nil
+       (query-opt status-option-map :status) => "REJECTED"
+       (query-opt thumb-option-map :status) => nil)
 
 (facts :query-opts-str
        (query-opts-str thumb-map) => ""

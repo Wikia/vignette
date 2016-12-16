@@ -13,7 +13,7 @@
          (http/get ..static-asset-url.. {:as :stream}) => (future {:status 200})
          (sa/->AsyncResponseStoredObject {:status 200}) => ..object..)
        (get-original
-         (sa/create-static-image-storage --static-asset-get--) {:uuid ..uuid..}) => nil
+         (sa/create-static-image-storage --static-asset-get--) {:uuid ..uuid.. :options {:status ..statuses..}}) => nil
        (provided
          (--static-asset-get-- ..uuid..) => ..static-asset-url..
          (http/get ..static-asset-url.. {:as :stream}) => (future {:status 404})))
