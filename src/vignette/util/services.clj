@@ -8,10 +8,3 @@
     (consul/->uri
       (consul/find-service
         consul/create-consul "static-assets" consul/service-query-tag)) "/image/" oid))
-
-(defn materialize-image-review-url [oid & statuses]
-  (let [query-params (str "status=" (if (empty? statuses) (join "&status=" ["ACCEPTED" "FLAGGED" "UNREVIEWED"]) (join "&" statuses)))]
-    (str
-      (consul/->uri
-        (consul/find-service
-          consul/create-consul "image-review" consul/service-query-tag)) "/image-review/image/" oid "?" query-params)))
