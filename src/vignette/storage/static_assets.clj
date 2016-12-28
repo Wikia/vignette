@@ -22,12 +22,12 @@
     (fs/file-exists? to))
   (->response-object [this] (file-stream this)))
 
-(defn create-async-response-stored-object [static-image-get image-review-get]
+(defn create-async-response-stored-object [static-image-get]
   (let [static-image-response @static-image-get]
-    (if (and (-> static-image-response :status (= 200)) (some #(not (= % (:status @image-review-get))) [403]))
+    (if (-> static-image-response :status (= 200))
       (->AsyncResponseStoredObject static-image-response))))
 
-(defrecord StaticImageStorage [static-image-url image-review-url] ImageStorageProtocol
+(defrecord StaticImageStorage [static-image-url] ImageStorageProtocol
   (save-thumbnail [_ _ _] nil)
   (get-thumbnail [_ _] nil)
   (save-original [_ _ _] nil)
@@ -35,14 +35,13 @@
   (get-original [_ original-map]
     (if-let [uuid (:uuid original-map)]
       (create-async-response-stored-object
-        (http/get (static-image-url uuid) {:as :stream})
-        (http/get (image-review-url uuid (get-in original-map [:options :status]))))))
+        (http/get (static-image-url uuid) {:as :stream}))))
 
   (original-exists? [_ image-map] nil
     (if-let [uuid (:uuid image-map)]
-      (let [static-image-response (http/head (static-image-url uuid)) image-review-response (http/head (image-review-url uuid))]
-        (and (-> @static-image-response :status (= 200))
-             (-> @image-review-response :status (some-fn #(or (= % 200) (= % 404)))))))))
+      (let [static-image-response (http/head (static-image-url uuid))]
+        (-> @static-image-response :status (= 200))))))
+             
 
-(defn create-static-image-storage [static-image-url image-review-url]
-  (->StaticImageStorage static-image-url image-review-url))
+(defn create-static-image-storage [static-image-url]
+  (->StaticImageStorage static-image-url))
