@@ -18,6 +18,7 @@
                         (GET "/ping" [] "pong")
                         (files "/static/")
                         (bad-request-path))))
+      (log-image-request)
       (wrap-params)
       (exception-catcher)
       (multiple-slash->single-slash)
