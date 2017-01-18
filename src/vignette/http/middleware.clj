@@ -5,7 +5,6 @@
             [ring.util.response :refer [response status charset header get-header]]
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.util.image-response :refer :all]
-            [vignette.util.query-options :refer :all]
             [wikia.common.logger :as log]
             [wikia.common.perfmonitoring.core :as perf])
   (:import [java.net InetAddress]))
@@ -41,19 +40,6 @@
 
 (declare add-cache-control-header
          hours-to-seconds)
-
-(defn log-image-request
-  [handler]
-  (fn [request]
-    (let [response (handler request)]
-      (log/warn "Image request" {:status (get response :status 0)
-                             :uri (:uri request)
-                             :format (get (:query-params request) "format")
-                             :accept (get (:headers request) "accept")
-                             :agent (get (:headers request) "user-agent")
-                             :size (get (:headers response) "Content-Length" "0")
-                             })
-      response)))
 
 (defn add-headers
   [handler]
