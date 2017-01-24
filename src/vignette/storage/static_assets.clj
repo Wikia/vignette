@@ -34,8 +34,13 @@
 
   (get-original [_ original-map]
     (if-let [uuid (:uuid original-map)]
-      (create-async-response-stored-object
-        (http/get (static-image-url uuid) {:as :stream}))))
+      (let [response @(http/get (static-image-url uuid) {:as :stream})]
+        (let [status (:status response)]
+          (if (= 200 status)
+            (->AsyncResponseStoredObject response)
+            (if (= 451 status)
+              (if-let [pid (:blocked-placeholder original-map)]
+                (create-async-response-stored-object (http/get (static-image-url pid) {:as :stream})))))))))
 
   (original-exists? [_ image-map] nil
     (if-let [uuid (:uuid image-map)]
