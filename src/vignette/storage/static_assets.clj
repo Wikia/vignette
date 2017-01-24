@@ -22,10 +22,14 @@
     (fs/file-exists? to))
   (->response-object [this] (file-stream this)))
 
-(defn create-async-response-stored-object [static-image-get]
-  (let [static-image-response @static-image-get]
-    (if (-> static-image-response :status (= 200))
-      (->AsyncResponseStoredObject static-image-response))))
+(defn first-available [image-urls]
+  (if-let [url (first image-urls)]
+    (let [response @(http/get url {:as :stream})]
+      (let [status (:status response)]
+        (if (= 200 status)
+          (->AsyncResponseStoredObject response)
+          (if (= 451 status)
+            (first-available (rest image-urls))))))))
 
 (defrecord StaticImageStorage [static-image-url] ImageStorageProtocol
   (save-thumbnail [_ _ _] nil)
@@ -33,14 +37,9 @@
   (save-original [_ _ _] nil)
 
   (get-original [_ original-map]
-    (if-let [uuid (:uuid original-map)]
-      (let [response @(http/get (static-image-url uuid) {:as :stream})]
-        (let [status (:status response)]
-          (if (= 200 status)
-            (->AsyncResponseStoredObject response)
-            (if (= 451 status)
-              (if-let [pid (:blocked-placeholder original-map)]
-                (create-async-response-stored-object (http/get (static-image-url pid) {:as :stream})))))))))
+    (let [uuid (:uuid original-map)
+          pid (:blocked-placeholder original-map)]
+      (first-available (map static-image-url (remove nil? [uuid pid])))))
 
   (original-exists? [_ image-map] nil
     (if-let [uuid (:uuid image-map)]
