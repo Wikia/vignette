@@ -291,3 +291,4 @@ Distributed under the Eclipse Public License either version 1.0 or (at your opti
  * [Michał Roszka](https://github.com/michalroszka)
  * [Nelson Monterroso](https://github.com/nmonterroso)
  * [Pawel Chojnacki](https://github.com/pchojnacki)
+ * [Paweł Wójcik](https://github.com/pwojcik86)
