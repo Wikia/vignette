@@ -7,6 +7,7 @@
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :as u]))
 
+(def blocked-placeholder-param "bp")
 
 (defn handle-thumbnail
   [store image-params request]
@@ -43,12 +44,21 @@
   [request-map]
   (assoc request-map :image-type (route-params->image-type request-map)))
 
+(defn route->blocked-placeholder
+  [request-map request]
+  (if-let [params (:query-params request)]
+    (if-let [placeholder-id (params blocked-placeholder-param)]
+      (assoc request-map :blocked-placeholder placeholder-id)
+      request-map)
+    request-map))
+
 (defn route->original-map
   [request-map request]
   (-> request-map
       (assoc :request-type :original)
       (route->image-type)
-      (route->options request)))
+      (route->options request)
+      (route->blocked-placeholder request)))
 
 (defn route->thumbnail-map
   [request-map request &[options]]
@@ -56,6 +66,7 @@
       (assoc :request-type :thumbnail)
       (route->image-type)
       (route->options request)
+      (route->blocked-placeholder request)
       (cond->
         options (merge options))))
 
