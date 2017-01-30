@@ -33,3 +33,13 @@
          ..response.. =contains=> {:headers {}})
        (filename
          (sa/->AsyncResponseStoredObject ..response..)) => nil)
+
+(facts :static-assets :get-blocked-placeholder
+       (get-original
+         (sa/create-static-image-storage --static-asset-get--) {:uuid ..uuid.. :blocked-placeholder ..placeholder-id..}) => ..placeholder..
+       (provided
+         (--static-asset-get-- ..uuid..) => ..static-asset-url..
+         (http/get ..static-asset-url.. {:as :stream}) => (future {:status 451})
+         (--static-asset-get-- ..placeholder-id..) => ..placeholder-url..
+         (http/get ..placeholder-url.. {:as :stream}) => (future {:status 200})
+         (sa/->AsyncResponseStoredObject {:status 200}) => ..placeholder..))
