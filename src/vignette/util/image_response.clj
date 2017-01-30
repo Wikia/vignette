@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [compojure.route :refer [not-found]]
             [ring.util.response :refer [response status header]]
+            [pantomime.mime :refer [mime-type-of]]
             [digest :as digest]
             [vignette.media-types :refer :all]
             [vignette.util.query-options :refer :all]
@@ -14,6 +15,7 @@
 (declare create-image-response
          add-content-disposition-header
          add-surrogate-header
+         add-vary-header
          surrogate-key)
 
 (defn when-header-val
@@ -50,7 +52,8 @@
        (when-header-val "ETag" (str "\"" (etag image) "\""))
        (header "X-Thumbnailer" "Vignette")
        (add-content-disposition-header image-map image)
-       (add-surrogate-header image-map)))
+       (add-surrogate-header image-map)
+       (add-vary-header image-map)))
   ([image]
    (create-image-response image nil)))
 
@@ -99,3 +102,16 @@
       (digest/sha1 (fully-qualified-original-path image-map))
       (catch Exception e
         (str "vignette-" (:original image-map))))))
+
+(def vary-accept-mime-types #{"image/jpeg" "image/png"})
+(defn is-vary-required
+  [file]
+  (contains? vary-accept-mime-types (mime-type-of (or file ""))))
+
+(defn add-vary-header
+  [response-map image-map]
+  (if (is-vary-required (original-path image-map))
+  (-> response-map
+      (header "Vary" "Accept"))
+  response-map))
+
