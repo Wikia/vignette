@@ -43,16 +43,16 @@
                             #"^\/(.*)"
                             "$1")))
 
-(defn route->forced-image-options
+(defn route->default-image-options
   [request options]
-  (if (force-webp? request)
+  (if (and (empty? (:format options)) (force-webp? request))
     (merge options force-webp-options)
     options))
 
 (defn route->options
   "Extracts the query options and moves them to 'request-map'"
   [request-map request]
-  (assoc request-map :options (merge (route->forced-image-options request (extract-query-opts request)))))
+  (assoc request-map :options (merge (route->default-image-options request (extract-query-opts request)))))
 
 (defn route->image-type
   [request-map]
