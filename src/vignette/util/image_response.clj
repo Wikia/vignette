@@ -3,7 +3,6 @@
             [clojure.string :as string]
             [compojure.route :refer [not-found]]
             [ring.util.response :refer [response status header]]
-            [pantomime.mime :refer [mime-type-of]]
             [digest :as digest]
             [vignette.media-types :refer :all]
             [vignette.util.query-options :refer :all]
@@ -103,14 +102,9 @@
       (catch Exception e
         (str "vignette-" (:original image-map))))))
 
-(def vary-accept-mime-types #{"image/jpeg" "image/png"})
-(defn is-vary-required
-  [file]
-  (contains? vary-accept-mime-types (mime-type-of (or file ""))))
-
 (defn add-vary-header
   [response-map image-map]
-  (if (is-vary-required (original-path image-map))
+  (if (webp-supported? (original-path image-map))
   (-> response-map
       (header "Vary" "Accept"))
   response-map))

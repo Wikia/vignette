@@ -1,5 +1,6 @@
 (ns vignette.media-types
   (:require [slingshot.slingshot :refer [throw+]]
+            [pantomime.mime :refer [mime-type-of]]
             [vignette.util.query-options :refer :all]))
 
 (declare original
@@ -8,6 +9,11 @@
          image-type)
 
 (def archive-dir "archive")
+
+(def webp-mime-types #{"image/jpeg" "image/png"})
+(defn webp-supported?
+  [file-path]
+  (contains? webp-mime-types (mime-type-of (or file-path ""))))
 
 (defmulti image-type->path-prefix (fn [object-map] (image-type object-map)))
 
