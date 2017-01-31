@@ -18,7 +18,7 @@
                      :replace (create-query-opt #"^true$" false)
                      :zone (create-query-opt #"\w+")})
 
-(def autodetect-image-format-option "format-autodetect")
+(def autodetect-image-format-option :format-autodetect)
 
 (defn query-opt-regex
   [query-opt]

@@ -38,7 +38,7 @@
       (get (:headers response) "Content-Length") => nil?
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000"
-      (:body response) => nil?)) 
+      (:body response) => nil?))
 
   (facts :requests :thumbnail-integration :window-crop
     (let [response (client/get (format "http://localhost:%d/bucket/a/ab/carousel.jpg/revision/latest/window-crop/width/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900" default-port) {:as :byte-array})]
@@ -57,7 +57,7 @@
       (get (:headers response) "Content-Length") => nil?
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000"
-      (:body response) => nil?)) 
+      (:body response) => nil?))
 
   (facts :requests :thumbnail-integration :window-crop-fixed
     (let [response (client/get (format "http://localhost:%d/bucket/a/ab/beach.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/60/y-offset/550/window-width/200/window-height/260?fill=blue" default-port) {:as :byte-array})]
@@ -76,7 +76,7 @@
       (get (:headers response) "Content-Length") => nil?
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000"
-      (:body response) => nil?)) 
+      (:body response) => nil?))
 
   (facts :requests :thumbnail-integration :fixed-aspect-ratio :thumbnail
     (let [response (client/get (format "http://localhost:%d/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue" default-port) {:as :byte-array})]
@@ -112,4 +112,14 @@
       (get (:headers response) "Content-Length") => nil?
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000"
-      (:body response) => nil?)))
+      (:body response) => nil?)
+
+    (let [response (client/get (format "http://localhost:%d/bucket/a/ab/beach.jpg/revision/latest" default-port) {:as :byte-array, :accept :webp})]
+      (:status response) => 200
+      (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
+      (get (:headers response) "Content-Disposition") => "inline; filename=\"beach.jpg\""
+      (get (:headers response) "Content-Length") => "189612"
+      (get (:headers response) "Connection") => "close"
+      (get (:headers response) "Cache-Control") => "public, max-age=31536000"
+      (get (:headers response) "Content-Type") => "image/webp"
+      (digest/sha1 (:body response)) => "a8969142a23801ee3b2d28896f41e9339e1294e6")))
