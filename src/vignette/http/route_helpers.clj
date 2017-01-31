@@ -11,9 +11,9 @@
 
 (def webp-accept-header-name "accept")
 (def webp-accept-header-value "image/webp")
-(def force-webp-options {:format "webp"})
+(def webp-format-options {:format "webp"})
 
-(defn force-webp? [request]
+(defn browser-supports-webp? [request]
   (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
     (.contains vary-string webp-accept-header-value)))
 
@@ -43,16 +43,22 @@
                             #"^\/(.*)"
                             "$1")))
 
-(defn route->default-image-options
+(defn route-params->add-webp-format-options
   [request options]
-  (if (and (empty? (:format options)) (force-webp? request))
-    (merge options force-webp-options)
+  (if (browser-supports-webp? request)
+    (merge options webp-format-options)
+    options))
+
+(defn route-params->image-format-options
+  [request options]
+  (if (empty? (:format options))
+    (set-format-autodetection (route-params->add-webp-format-options request options))
     options))
 
 (defn route->options
   "Extracts the query options and moves them to 'request-map'"
   [request-map request]
-  (assoc request-map :options (merge (route->default-image-options request (extract-query-opts request)))))
+  (assoc request-map :options (merge (route-params->image-format-options request (extract-query-opts request)))))
 
 (defn route->image-type
   [request-map]

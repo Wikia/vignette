@@ -18,6 +18,8 @@
                      :replace (create-query-opt #"^true$" false)
                      :zone (create-query-opt #"\w+")})
 
+(def autodetect-image-format-option "format-autodetect")
+
 (defn query-opt-regex
   [query-opt]
   (get query-opt :regex))
@@ -85,3 +87,11 @@
     (query-opt data :format) (str (query-opt data :format) ":" filename)
     (= (query-opt data :fill) "transparent") (str "png:" filename)
     :else filename))
+
+(defn query-opts->format-autodetected?
+  [data]
+  (contains? (query-opts data) autodetect-image-format-option))
+
+(defn set-format-autodetection
+  [options]
+  (merge options {autodetect-image-format-option true}))

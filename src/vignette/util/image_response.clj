@@ -104,8 +104,7 @@
 
 (defn add-vary-header
   [response-map image-map]
-  (if (webp-supported? (original-path image-map))
+  (if (and (query-opts->format-autodetected? image-map) (webp-supported? (original-path image-map)))
   (-> response-map
       (header "Vary" "Accept"))
   response-map))
-
