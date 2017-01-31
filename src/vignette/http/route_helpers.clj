@@ -9,14 +9,6 @@
 
 (def blocked-placeholder-param "bp")
 
-(def webp-accept-header-name "accept")
-(def webp-accept-header-value "image/webp")
-(def webp-format-options {:format "webp"})
-
-(defn browser-supports-webp? [request]
-  (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
-    (.contains vary-string webp-accept-header-value)))
-
 (defn handle-thumbnail
   [store image-params request]
   (if-let [thumb (u/get-or-generate-thumbnail store image-params)]
@@ -43,22 +35,10 @@
                             #"^\/(.*)"
                             "$1")))
 
-(defn route-params->add-webp-format-options
-  [request options]
-  (if (browser-supports-webp? request)
-    (merge options webp-format-options)
-    options))
-
-(defn route-params->image-format-options
-  [request options]
-  (if (empty? (:format options))
-    (set-format-autodetection (route-params->add-webp-format-options request options))
-    options))
-
 (defn route->options
   "Extracts the query options and moves them to 'request-map'"
   [request-map request]
-  (assoc request-map :options (route-params->image-format-options request (extract-query-opts request))))
+  (assoc request-map :options (autodetect-request-format request (extract-query-opts request))))
 
 (defn route->image-type
   [request-map]

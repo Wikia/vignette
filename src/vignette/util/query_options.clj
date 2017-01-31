@@ -18,6 +18,8 @@
                      :replace (create-query-opt #"^true$" false)
                      :zone (create-query-opt #"\w+")})
 
+(def webp-accept-header-name "accept")
+(def webp-accept-header-value "image/webp")
 (def autodetect-image-format-option :format-autodetect)
 
 (defn query-opt-regex
@@ -48,6 +50,7 @@
               (assoc running (keyword key) val)
               running))
           {} (:query-params request)))
+
 
 (defn query-opts
   [data]
@@ -88,10 +91,26 @@
     (= (query-opt data :fill) "transparent") (str "png:" filename)
     :else filename))
 
-(defn query-opts->format-autodetected?
-  [data]
-  (contains? (query-opts data) autodetect-image-format-option))
+(defn browser-supports-webp? [request]
+  (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
+    (.contains vary-string webp-accept-header-value)))
+
+(defn add-webp-format-option-if-supported
+  [request options]
+  (if (browser-supports-webp? request)
+    (merge options {:format "webp"})
+    options))
 
 (defn set-format-autodetection
   [options]
   (merge options {autodetect-image-format-option true}))
+
+(defn query-opts->format-autodetected?
+  [data]
+  (contains? (query-opts data) autodetect-image-format-option))
+
+(defn autodetect-request-format
+  [request options]
+  (if (empty? (:format options))
+    (add-webp-format-option-if-supported request (set-format-autodetection options))
+    options))
