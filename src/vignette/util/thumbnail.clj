@@ -78,7 +78,7 @@
   (if (and (= "webp" (get-in thumb-map [:options :format]))
           (not (webp-supported? (thumbnail-path thumb-map))))
     (do
-      (log/info "webp-override-remove" (select-keys thumb-map [:original :options]))
+      (log/info "webp-override-remove" (select-keys thumb-map [:original :options])) ; todo: do we need it?
       (update-in thumb-map [:options] dissoc :format))
       thumb-map)
 )
