@@ -80,9 +80,7 @@
     (do
       (log/info "webp-override-remove" (select-keys thumb-map [:original :options]))
       (update-in thumb-map [:options] dissoc :format))
-    (do
-      (log/info "webp-override-keep" (select-keys thumb-map [:original :options]))
-      thumb-map))
+      thumb-map)
 )
 
 (defn get-or-generate-thumbnail
