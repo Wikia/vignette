@@ -40,6 +40,22 @@
   [request-map request]
   (assoc request-map :requested-format (:format (extract-query-opts request))))
 
+(defn browser-supports-webp? [request]
+  (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
+    (.contains vary-string webp-accept-header-value)))
+
+(defn add-webp-format-option-if-supported
+  [request options]
+  (if (browser-supports-webp? request)
+    (merge options {:format "webp"})
+    options))
+
+(defn autodetect-request-format
+  [request options]
+  (if (empty? (:format options))
+    (add-webp-format-option-if-supported request options)
+    options))
+
 (defn route->options
   "Extracts the query options and moves them to 'request-map'"
   [request-map request]
@@ -84,3 +100,4 @@
 (defn route->thumbnail-auto-width-map
   [request-map request]
   (route->thumbnail-map request-map request {:width :auto}))
+
