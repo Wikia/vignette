@@ -90,6 +90,10 @@
     (provided
      (u/get-or-generate-thumbnail ..wiki-store.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
 
+    (:headers ((create-routes (image-routes {:wikia-store ..wiki-store.. :static-store ..static-store..})) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10"))) => (contains {"Content-Type" "image/jpeg"})
+    (provided
+      (u/get-or-generate-thumbnail ..wiki-store.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
+
     ((create-routes (image-routes {:wikia-store ..wiki-store.. :static-store ..static-store..})) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 404})
     (provided
      (u/get-or-generate-thumbnail ..wiki-store.. route-params) => nil
@@ -100,6 +104,23 @@
     (provided
       (u/get-or-generate-thumbnail ..wiki-store.. route-params) =throws=> (NullPointerException.))))
 
+(facts :all-routes-thumbnail-webp
+       (let [route-params {:request-type :thumbnail
+                           :image-type "images"
+                           :original "ropes.jpg"
+                           :revision "latest"
+                           :middle-dir "35"
+                           :top-dir "3"
+                           :wikia "lotr"
+                           :thumbnail-mode "thumbnail"
+                           :height "10"
+                           :width "10"
+                           :requested-format nil
+                           :options {:format "webp"}}]
+         ((create-routes (image-routes {:wikia-store ..wiki-store.. :static-store ..static-store..})) (assoc-in (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10") [:headers "accept"] "image/webp")) => (contains {:status 200})
+         (provided
+           (u/get-or-generate-thumbnail ..wiki-store.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg"))
+           )))
 
 (facts :all-routes-original
   (let [route-params {:request-type :original
