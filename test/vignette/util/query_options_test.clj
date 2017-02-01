@@ -29,8 +29,8 @@
 
 (facts :query-opts
        (query-opts thumb-option-map) => {:fill "purple" :lang "zh" :replace true}
-       (query-opts thumb-map) => nil)
-       (query-opts status-option-map) => {:status "REJECTED"}
+       (query-opts thumb-map) => nil
+       (query-opts status-option-map) => {:status "REJECTED"})
 
 (facts :query-opt
        (query-opt thumb-map :foo) => nil
