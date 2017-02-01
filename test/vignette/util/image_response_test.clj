@@ -41,3 +41,11 @@
        (add-surrogate-header {} {:wikia "wikia" :original "orig" :image-type "images"}) =>
        {:headers {"Surrogate-Key"   "c8dfba77e9beb5c26ca20d4411674065d4a0ded5"
                   "X-Surrogate-Key" "c8dfba77e9beb5c26ca20d4411674065d4a0ded5"}})
+
+(facts :add-vary-header
+       (add-vary-header {} {:requested-format nil :request-type :thumbnail :original "some-file.png" :image-type "images"}) => {:headers {"Vary" "Accept"}}
+       (add-vary-header {} {:request-type :thumbnail :original "some-file.png" :image-type "images"}) => {:headers {"Vary" "Accept"}}
+       (add-vary-header {} {:requested-format nil :request-type :original :original "some-file.png" :image-type "images"}) => {}
+       (add-vary-header {} {:requested-format nil :request-type :thumbnail :original "some-file.bmp" :image-type "images"}) => {}
+       (add-vary-header {} {:requested-format "png" :request-type :thumbnail :original "some-file.png" :image-type "images"}) => {})
+
