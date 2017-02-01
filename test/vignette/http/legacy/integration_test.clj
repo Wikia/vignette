@@ -49,7 +49,7 @@
     (let [response (client/get (format "http://localhost:%d/bucket/images/thumb/a/ab/beach.jpg/200px-beach.jpg" default-port) {:as :byte-array})]
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 16341 10)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 16341 20)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)

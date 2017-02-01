@@ -27,7 +27,7 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6991f130a508cf3d03f8f097c32b0ff11beb5b77"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"boat.jpg\"; filename*=UTF-8''boat.jpg"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 8970 10)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 8970 20)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
@@ -48,7 +48,7 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "e0b7c4db3fb0453950367c1703710925b649babb"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"carousel.jpg\"; filename*=UTF-8''carousel.jpg"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 23175 10)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 23175 20)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
@@ -69,7 +69,7 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"beach.jpg\"; filename*=UTF-8''beach.jpg"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 9600 10)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 9600 20)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
@@ -89,7 +89,7 @@
     (let [response (client/get (format "http://localhost:%d/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue" default-port) {:as :byte-array})]
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 9450 10)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 9450 20)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000")
@@ -108,7 +108,7 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"beach.jpg\"; filename*=UTF-8''beach.jpg"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 189612 10)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 189612 20)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
@@ -128,7 +128,7 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"beach.jpg.webp\"; filename*=UTF-8''beach.jpg.webp"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 11598 10)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 11598 20)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000"
       (get (:headers response) "Content-Type") => "image/webp"
