@@ -84,7 +84,8 @@
                       :thumbnail-mode "thumbnail"
                       :height "10"
                       :width "10"
-                      :options {:format-autodetect true}}]
+                      :requested-format nil
+                      :options {}}]
     ((create-routes (image-routes {:wikia-store ..wiki-store.. :static-store ..static-store..})) (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10")) => (contains {:status 200})
     (provided
      (u/get-or-generate-thumbnail ..wiki-store.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
@@ -108,7 +109,8 @@
                       :top-dir "3"
                       :revision "12345"
                       :wikia "lotr"
-                      :options {:format-autodetect true}} ]
+                      :requested-format nil
+                      :options {}} ]
     ((create-routes (image-routes {:wikia-store ..wiki-store.. :static-store ..static-store..})) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 200})
     (provided
      (sp/get-original ..wiki-store.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))

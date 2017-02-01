@@ -20,7 +20,6 @@
 
 (def webp-accept-header-name "accept")
 (def webp-accept-header-value "image/webp")
-(def autodetect-image-format-option :format-autodetect)
 
 (defn query-opt-regex
   [query-opt]
@@ -101,16 +100,8 @@
     (merge options {:format "webp"})
     options))
 
-(defn set-format-autodetection
-  [options]
-  (merge options {autodetect-image-format-option true}))
-
-(defn query-opts->format-autodetected?
-  [data]
-  (contains? (query-opts data) autodetect-image-format-option))
-
 (defn autodetect-request-format
   [request options]
   (if (empty? (:format options))
-    (add-webp-format-option-if-supported request (set-format-autodetection options))
+    (add-webp-format-option-if-supported request options)
     options))

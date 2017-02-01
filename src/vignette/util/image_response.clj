@@ -103,8 +103,14 @@
         (str "vignette-" (:original image-map))))))
 
 (defn add-vary-header
+  "Add Vary: Accept header for supported thumbail types if format was not specified in query params"
   [response-map image-map]
-  (if (and (query-opts->format-autodetected? image-map) (webp-supported? (original-path image-map)))
-  (-> response-map
-      (header "Vary" "Accept"))
-  response-map))
+  (if (and
+        (empty? (:requested-format image-map))
+        (= (:request-type image-map) :thumbnail)
+        (webp-supported? (original-path image-map)))
+    (-> response-map
+        (header "Vary" "Accept"))
+    response-map)
+)
+

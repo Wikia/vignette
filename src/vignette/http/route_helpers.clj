@@ -35,6 +35,11 @@
                             #"^\/(.*)"
                             "$1")))
 
+(defn route->requested-format
+  "Extract information about the format being explicitely specified in the url"
+  [request-map request]
+  (assoc request-map :requested-format (:format (extract-query-opts request))))
+
 (defn route->options
   "Extracts the query options and moves them to 'request-map'"
   [request-map request]
@@ -57,6 +62,7 @@
   (-> request-map
       (assoc :request-type :original)
       (route->image-type)
+      (route->requested-format request)
       (route->options request)
       (route->blocked-placeholder request)))
 
@@ -65,6 +71,7 @@
   (-> request-map
       (assoc :request-type :thumbnail)
       (route->image-type)
+      (route->requested-format request)
       (route->options request)
       (route->blocked-placeholder request)
       (cond->
