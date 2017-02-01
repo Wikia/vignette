@@ -14,3 +14,6 @@
       (dissoc outer :__rest))
     ))
 
+(def jpeg-header [ -1 -40 -1 ])
+(def riff-header [82 73 70 70])
+(def webp-header [87 69 66 80])
