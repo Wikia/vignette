@@ -47,7 +47,6 @@
               running))
           {} (:query-params request)))
 
-
 (defn query-opts
   [data]
   (if (empty? (:options data))
