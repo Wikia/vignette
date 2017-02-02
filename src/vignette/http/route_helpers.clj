@@ -38,11 +38,6 @@
                             #"^\/(.*)"
                             "$1")))
 
-(defn route->requested-format
-  "Extract information about the format being explicitely specified in the url"
-  [request-map request]
-  (assoc request-map :requested-format (:format (extract-query-opts request))))
-
 (defn browser-supports-webp? [request]
   (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
     (.contains vary-string webp-accept-header-value)))
@@ -59,10 +54,16 @@
     (add-webp-format-option-if-supported request options)
     options))
 
+(defn route->webp-request-format
+  "In case format was not specified in query options, try to set it to webp based on the accept header."
+  [request-map request]
+  (assoc request-map :requested-format (:format (:options request-map))
+                     :options (autodetect-request-format request (:options request-map))))
+
 (defn route->options
   "Extracts the query options and moves them to 'request-map'"
   [request-map request]
-  (assoc request-map :options (autodetect-request-format request (extract-query-opts request))))
+  (assoc request-map :options (extract-query-opts request)))
 
 (defn route->image-type
   [request-map]
@@ -81,8 +82,8 @@
   (-> request-map
       (assoc :request-type :original)
       (route->image-type)
-      (route->requested-format request)
       (route->options request)
+      (route->webp-request-format request)
       (route->blocked-placeholder request)))
 
 (defn route->thumbnail-map
@@ -90,8 +91,8 @@
   (-> request-map
       (assoc :request-type :thumbnail)
       (route->image-type)
-      (route->requested-format request)
       (route->options request)
+      (route->webp-request-format request)
       (route->blocked-placeholder request)
       (cond->
         options (merge options))))

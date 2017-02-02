@@ -56,6 +56,8 @@
        (autodetect-request-format webp-support-request {}) => {:format "webp"}
        (autodetect-request-format webp-support-request {:format "jpeg"}) => {:format "jpeg"})
 
-(facts :route->requested-format
-       (route->requested-format {} request-with-format) => {:requested-format "jpg"}
-       (route->requested-format {} request-without-format) => {:requested-format nil})
+(facts :route->webp-request-format
+       (route->webp-request-format {:options {}} webp-support-request) => {:options {:format "webp"}, :requested-format nil}
+       (route->webp-request-format {:options {:format "jpg"}} webp-support-request) => {:options {:format "jpg"}, :requested-format "jpg"}
+       (route->webp-request-format {:options {:format "jpg"}} no-webp-support-request) => {:options {:format "jpg"}, :requested-format "jpg"}
+       (route->webp-request-format {:options {}} no-webp-support-request) => {:options {}, :requested-format nil})
