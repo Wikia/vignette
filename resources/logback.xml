@@ -9,13 +9,7 @@
           <message>@message</message>
         </fieldNames>
     </appender>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg %X%n</pattern>
-        </encoder>
-    </appender>
     <root level="info">
         <appender-ref ref="stash"/>
-        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
