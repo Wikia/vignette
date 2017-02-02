@@ -68,14 +68,10 @@
       (or (zero? (:exit sh-out))
           (and (= 1 (:exit sh-out))
                (file-exists? temp-file))) (io/file temp-file)
-      :else (do
-              (throw+ {:type         :convert-error
+      :else (throw+ {:type         :convert-error
                      :error-code   (:exit sh-out)
                      :error-string (:err sh-out)}
-                    "thumbnailing error")
-              (log/error "Thumbnail failed"  {:type         :convert-error
-                                              :error-code   (:exit sh-out)
-                                              :error-string (:err sh-out)})))))
+                    "thumbnailing error"))))
 
 (defn webp-override
   [thumb-map]
