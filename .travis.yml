@@ -17,6 +17,9 @@ addons:
 before_install:
   - ./travis/build-imagemagick.sh
   - export VIGNETTE_THUMBNAIL_BIN=$TRAVIS_BUILD_DIR/bin/thumbnail
+  - export PATH=$HOME/opt/bin:$PATH
+  - export IMAGEMAGICK_BASE=$HOME/opt
 script:
+  - magick -version | grep $IMAGEMAGICK_VERSION
   - convert --version | grep webp
   - lein2 midje

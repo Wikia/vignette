@@ -23,5 +23,3 @@ cd ImageMagick-$IMAGEMAGICK_VERSION
 ./configure --prefix=$HOME/opt --with-webp
 make -j$CORES
 make install -j$CORES
-export IMAGEMAGICK_BASE=$HOME/opt
-magick -version | grep $IMAGEMAGICK_VERSION
