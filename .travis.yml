@@ -19,6 +19,7 @@ before_install:
   - export LD_FLAGS=-L$HOME/opt/lib
   - export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib:$HOME/opt/lib
   - export CPPFLAGS=-I$HOME/opt/include
+  - export CFLAGS=-I$HOME/opt/include
   - export CPATH=$CPATH:$HOME/opt/include
   - convert -version | grep $IMAGEMAGICK_VERSION || {
     export CORES=$(nproc) &&
