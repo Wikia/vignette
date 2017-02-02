@@ -113,4 +113,3 @@
         (header "Vary" "Accept"))
     response-map)
 )
-
