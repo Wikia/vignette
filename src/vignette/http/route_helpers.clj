@@ -9,6 +9,9 @@
 
 (def blocked-placeholder-param "bp")
 
+(def webp-accept-header-name "accept")
+(def webp-accept-header-value "image/webp")
+
 (defn handle-thumbnail
   [store image-params request]
   (if-let [thumb (u/get-or-generate-thumbnail store image-params)]

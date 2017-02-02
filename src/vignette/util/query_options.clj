@@ -18,9 +18,6 @@
                      :replace (create-query-opt #"^true$" false)
                      :zone (create-query-opt #"\w+")})
 
-(def webp-accept-header-name "accept")
-(def webp-accept-header-value "image/webp")
-
 (defn query-opt-regex
   [query-opt]
   (get query-opt :regex))
