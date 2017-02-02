@@ -18,6 +18,7 @@ before_install:
   - export PATH=$HOME/opt/bin:$PATH
   - export LD_FLAGS=-L$HOME/opt/lib
   - export LD_LIBRARY_PATH=/lib:/usr/lib:/usr/local/lib:$HOME/opt/lib
+  - export CPPFLAGS=-I$HOME/opt/include
   - export CPATH=$CPATH:$HOME/opt/include
   - convert -version | grep $IMAGEMAGICK_VERSION || {
     export CORES=$(nproc) &&
@@ -26,19 +27,20 @@ before_install:
     curl -O https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-$LIBWEBP_VERSION.tar.gz &&
     tar xvzf libwebp-$LIBWEBP_VERSION.tar.gz &&
     cd libwebp-$LIBWEBP_VERSION &&
-    ./configure &&
+    ./configure --prefix=$HOME/opt &&
     make -j$CORES &&
     make install -j$CORES &&
     cd /tmp &&
     curl -O https://www.imagemagick.org/download/ImageMagick-$IMAGEMAGICK_VERSION.tar.gz &&
     tar xvzf ImageMagick-$IMAGEMAGICK_VERSION.tar.gz &&
     cd ImageMagick-$IMAGEMAGICK_VERSION &&
-    ./configure --with-webp &&
+    ./configure --prefix=$HOME/opt --with-webp &&
     make -j$CORES &&
     make install -j$CORES &&
     $HOME/opt/bin/magick -version | grep $IMAGEMAGICK_VERSION &&
     cd $TRAVIS_BUILD_DIR; }
   - export VIGNETTE_THUMBNAIL_BIN=$TRAVIS_BUILD_DIR/bin/thumbnail
+  - export IMAGEMAGICK_BASE=$HOME/opt
 script:
   - convert --version | grep webp
   - lein2 midje
