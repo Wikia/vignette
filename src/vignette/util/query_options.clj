@@ -86,5 +86,3 @@
     (query-opt data :format) (str (query-opt data :format) ":" filename)
     (= (query-opt data :fill) "transparent") (str "png:" filename)
     :else filename))
-
-
