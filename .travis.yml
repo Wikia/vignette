@@ -2,4 +2,24 @@ language: clojure
 lein: lein2
 jdk:
   - oraclejdk8
-script: lein2 midje :filter -thumbnail-integration
+env:
+  global:
+  - IMAGEMAGICK_VERSION: '7.0.4-6'
+  - LIBWEBP_VERSION: '0.6.0'
+addons:
+  apt:
+    packages:
+      - libjpeg-dev
+      - libpng-dev
+      - libgif-dev
+      - build-essential
+      - curl
+before_install:
+  - ./travis/build-imagemagick.sh
+  - export VIGNETTE_THUMBNAIL_BIN=$TRAVIS_BUILD_DIR/bin/thumbnail
+  - export PATH=$HOME/opt/bin:$PATH
+  - export IMAGEMAGICK_BASE=$HOME/opt
+script:
+  - magick -version | grep $IMAGEMAGICK_VERSION
+  - convert --version | grep webp
+  - lein2 midje
