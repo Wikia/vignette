@@ -4,7 +4,6 @@ jdk:
   - oraclejdk8
 env:
   global:
-  - IMAGEMAGICK_VERSION: '7.0.4-6'
   - LIBWEBP_VERSION: '0.6.0'
 addons:
   apt:
@@ -20,6 +19,5 @@ before_install:
   - export PATH=$HOME/opt/bin:$PATH
   - export IMAGEMAGICK_BASE=$HOME/opt
 script:
-  - magick -version | grep $IMAGEMAGICK_VERSION
   - convert --version | grep webp
   - lein2 midje
