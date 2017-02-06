@@ -52,6 +52,7 @@ MODE_OPTIONS=(
 	"window-crop-fixed"
 	"zoom-crop"
 	"zoom-crop-down"
+	"type-convert"
 )
 
 TYPE_JPEG="JPEG"
@@ -209,6 +210,7 @@ if [ "$OUT"X = "X" ]; then
 fi
 
 MODES_REQUIRING_WIDTH=("${MODE_OPTIONS[@]/"scale-to-height-down"}")
+MODES_REQUIRING_WIDTH=("${MODES_REQUIRING_WIDTH[@]/"type-convert"}")
 MODES_REQUIRING_HEIGHT=("fixed-aspect-ratio" "fixed-aspect-ratio-down" "thumbnail" "thumbnail-down" "top-crop" "top-crop-down" "window-crop-fixed" "zoom-crop" "zoom-crop-down" "scale-to-height-down")
 
 if [ "$HEIGHT"X = "X" ]; then
@@ -445,6 +447,9 @@ function thumb_params() {
 				THUMB_PARAMS="${QUALITY} -gravity center -crop ${WIDTH}x${HEIGHT}+0+0 -thumbnail ${WIDTH}x${HEIGHT}+0+0"
 			fi
 			;;
+		"type-convert")
+		    QUALITY="webp:lossless=true"
+		    THUMB_PARAMS="${QUALITY}"
 	esac
 }
 
