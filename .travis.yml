@@ -4,7 +4,6 @@ jdk:
   - oraclejdk8
 env:
   global:
-  - IMAGEMAGICK_VERSION: '7.0.4-6'
   - LIBWEBP_VERSION: '0.6.0'
 addons:
   apt:
