@@ -25,5 +25,6 @@ cache:
     - $HOME/opt
     - $HOME/.m2/repository
 script:
+  - magick --version
   - convert --version | grep webp
   - lein2 midje
