@@ -1,5 +1,6 @@
 (ns vignette.util.external-hotlinking
-  (:require [vignette.protocols :refer :all]
+  (:require [vignette.media-types :refer :all]
+            [vignette.protocols :refer :all]
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :as u]))
 
@@ -18,8 +19,8 @@
     (.contains vary-string force-header-val)))
 
 (defn force-webp? [image-params]
-  (if-let [format (get-in image-params [:options :format])]
-    (.contains format force-webp-val)))
+  (and (= force-webp-val (get-in image-params [:options :format]))
+    (webp-supported? (original-path image-params))))
 
 (defn image-params->forced-thumb-params [image-params]
   (merge image-params force-thumb-params))
