@@ -17,8 +17,8 @@ cd libwebp-$LIBWEBP_VERSION
 make -j$CORES
 make install -j$CORES
 cd /tmp
-curl -O https://www.imagemagick.org/download/ImageMagick.tar.gz
-tar xvzf ImageMagick.tar.gz
+curl -O https://github.com/ImageMagick/ImageMagick/archive/7.0.4-7.tar.gz
+tar xvzf 7.0.4-7.tar.gz
 cd ImageMagick-*
 ./configure --prefix=$HOME/opt --with-webp
 make -j$CORES
