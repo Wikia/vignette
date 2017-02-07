@@ -7,6 +7,12 @@ export CPPFLAGS=-I$HOME/opt/include
 export CFLAGS=-I$HOME/opt/include
 export CORES=$(nproc)
 
+if [[ `convert --version | grep $IMAGEMAGICK_VERSION` ]]; then
+    echo "Found correct version of ImageMagick"
+    exit 1
+fi
+
+
 echo "Using $CORES cores for compiling..."
 
 cd /tmp
@@ -17,9 +23,9 @@ cd libwebp-$LIBWEBP_VERSION
 make -j$CORES
 make install -j$CORES
 cd /tmp
-curl -O https://github.com/ImageMagick/ImageMagick/archive/7.0.4-7.tar.gz
-tar xvzf 7.0.4-7.tar.gz
-cd ImageMagick-*
+curl -O https://github.com/ImageMagick/ImageMagick/archive/$IMAGEMAGICK_VERSION.tar.gz
+tar xvzf $IMAGEMAGICK_VERSION.tar.gz
+cd ImageMagick-$IMAGEMAGICK_VERSION
 ./configure --prefix=$HOME/opt --with-webp
 make -j$CORES
 make install -j$CORES
