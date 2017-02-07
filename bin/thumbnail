@@ -449,7 +449,9 @@ function thumb_params() {
 			;;
 		"type-convert")
 		    # -define webp:lossless=true will increase the image size dramatically due to the artifacts
-		    QUALITY="-quality 95"
+		    if [ "$QUALITY" = "" ]; then
+                QUALITY="-quality 95"
+            fi
 		    THUMB_PARAMS="${QUALITY}"
 	esac
 }
