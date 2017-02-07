@@ -9,7 +9,7 @@ export CORES=$(nproc)
 
 if [[ `convert --version | grep $IMAGEMAGICK_VERSION` ]]; then
     echo "Found correct version of ImageMagick"
-    exit 1
+    exit 0
 fi
 
 

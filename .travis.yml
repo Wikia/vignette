@@ -23,6 +23,7 @@ before_install:
 cache:
   directories:
     - $HOME/opt
+    - $HOME/.m2/repository
 script:
   - convert --version | grep webp
   - lein2 midje
