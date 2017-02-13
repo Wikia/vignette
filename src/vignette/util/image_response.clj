@@ -75,7 +75,9 @@
      (let [target-filename
            (if-let [requested-path
                     (when image-object (extension-for-name (content-type image-object)))]
-                      (string/replace filename #"\.\w+$" requested-path)
+                      (if (re-matches #"\.\w+$" filename)
+                        (string/replace filename #"\.\w+$" requested-path)
+                        (str filename requested-path))
                       filename)]
        (header response-map "Content-Disposition" (format "inline; filename=\"%s\"; filename*=UTF-8''%s" target-filename (url-encode target-filename))))
      response-map))
