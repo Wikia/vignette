@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [compojure.route :refer [not-found]]
             [ring.util.response :refer [response status header]]
+            [pantomime.mime :refer [extension-for-name]]
             [digest :as digest]
             [vignette.media-types :refer :all]
             [vignette.util.query-options :refer :all]
@@ -73,8 +74,9 @@
    (if-let [filename (base-filename image-map image-object)]
      (let [target-filename
            (if-let [requested-path
-                    (query-opt image-map :format)] (str filename "." requested-path)
-                                                   filename)]
+                    (when image-object (extension-for-name (content-type image-object)))]
+                      (string/replace filename #".\w+$" requested-path)
+                      filename)]
        (header response-map "Content-Disposition" (format "inline; filename=\"%s\"; filename*=UTF-8''%s" target-filename (url-encode target-filename))))
      response-map))
   ([response-map image-map]

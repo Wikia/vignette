@@ -74,9 +74,9 @@
                     "thumbnailing error"))))
 
 (defn webp-override
-  [thumb-map]
+  [original thumb-map]
   (if (and (= "webp" (get-in thumb-map [:options :format]))
-          (not (webp-supported? (thumbnail-path thumb-map))))
+          (not (webp-supported? original)))
     (do
       (log/info "webp-override-remove" (select-keys thumb-map [:original :options])) ; todo: do we need it?
       (update-in thumb-map [:options] dissoc :format))
@@ -85,15 +85,13 @@
 
 (defn get-or-generate-thumbnail
   [store thumb-map]
-  (let [thumb-params (webp-override thumb-map)]
-    (if-let [thumb (and (not (q/query-opt thumb-params :replace))
-                        (get-thumbnail store thumb-params))]
-      (do
-        (perf/publish {:thumbnail-cache-hit 1})
-        thumb)
-      (when-let [thumb (generate-thumbnail store thumb-params)]
-      thumb)))
-  )
+  (if-let [thumb (and (not (q/query-opt thumb-map :replace))
+                      (get-thumbnail store thumb-map))]
+    (do
+      (perf/publish {:thumbnail-cache-hit 1})
+      thumb)
+    (when-let [thumb (generate-thumbnail store thumb-map)]
+    thumb)))
 
 (defn generate-thumbnail
   "Generate a thumbnail from the original specified in thumb-map.
@@ -105,14 +103,15 @@
       original
       (when-let [local-original (original->local original)]
         (try+
-          (when-let [thumb (original->thumbnail local-original thumb-map)]
-            (perf/publish {:generate-thumbail 1})
-            (background-check-and-delete-original
-              thumb-map thumb local-original)
-            (ls/create-stored-object thumb (fn [stored-object]
-                                             (background-save-thumbnail store
-                                                                        stored-object
-                                                                        thumb-map))))
+          (let [thumb-params (webp-override local-original thumb-map)]
+            (when-let [thumb (original->thumbnail local-original thumb-params)]
+              (perf/publish {:generate-thumbail 1})
+              (background-check-and-delete-original
+                thumb-params thumb local-original)
+              (ls/create-stored-object thumb (fn [stored-object]
+                                               (background-save-thumbnail store
+                                                                          stored-object
+                                                                          thumb-params)))))
           (catch Object _
             (background-delete-file local-original)
             (throw+)))))
