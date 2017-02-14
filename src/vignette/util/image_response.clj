@@ -10,7 +10,8 @@
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :refer :all]
-            [ring.util.codec :refer [url-encode]]))
+            [ring.util.codec :refer [url-encode]]
+            [io.clj.logging :as log]))
 
 (declare create-image-response
          add-content-disposition-header
@@ -110,6 +111,7 @@
   "Add Vary: Accept header for supported thumbail types if format was not specified in query params"
   [response-map image-map]
   (if (and
+        image-map
         (empty? (:requested-format image-map))
         (webp-supported? (original-path image-map)))
     (-> response-map
