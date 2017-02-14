@@ -111,7 +111,6 @@
   [response-map image-map]
   (if (and
         (empty? (:requested-format image-map))
-        (= (:request-type image-map) :thumbnail)
         (webp-supported? (original-path image-map)))
     (-> response-map
         (header "Vary" "Accept"))

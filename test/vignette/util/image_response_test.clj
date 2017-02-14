@@ -45,7 +45,9 @@
 (facts :add-vary-header
        (add-vary-header {} {:requested-format nil :request-type :thumbnail :original "some-file.png" :image-type "images"}) => {:headers {"Vary" "Accept"}}
        (add-vary-header {} {:request-type :thumbnail :original "some-file.png" :image-type "images"}) => {:headers {"Vary" "Accept"}}
-       (add-vary-header {} {:requested-format nil :request-type :original :original "some-file.png" :image-type "images"}) => {}
+       (add-vary-header {} {:requested-format nil :request-type :original :original "some-file.png" :image-type "images"}) => {:headers {"Vary" "Accept"}}
+       (add-vary-header {} {:requested-format nil :request-type :original :original "some-file.bmp" :image-type "images"}) => {}
        (add-vary-header {} {:requested-format nil :request-type :thumbnail :original "some-file.bmp" :image-type "images"}) => {}
-       (add-vary-header {} {:requested-format "png" :request-type :thumbnail :original "some-file.png" :image-type "images"}) => {})
+       (add-vary-header {} {:requested-format "png" :request-type :thumbnail :original "some-file.png" :image-type "images"}) => {}
+       (add-vary-header {} {:requested-format "png" :request-type :original :original "some-file.png" :image-type "images"}) => {})
 
