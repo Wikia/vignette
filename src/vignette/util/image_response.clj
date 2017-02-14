@@ -75,7 +75,7 @@
      (let [target-filename
            (if-let [requested-path
                     (when image-object (extension-for-name (content-type image-object)))]
-                      (if (re-matches #"\.\w+$" filename)
+                      (if (re-find #"\.\w+$" filename)
                         (string/replace filename #"\.\w+$" requested-path)
                         (str filename requested-path))
                       filename)]
