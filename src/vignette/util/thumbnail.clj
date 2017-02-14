@@ -90,15 +90,25 @@
     (do
       (perf/publish {:thumbnail-cache-hit 1})
       thumb)
-    (when-let [thumb (generate-thumbnail store thumb-map)]
+    (when-let [thumb (generate-thumbnail store thumb-map nil)]
     thumb)))
+
+(defn original->get-or-generate-thumbnail
+  [store thumb-map original]
+  (if-let [thumb (and (not (q/query-opt thumb-map :replace))
+                      (get-thumbnail store thumb-map))]
+    (do
+      (perf/publish {:thumbnail-cache-hit 1})
+      thumb)
+    (when-let [thumb (generate-thumbnail store thumb-map original)]
+      thumb)))
 
 (defn generate-thumbnail
   "Generate a thumbnail from the original specified in thumb-map.
   This function will download the original locally and thumbnail it.
   The original will be removed after the thumbnailing is completed."
-  [store thumb-map]
-  (if-let [original (get-original store thumb-map)]
+  [store thumb-map original]
+  (if-let [original (or original (get-original store thumb-map))]
     (if (is-passthrough-required (filename original))
       original
       (when-let [local-original (original->local original)]

@@ -15,6 +15,10 @@
   [file]
   (contains? webp-mime-types (mime-type-of (or file ""))))
 
+(defn webp-supported-content-type?
+  [content-type]
+  (contains? webp-mime-types content-type))
+
 (defmulti image-type->path-prefix (fn [object-map] (image-type object-map)))
 
 (defmethod image-type->path-prefix "avatars" [object-map]

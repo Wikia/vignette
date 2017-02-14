@@ -33,7 +33,7 @@
          (run-thumbnailer anything) => {:exit 1 :err 256 :out "testing failure"})
 
        ;special mime type
-       (generate-thumbnail ..store.. beach-map) => ..file..
+       (generate-thumbnail ..store.. beach-map nil) => ..file..
        (provided
          (get-original ..store.. beach-map) => ..file..
          (filename ..file..) => "file.ogv"))
@@ -62,7 +62,7 @@
 
 
 (facts :generate-thumbnail
-       (generate-thumbnail ..store.. beach-map) => ..object..
+       (generate-thumbnail ..store.. beach-map nil) => ..object..
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
@@ -72,11 +72,11 @@
          (background-check-and-delete-original beach-map & anything) => nil
          (create-stored-object ..thumb.. & anything) => ..object..)
 
-       (generate-thumbnail ..store.. beach-map) => (throws ExceptionInfo)
+       (generate-thumbnail ..store.. beach-map nil) => (throws ExceptionInfo)
        (provided
          (get-original ..store.. beach-map) => nil)
 
-       (generate-thumbnail ..store.. beach-map) => falsey
+       (generate-thumbnail ..store.. beach-map nil) => falsey
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
@@ -94,7 +94,7 @@
        (get-or-generate-thumbnail ..store.. beach-map) => ..thumb..
        (provided
          (get-thumbnail ..store.. beach-map) => false
-         (generate-thumbnail ..store.. beach-map) => ..thumb..)
+         (generate-thumbnail ..store.. beach-map nil) => ..thumb..)
 
        ; generate new - fail
        (let [image-dne (assoc beach-map :original "doesnotexist.jpg")]
@@ -107,7 +107,7 @@
        (let [option-map (assoc-in beach-map [:options :replace] "true")]
          (get-or-generate-thumbnail ..store.. option-map) => ..new-thumb..
          (provided
-           (generate-thumbnail ..store.. option-map) => ..new-thumb..)))
+           (generate-thumbnail ..store.. option-map nil) => ..new-thumb..)))
 
 (facts :route-map->thumb-args
        (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
