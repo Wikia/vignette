@@ -52,7 +52,9 @@
   [request options]
   (if (empty? (:format options))
     (add-webp-format-option-if-supported request options)
-    options))
+      (if (= "original" (:format options))
+          (dissoc options :format)
+          options)))
 
 (defn route->webp-request-format
   "In case format was not specified in query options, try to set it to webp based on the accept header."
