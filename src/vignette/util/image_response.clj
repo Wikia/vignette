@@ -46,14 +46,15 @@
 
 (defn create-image-response
   ([image image-map]
-   (-> (response (->response-object image))
-       (when-header-val "Content-Type" (content-type image))
-       (when-header-val "Content-Length" (content-length image))
-       (when-header-val "ETag" (str "\"" (etag image) "\""))
-       (header "X-Thumbnailer" "Vignette")
-       (add-content-disposition-header image-map image)
-       (add-surrogate-header image-map)
-       (add-vary-header image-map image)))
+    (let [image-mime-type (content-type image)]
+      (-> (response (->response-object image))
+          (when-header-val "Content-Type" image-mime-type)
+          (when-header-val "Content-Length" (content-length image))
+          (when-header-val "ETag" (str "\"" (etag image) "\""))
+          (header "X-Thumbnailer" "Vignette")
+          (add-content-disposition-header image-map image image-mime-type)
+          (add-surrogate-header image-map)
+          (add-vary-header image-map image-mime-type))))
   ([image]
    (create-image-response image nil)))
 
@@ -70,11 +71,11 @@
       (when object (filename object))))
 
 (defn add-content-disposition-header
-  ([response-map image-map image-object]
+  ([response-map image-map image-object image-mime-type]
    (if-let [filename (base-filename image-map image-object)]
      (let [target-filename
            (if-let [requested-path
-                    (when image-object (extension-for-name (content-type image-object)))]
+                    (when image-mime-type (extension-for-name image-mime-type))]
                       (if (re-find #"\.\w+$" filename)
                         (string/replace filename #"\.\w+$" requested-path)
                         (str filename requested-path))
@@ -82,7 +83,7 @@
        (header response-map "Content-Disposition" (format "inline; filename=\"%s\"; filename*=UTF-8''%s" target-filename (url-encode target-filename))))
      response-map))
   ([response-map image-map]
-   (add-content-disposition-header response-map image-map nil)))
+   (add-content-disposition-header response-map image-map nil nil)))
 
 
 (defn add-surrogate-header
@@ -108,13 +109,12 @@
 
 (defn add-vary-header
   "Add Vary: Accept header for supported thumbail types if format was not specified in query params"
-  [response-map image-map image-object]
+  [response-map image-map image-mime-type]
   (if (and
         image-map
-        image-object
         (empty? (:requested-format image-map))
         (= (:request-type image-map) :thumbnail)
-        (webp-compatible-mime-type? (content-type image-object)))
+        (webp-compatible-mime-type? image-mime-type))
       (-> response-map
           (header "Vary" "Accept"))
       response-map)
