@@ -53,7 +53,7 @@
        (header "X-Thumbnailer" "Vignette")
        (add-content-disposition-header image-map image)
        (add-surrogate-header image-map)
-       (add-vary-header image-map)))
+       (add-vary-header image-map image)))
   ([image]
    (create-image-response image nil)))
 
@@ -108,12 +108,14 @@
 
 (defn add-vary-header
   "Add Vary: Accept header for supported thumbail types if format was not specified in query params"
-  [response-map image-map]
+  [response-map image-map image-object]
   (if (and
+        image-map
+        image-object
         (empty? (:requested-format image-map))
         (= (:request-type image-map) :thumbnail)
-        (webp-supported? (original-path image-map)))
-    (-> response-map
-        (header "Vary" "Accept"))
-    response-map)
+        (webp-compatible-mime-type? (content-type image-object)))
+      (-> response-map
+          (header "Vary" "Accept"))
+      response-map)
 )
