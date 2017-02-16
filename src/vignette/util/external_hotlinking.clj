@@ -6,7 +6,6 @@
 
 (def force-header-name "x-vignette-force-thumb")
 (def force-header-val "1")
-(def force-webp-val "webp")
 (def force-thumb-params {:request-type :thumbnail
                          :thumbnail-mode "scale-to-width"
                          :width "200"
@@ -19,7 +18,7 @@
     (.contains vary-string force-header-val)))
 
 (defn force-webp? [image-params]
-  (= force-webp-val (get-in image-params [:options :format])))
+  (= webp-format (get-in image-params [:options :format])))
 
 (defn image-params->forced-thumb-params [image-params]
   (merge image-params force-thumb-params))

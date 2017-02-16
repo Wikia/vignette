@@ -8,6 +8,7 @@
             [vignette.util.image-response :refer :all]
             [vignette.storage.protocols :as sp]
             [vignette.util.image-response :as ir]
+            [vignette.media-types :as mt]
             [vignette.util.thumbnail :as u])
   (:import java.io.FileNotFoundException))
 
@@ -53,13 +54,13 @@
 (facts :autodetect-request-format
        (autodetect-request-format no-webp-support-request {}) => {}
        (autodetect-request-format no-webp-support-request {:format "png"}) => {:format "png"}
-       (autodetect-request-format webp-support-request {}) => {:format "webp"}
+       (autodetect-request-format webp-support-request {}) => {:format mt/webp-format}
        (autodetect-request-format webp-support-request {:format "jpeg"}) => {:format "jpeg"}
        (autodetect-request-format webp-support-request {:format "original"}) => {}
        (autodetect-request-format no-webp-support-request {:format "original"}) => {})
 
 (facts :route->webp-request-format
-       (route->webp-request-format {:options {}} webp-support-request) => {:options {:format "webp"}, :requested-format nil}
+       (route->webp-request-format {:options {}} webp-support-request) => {:options {:format mt/webp-format}, :requested-format nil}
        (route->webp-request-format {:options {:format "jpg"}} webp-support-request) => {:options {:format "jpg"}, :requested-format "jpg"}
        (route->webp-request-format {:options {:format "jpg"}} no-webp-support-request) => {:options {:format "jpg"}, :requested-format "jpg"}
        (route->webp-request-format {:options {}} no-webp-support-request) => {:options {}, :requested-format nil}

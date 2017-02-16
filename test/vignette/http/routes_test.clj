@@ -15,7 +15,8 @@
             [vignette.test.helper :refer [context-route-matches]]
             [vignette.util.thumbnail :as u]
             [vignette.setup :refer [image-routes]]
-            [vignette.http.legacy.routes :as hlr]))
+            [vignette.http.legacy.routes :as hlr]
+            [vignette.media-types :as mt]))
 
 (def in-wiki-context-route-matches (partial context-route-matches vignette.http.api-routes/wiki-context))
 
@@ -105,18 +106,18 @@
       (u/get-or-generate-thumbnail ..wiki-store.. route-params) =throws=> (NullPointerException.))))
 
 (facts :all-routes-thumbnail-webp
-       (let [route-params {:request-type :thumbnail
-                           :image-type "images"
-                           :original "ropes.jpg"
-                           :revision "latest"
-                           :middle-dir "35"
-                           :top-dir "3"
-                           :wikia "lotr"
-                           :thumbnail-mode "thumbnail"
-                           :height "10"
-                           :width "10"
+       (let [route-params {:request-type     :thumbnail
+                           :image-type       "images"
+                           :original         "ropes.jpg"
+                           :revision         "latest"
+                           :middle-dir       "35"
+                           :top-dir          "3"
+                           :wikia            "lotr"
+                           :thumbnail-mode   "thumbnail"
+                           :height           "10"
+                           :width            "10"
                            :requested-format nil
-                           :options {:format "webp"}}]
+                           :options          {:format mt/webp-format}}]
          ((create-routes (image-routes {:wikia-store ..wiki-store.. :static-store ..static-store..})) (assoc-in (request :get "/lotr/3/35/ropes.jpg/revision/latest/thumbnail/width/10/height/10") [:headers "accept"] "image/webp")) => (contains {:status 200})
          (provided
            (u/get-or-generate-thumbnail ..wiki-store.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg"))

@@ -43,7 +43,7 @@
 
 (def zone-original-map (assoc original-map :options {:zone "temp"}))
 
-(def format-latest-map (assoc latest-map :options {:format "webp"}))
+(def format-latest-map (assoc latest-map :options {:format webp-format}))
 
 (def timeline-file "bbe457792492f1b89f21a45aa6ca6088.jpg")
 (def timeline-map {:wikia "television"
