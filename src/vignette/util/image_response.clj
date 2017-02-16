@@ -10,8 +10,7 @@
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :refer :all]
-            [ring.util.codec :refer [url-encode]]
-            [wikia.common.logger :as log]))
+            [ring.util.codec :refer [url-encode]]))
 
 (declare create-image-response
          add-content-disposition-header
