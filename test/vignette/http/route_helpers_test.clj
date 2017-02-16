@@ -54,10 +54,14 @@
        (autodetect-request-format no-webp-support-request {}) => {}
        (autodetect-request-format no-webp-support-request {:format "png"}) => {:format "png"}
        (autodetect-request-format webp-support-request {}) => {:format "webp"}
-       (autodetect-request-format webp-support-request {:format "jpeg"}) => {:format "jpeg"})
+       (autodetect-request-format webp-support-request {:format "jpeg"}) => {:format "jpeg"}
+       (autodetect-request-format webp-support-request {:format "original"}) => {}
+       (autodetect-request-format no-webp-support-request {:format "original"}) => {})
 
 (facts :route->webp-request-format
        (route->webp-request-format {:options {}} webp-support-request) => {:options {:format "webp"}, :requested-format nil}
        (route->webp-request-format {:options {:format "jpg"}} webp-support-request) => {:options {:format "jpg"}, :requested-format "jpg"}
        (route->webp-request-format {:options {:format "jpg"}} no-webp-support-request) => {:options {:format "jpg"}, :requested-format "jpg"}
-       (route->webp-request-format {:options {}} no-webp-support-request) => {:options {}, :requested-format nil})
+       (route->webp-request-format {:options {}} no-webp-support-request) => {:options {}, :requested-format nil}
+       (route->webp-request-format {:options {:format "original"}} webp-support-request) => {:options {}, :requested-format "original"}
+       (route->webp-request-format {:options {:format "original"}} no-webp-support-request) => {:options {}, :requested-format "original"})

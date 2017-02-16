@@ -15,9 +15,9 @@
   [file]
   (contains? webp-mime-types (mime-type-of (or file ""))))
 
-(defn webp-supported-content-type?
-  [content-type]
-  (contains? webp-mime-types content-type))
+(defn webp-compatible-mime-type?
+  [mime-type]
+  (contains? (conj webp-mime-types "image/webp") mime-type))
 
 (defmulti image-type->path-prefix (fn [object-map] (image-type object-map)))
 

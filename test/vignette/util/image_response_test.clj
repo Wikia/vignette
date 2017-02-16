@@ -43,11 +43,11 @@
                   "X-Surrogate-Key" "c8dfba77e9beb5c26ca20d4411674065d4a0ded5"}})
 
 (facts :add-vary-header
-       (add-vary-header {} {:requested-format nil :request-type :thumbnail :original "some-file.png" :image-type "images"}) => {:headers {"Vary" "Accept"}}
-       (add-vary-header {} {:request-type :thumbnail :original "some-file.png" :image-type "images"}) => {:headers {"Vary" "Accept"}}
-       (add-vary-header {} {:requested-format nil :request-type :original :original "some-file.png" :image-type "images"}) => {:headers {"Vary" "Accept"}}
-       (add-vary-header {} {:requested-format nil :request-type :original :original "some-file.bmp" :image-type "images"}) => {}
-       (add-vary-header {} {:requested-format nil :request-type :thumbnail :original "some-file.bmp" :image-type "images"}) => {}
-       (add-vary-header {} {:requested-format "png" :request-type :thumbnail :original "some-file.png" :image-type "images"}) => {}
-       (add-vary-header {} {:requested-format "png" :request-type :original :original "some-file.png" :image-type "images"}) => {})
-
+       (add-vary-header {} {:requested-format nil :request-type :thumbnail } "image/png") => {:headers {"Vary" "Accept"}}
+       (add-vary-header {} {:requested-format nil :request-type :thumbnail } "image/webp") => {:headers {"Vary" "Accept"}}
+       (add-vary-header {} {:request-type :thumbnail} "image/jpeg") => {} ;; legacy routes - no Vary: Accept
+       (add-vary-header {} {:requested-format nil :request-type :original} "image/png") => {}
+       (add-vary-header {} {:requested-format nil :request-type :thumbnail} "image/bmp") => {}
+       (add-vary-header {} {:requested-format "png" :request-type :thumbnail} "image/png") => {}
+       (add-vary-header {} {:requested-format "original" :request-type :thumbnail} "image/png") => {}
+       (add-vary-header {} {:requested-format "original" :request-type :original} "image/png") => {})
