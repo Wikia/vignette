@@ -6,4 +6,4 @@
 (facts :static-assets :url
        (svc/materialize-static-asset-url "uuid_sample") => "http://hostname:9999/image/uuid_sample"
        (provided
-         (consul/find-service consul/create-consul "static-assets" "prod") => {:address "hostname", :port 9999}))
+         (consul/find-service consul/create-consul "static-assets" consul/service-query-tag) => {:address "hostname", :port 9999}))

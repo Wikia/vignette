@@ -43,6 +43,7 @@
 
 (def zone-original-map (assoc original-map :options {:zone "temp"}))
 
+(def format-latest-map (assoc latest-map :options {:format "webp"}))
 
 (def timeline-file "bbe457792492f1b89f21a45aa6ca6088.jpg")
 (def timeline-map {:wikia "television"
@@ -67,6 +68,7 @@
 (facts :thumbnail-path
        (thumbnail-path archive-map) => "images/thumb/archive/a/ab/12345!boat.jpg/200px-300px-thumbnail-boat.jpg"
        (thumbnail-path latest-map) => "images/thumb/a/ab/boat.jpg/200px-300px-thumbnail-boat.jpg"
+       (thumbnail-path format-latest-map) => "images/thumb/a/ab/boat.jpg/200px-300px-thumbnail[format=webp]-boat.jpg"
        (fully-qualified-original-path latest-map) => "bucket/images/a/ab/boat.jpg"
        (fully-qualified-original-path archive-map) => "bucket/images/archive/a/ab/12345!boat.jpg")
 
