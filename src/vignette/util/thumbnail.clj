@@ -64,6 +64,9 @@
         thumb-options (reduce conj route-options query-options)
         args (reduce conj base-command thumb-options)
         sh-out (run-thumbnailer args)]
+    (log/error "Will call thumbnailer" {
+                                 :args args
+                                 })
     (cond
       (or (zero? (:exit sh-out))
           (and (= 1 (:exit sh-out))
@@ -76,7 +79,7 @@
 (defn webp-override
   [original thumb-map]
   (if (and (= webp-format (get-in thumb-map [:options :format]))
-          (not (webp-supported? original)))
+          (not (webp-compatible-mime-type? (mime-type-of (or original "")))))
     (do
       (log/info "webp-override-remove" (select-keys thumb-map [:original :options])) ; todo: do we need it?
       (update-in thumb-map [:options] dissoc :format))

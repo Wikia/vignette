@@ -46,7 +46,8 @@
        (add-vary-header {} {:requested-format nil :request-type :thumbnail } "image/png") => {:headers {"Vary" "Accept"}}
        (add-vary-header {} {:requested-format nil :request-type :thumbnail } "image/webp") => {:headers {"Vary" "Accept"}}
        (add-vary-header {} {:request-type :thumbnail} "image/jpeg") => {} ;; legacy routes - no Vary: Accept
-       (add-vary-header {} {:requested-format nil :request-type :original} "image/png") => {}
+       (add-vary-header {} {:requested-format nil :request-type :original} "image/png") => {:headers {"Vary" "Accept"}}
+       (add-vary-header {} {:request-type :original} "image/jpeg") => {} ;; legacy routes - no Vary: Accept
        (add-vary-header {} {:requested-format nil :request-type :thumbnail} "image/bmp") => {}
        (add-vary-header {} {:requested-format "png" :request-type :thumbnail} "image/png") => {}
        (add-vary-header {} {:requested-format "original" :request-type :thumbnail} "image/png") => {}

@@ -29,7 +29,7 @@
 (defn webp-filter [store image-params]
   (let [original-image (get-original store image-params)]
     (if (and (force-webp? image-params)
-        (webp-compatible-mime-type? (content-type original-image)))
+        (webp-or-compatible-mime-type? (content-type original-image)))
           (u/original->get-or-generate-thumbnail store (image-params->forced-webp-params image-params) original-image)
           original-image)))
 

@@ -13,13 +13,13 @@
 (def webp-mime-types #{"image/jpeg" "image/png"})
 (def webp-format "webp")
 
-(defn webp-compatible-mime-type?
+(defn webp-or-compatible-mime-type?
   [mime-type]
   (contains? (conj webp-mime-types "image/webp") mime-type))
 
-(defn webp-supported?
-  [file]
-  (webp-compatible-mime-type? (mime-type-of (or file ""))))
+(defn webp-compatible-mime-type?
+  [mime-type]
+  (contains? webp-mime-types mime-type))
 
 (defmulti image-type->path-prefix (fn [object-map] (image-type object-map)))
 
