@@ -11,7 +11,6 @@
 (def blocked-placeholder-param "bp")
 
 (def webp-accept-header-name "accept")
-(def webp-accept-header-value "image/webp")
 
 (defn handle-thumbnail
   [store image-params request]
@@ -41,7 +40,7 @@
 
 (defn browser-supports-webp? [request]
   (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
-    (.contains vary-string webp-accept-header-value)))
+    (.contains vary-string mt/webp-mime-type)))
 
 (defn add-webp-format-option-if-supported
   [request options]
