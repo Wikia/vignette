@@ -64,9 +64,6 @@
         thumb-options (reduce conj route-options query-options)
         args (reduce conj base-command thumb-options)
         sh-out (run-thumbnailer args)]
-    (log/error "Will call thumbnailer" {
-                                 :args args
-                                 })
     (cond
       (or (zero? (:exit sh-out))
           (and (= 1 (:exit sh-out))
@@ -121,10 +118,9 @@
               (perf/publish {:generate-thumbail 1})
               (background-check-and-delete-original
                 thumb-params thumb local-original)
-              (ls/create-stored-object thumb (fn [stored-object]
-                                               (background-save-thumbnail store
-                                                                          stored-object
-                                                                          thumb-params)))))
+              (let [stored-object (ls/create-stored-object thumb)]
+                (background-save-thumbnail store stored-object thumb-map)
+                stored-object)))
           (catch Object _
             (background-delete-file local-original)
             (throw+)))))
@@ -143,8 +139,8 @@
 (defn background-save-thumbnail
   "Save the thumbnail in the background. This should not delay the rendering."
   [store stored-object map]
-  (future (save-thumbnail store stored-object map)
-          (io/delete-file (file-stream stored-object))))
+  (future
+    (save-thumbnail store stored-object map)))
 
 (defn background-delete-file
   [file]
