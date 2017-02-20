@@ -64,4 +64,4 @@
 
 (defn create-stored-object
   [file]
-    (->LocalStoredObject file))
+  (->LocalStoredObject file))
