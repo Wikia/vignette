@@ -132,18 +132,24 @@
                       :revision "12345"
                       :wikia "lotr"
                       :requested-format nil
-                      :options {}} ]
+                      :options {}}
+        forced-route-params (assoc route-params :thumbnail-mode "type-convert" :request-type :thumbnail)]
     ((create-routes (image-routes {:wikia-store ..wiki-store.. :static-store ..static-store..})) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 200})
     (provided
-     (sp/get-original ..wiki-store.. route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
+     (sp/get-thumbnail ..wiki-store.. forced-route-params) => nil
+     (sp/get-original ..wiki-store.. forced-route-params) => (ls/create-stored-object (io/file "image-samples/ropes.jpg")))
 
     ((create-routes (image-routes {:wikia-store ..wiki-store.. :static-store ..static-store..})) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 404})
     (provided
-     (sp/get-original ..wiki-store.. route-params) => nil)
+     (sp/get-thumbnail ..wiki-store.. forced-route-params) => nil
+     (sp/get-original ..wiki-store.. forced-route-params) => nil
+     (ir/error-image forced-route-params) => ..thumb..
+     (ir/create-image-response ..thumb.. forced-route-params) => {})
 
     ((create-routes (image-routes {:wikia-store ..wiki-store.. :static-store ..static-store..})) (request :get "/lotr/3/35/ropes.jpg/revision/12345")) => (contains {:status 500})
     (provided
-      (sp/get-original ..wiki-store.. route-params) =throws=> (NullPointerException.))))
+      (sp/get-thumbnail ..wiki-store.. forced-route-params) =throws=> (NullPointerException.)
+    )))
 
 (facts :window-crop-route
        (in-wiki-context-route-matches proto/window-crop-route
