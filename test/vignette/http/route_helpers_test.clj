@@ -4,6 +4,7 @@
             [midje.sweet :refer :all]
             [pantomime.mime :refer [mime-type-of]]
             [ring.mock.request :refer :all]
+            [slingshot.slingshot :refer [try+]]
             [vignette.http.route-helpers :refer :all]
             [vignette.protocols :refer :all]
             [vignette.util.image-response :refer :all]
@@ -50,7 +51,15 @@
          (create-image-response ..original.. {}) => ..response..
          )
 
-       (handle-original ..store.. original-image-params ..request..) => (throws Exception)
+       (handle-original ..store.. original-image-params ..request..) => ..error..
+       (provided
+         (u/get-or-generate-thumbnail ..store.. original-forced-image-params) => nil
+         (error-response 404 original-image-params) => ..error..)
+
+       (try+
+         (handle-original ..store.. original-image-params ..request..)
+         (catch [:type :convert-error] e
+           (:response-code e))) => 404
        (provided
          (sp/get-thumbnail ..store.. original-forced-image-params) => nil
          (sp/get-original ..store.. original-forced-image-params) => nil))
