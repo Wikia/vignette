@@ -41,28 +41,30 @@
          (error-response 404 ..params..) => ..error..))
 
 (facts :handle-original
-       (handle-original ..store.. original-image-params ..request..) => ..response..
-       (provided
-         (sp/get-thumbnail ..store.. original-forced-image-params) => nil
-         (sp/get-original ..store.. original-forced-image-params) => ..original..
-         (sp/filename ..original..) => ..filename..
-         (mime-type-of ..filename..) => ..mime_type..
-         (u/is-passthrough-required ..mime_type.. original-forced-image-params) => true
-         (create-image-response ..original.. {}) => ..response..
-         )
+  (let [original-image-params {}
+        original-forced-image-params {:request-type :thumbnail, :thumbnail-mode "type-convert"}]
+    (handle-original ..store.. original-image-params ..request..) => ..response..
+    (provided
+      (sp/get-thumbnail ..store.. original-forced-image-params) => nil
+      (sp/get-original ..store.. original-forced-image-params) => ..original..
+      (sp/filename ..original..) => ..filename..
+      (mime-type-of ..filename..) => ..mime_type..
+      (u/is-passthrough-required ..mime_type.. original-forced-image-params) => true
+      (create-image-response ..original.. {}) => ..response..
+      )
 
-       (handle-original ..store.. original-image-params ..request..) => ..error..
-       (provided
-         (u/get-or-generate-thumbnail ..store.. original-forced-image-params) => nil
-         (error-response 404 original-image-params) => ..error..)
+    (handle-original ..store.. original-image-params ..request..) => ..error..
+    (provided
+      (u/get-or-generate-thumbnail ..store.. original-forced-image-params) => nil
+      (error-response 404 original-image-params) => ..error..)
 
-       (try+
-         (handle-original ..store.. original-image-params ..request..)
-         (catch [:type :convert-error] e
-           (:response-code e))) => 404
-       (provided
-         (sp/get-thumbnail ..store.. original-forced-image-params) => nil
-         (sp/get-original ..store.. original-forced-image-params) => nil))
+    (try+
+      (handle-original ..store.. original-image-params ..request..)
+      (catch [:type :convert-error] e
+             (:response-code e))) => 404
+    (provided
+      (sp/get-thumbnail ..store.. original-forced-image-params) => nil
+      (sp/get-original ..store.. original-forced-image-params) => nil)))
 
 (facts :route-params->image-type
        (route-params->image-type {:image-type ""}) => "images"
