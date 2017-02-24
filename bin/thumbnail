@@ -36,7 +36,14 @@ CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256MB -limit map 256M
 # sacrificing too much image quality. in the tests that were done, this
 # produced images that were closer in size to what is currently being created
 # with phpthumb
+# JPEG_QUALITY_LEVEL quality is used when generating JPEG thumbnails
 JPEG_QUALITY_LEVEL=80
+
+# Quality used for generating WebP images from JPEG
+WEBP_JPEG_QUALITY_LEVEL=85
+
+# When presenting PNG's using WebP we should use higher quality to avoid artifacts
+WEBP_PNG_QUALITY_LEVEL=90
 
 MODE_OPTIONS=(
 	"fixed-aspect-ratio"
@@ -276,6 +283,14 @@ function original_is() {
 	fi
 }
 
+function target_webp() {
+    if [[ "$1" =~ ^webp: ]]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
 function remove_custom_type() {
 	OUT=${OUT#*:}
 }
@@ -342,11 +357,26 @@ function thumb_params() {
 			HEIGHT=${WIDTH}
 	fi
 
-	original_is $TYPE_JPEG
+	original_is ${TYPE_JPEG}
 	jpeg=$?
 
+	original_is ${TYPE_PNG}
+	png=$?
+
+	target_webp ${OUT}
+	webp=$?
+
+
 	if [[ $jpeg -eq 1 ]]; then
+		if [[ $webp -eq 1 ]]; then
+			QUALITY="-quality ${WEBP_JPEG_QUALITY_LEVEL}"
+		else
 			QUALITY="-quality ${JPEG_QUALITY_LEVEL}"
+		fi
+	fi
+
+	if [[ $png -eq 1 ]] && [[ $webp -eq 1 ]]; then
+	    QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL}"
 	fi
 
 	# fixed-aspect-ratio (was LS, read fixed-aspect-ratio): thumbnail using a fixed aspect ratio and fill to generate a thumbnail with the exact dimensions given; no upscaling.
