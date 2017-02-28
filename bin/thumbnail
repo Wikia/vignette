@@ -45,6 +45,9 @@ WEBP_JPEG_QUALITY_LEVEL=85
 # When presenting PNG's using WebP we should use higher quality to avoid artifacts
 WEBP_PNG_QUALITY_LEVEL=90
 
+# When presenting full size PNGs we should use even higher quality
+WEBP_FULLSIZE_PNG_QUALITY_LEVEL=95
+
 MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"fixed-aspect-ratio-down"
@@ -378,7 +381,11 @@ function thumb_params() {
 	fi
 
 	if [[ $png -eq 1 ]] && [[ $webp -eq 1 ]]; then
-	    QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL}"
+	    if [[ "${MODE}" = "type-convert" ]]; then
+	        QUALITY="-quality ${WEBP_FULLSIZE_PNG_QUALITY_LEVEL}"
+	    else
+	        QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL}"
+	    fi
 	fi
 
 	# fixed-aspect-ratio (was LS, read fixed-aspect-ratio): thumbnail using a fixed aspect ratio and fill to generate a thumbnail with the exact dimensions given; no upscaling.
