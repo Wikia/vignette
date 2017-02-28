@@ -10,13 +10,18 @@
 
 (def archive-dir "archive")
 
-(def webp-mime-types #{"image/jpeg" "image/png"})
-(defn webp-supported?
-  [file]
-  (contains? webp-mime-types (mime-type-of (or file ""))))
+(def webp-compatible-mime-types #{"image/jpeg" "image/png"})
+(def webp-mime-type "image/webp")
+(def webp-format "webp")
+
+(defn webp-or-compatible-mime-type?
+  [mime-type]
+  (contains? (conj webp-compatible-mime-types webp-mime-type) mime-type))
+
 (defn webp-compatible-mime-type?
   [mime-type]
-  (contains? (conj webp-mime-types "image/webp") mime-type))
+  (contains? webp-compatible-mime-types mime-type))
+
 (defmulti image-type->path-prefix (fn [object-map] (image-type object-map)))
 
 (defmethod image-type->path-prefix "avatars" [object-map]

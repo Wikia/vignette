@@ -15,5 +15,6 @@
     ))
 
 (def jpeg-header [ -1 -40 -1 ])
+(def png-header [80 78 71 13 10 26 10])
 (def riff-header [82 73 70 70])
 (def webp-header [87 69 66 80])

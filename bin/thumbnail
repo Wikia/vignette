@@ -45,6 +45,9 @@ WEBP_JPEG_QUALITY_LEVEL=85
 # When presenting PNG's using WebP we should use higher quality to avoid artifacts
 WEBP_PNG_QUALITY_LEVEL=90
 
+# When presenting full size PNGs we should use even higher quality
+WEBP_FULLSIZE_PNG_QUALITY_LEVEL=95
+
 MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"fixed-aspect-ratio-down"
@@ -59,6 +62,7 @@ MODE_OPTIONS=(
 	"window-crop-fixed"
 	"zoom-crop"
 	"zoom-crop-down"
+	"type-convert"
 )
 
 TYPE_JPEG="JPEG"
@@ -216,6 +220,7 @@ if [ "$OUT"X = "X" ]; then
 fi
 
 MODES_REQUIRING_WIDTH=("${MODE_OPTIONS[@]/"scale-to-height-down"}")
+MODES_REQUIRING_WIDTH=("${MODES_REQUIRING_WIDTH[@]/"type-convert"}")
 MODES_REQUIRING_HEIGHT=("fixed-aspect-ratio" "fixed-aspect-ratio-down" "thumbnail" "thumbnail-down" "top-crop" "top-crop-down" "window-crop-fixed" "zoom-crop" "zoom-crop-down" "scale-to-height-down")
 
 if [ "$HEIGHT"X = "X" ]; then
@@ -360,12 +365,12 @@ function thumb_params() {
 	original_is ${TYPE_JPEG}
 	jpeg=$?
 
+
 	original_is ${TYPE_PNG}
 	png=$?
 
 	target_webp ${OUT}
 	webp=$?
-
 
 	if [[ $jpeg -eq 1 ]]; then
 		if [[ $webp -eq 1 ]]; then
@@ -376,7 +381,11 @@ function thumb_params() {
 	fi
 
 	if [[ $png -eq 1 ]] && [[ $webp -eq 1 ]]; then
-	    QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL}"
+	    if [[ "${MODE}" = "type-convert" ]]; then
+	        QUALITY="-quality ${WEBP_FULLSIZE_PNG_QUALITY_LEVEL}"
+	    else
+	        QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL}"
+	    fi
 	fi
 
 	# fixed-aspect-ratio (was LS, read fixed-aspect-ratio): thumbnail using a fixed aspect ratio and fill to generate a thumbnail with the exact dimensions given; no upscaling.
@@ -475,6 +484,8 @@ function thumb_params() {
 				THUMB_PARAMS="${QUALITY} -gravity center -crop ${WIDTH}x${HEIGHT}+0+0 -thumbnail ${WIDTH}x${HEIGHT}+0+0"
 			fi
 			;;
+		"type-convert")
+		    THUMB_PARAMS="${QUALITY}"
 	esac
 }
 

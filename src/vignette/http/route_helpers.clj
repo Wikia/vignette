@@ -5,12 +5,12 @@
             [vignette.protocols :refer :all]
             [vignette.storage.core :refer :all]
             [vignette.storage.protocols :refer :all]
-            [vignette.util.thumbnail :as u]))
+            [vignette.util.thumbnail :as u]
+            [vignette.media-types :as mt]))
 
 (def blocked-placeholder-param "bp")
 
 (def webp-accept-header-name "accept")
-(def webp-accept-header-value "image/webp")
 
 (defn handle-thumbnail
   [store image-params request]
@@ -40,12 +40,12 @@
 
 (defn browser-supports-webp? [request]
   (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
-    (.contains vary-string webp-accept-header-value)))
+    (.contains vary-string mt/webp-mime-type)))
 
 (defn add-webp-format-option-if-supported
   [request options]
   (if (browser-supports-webp? request)
-    (merge options {:format "webp"})
+    (merge options {:format mt/webp-format})
     options))
 
 (defn autodetect-request-format

@@ -4,7 +4,7 @@
 
 (def default-consul-hostname "localhost")
 (def default-consul-http-port 8500)
-(def default-service-query-tag "prod")
+(def default-service-query-tag "dev")
 
 (def service-query-tag (env :consul-query-tag default-service-query-tag))
 

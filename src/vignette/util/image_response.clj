@@ -10,7 +10,8 @@
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :refer :all]
-            [ring.util.codec :refer [url-encode]]))
+            [ring.util.codec :refer [url-encode]]
+            [io.clj.logging :as log]))
 
 (declare create-image-response
          add-content-disposition-header
@@ -114,8 +115,7 @@
         image-map
         (contains? image-map :requested-format)   ;; legacy routes - don't emit Vary if :requested-format is not set
         (nil? (:requested-format image-map))
-        (= (:request-type image-map) :thumbnail)
-        (webp-compatible-mime-type? image-mime-type))
+        (webp-or-compatible-mime-type? image-mime-type))
       (-> response-map
           (header "Vary" "Accept"))
       response-map))

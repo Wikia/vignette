@@ -127,6 +127,10 @@
   (let [window (requested-window-size requested)]
     (scale-width requested window)))
 
+(defn keep-dimensions
+  [requested original]
+  (requested-size original))
+
 (defn fitter
   "Creates a function that proportionally shrinks the given box,
   so that its 'a' (width or height) is not grater than that of the container"
@@ -182,6 +186,9 @@
 (def original-proportions-upto-original
   {:fn scale-and-fit-in-original :requires-original true})
 
+(def keep-original-dimensions
+  {:fn keep-dimensions :requires-original true})
+
 (def thumb-size-estimators {
   :fixed-aspect-ratio as-requested
   :fixed-aspect-ratio-down as-requested
@@ -196,6 +203,7 @@
   :window-crop-fixed as-requested
   :zoom-crop as-requested
   :zoom-crop-down requested-proportions-upto-original
+  :type-convert keep-original-dimensions
   })
 
 (defn estimate-thumb-size

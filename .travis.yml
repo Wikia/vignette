@@ -5,6 +5,7 @@ jdk:
 env:
   global:
   - LIBWEBP_VERSION: '0.6.0'
+  - IMAGEMAGICK_VERSION: '7.0.4-7'
 addons:
   apt:
     packages:
@@ -18,6 +19,12 @@ before_install:
   - export VIGNETTE_THUMBNAIL_BIN=$TRAVIS_BUILD_DIR/bin/thumbnail
   - export PATH=$HOME/opt/bin:$PATH
   - export IMAGEMAGICK_BASE=$HOME/opt
+
+cache:
+  directories:
+    - $HOME/opt
+    - $HOME/.m2/repository
 script:
+  - magick --version
   - convert --version | grep webp
   - lein2 midje

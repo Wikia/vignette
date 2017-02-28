@@ -33,7 +33,7 @@
          (run-thumbnailer anything) => {:exit 1 :err 256 :out "testing failure"})
 
        ;special mime type
-       (generate-thumbnail ..store.. beach-map) => ..file..
+       (generate-thumbnail ..store.. beach-map nil) => ..file..
        (provided
          (get-original ..store.. beach-map) => ..file..
          (filename ..file..) => "file.ogv"))
@@ -62,27 +62,29 @@
 
 
 (facts :generate-thumbnail
-       (generate-thumbnail ..store.. beach-map) => ..object..
+       (generate-thumbnail ..store.. beach-map nil) => ..object..
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
          (filename ..original..) => ..filename..
-         (is-passthrough-required ..filename..) => false
+         (is-passthrough-required ..original-mime-type.. beach-map) => false
          (original->thumbnail ..local.. beach-map) => ..thumb..
          (background-check-and-delete-original beach-map & anything) => nil
-         (create-stored-object ..thumb.. & anything) => ..object..)
+         (create-stored-object ..thumb.. & anything) => ..object..
+         (mime-type-of ..filename..) => ..original-mime-type..)
 
-       (generate-thumbnail ..store.. beach-map) => (throws ExceptionInfo)
+       (generate-thumbnail ..store.. beach-map nil) => (throws ExceptionInfo)
        (provided
          (get-original ..store.. beach-map) => nil)
 
-       (generate-thumbnail ..store.. beach-map) => falsey
+       (generate-thumbnail ..store.. beach-map nil) => falsey
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
          (filename ..original..) => ..filename..
-         (is-passthrough-required ..filename..) => false
-         (original->thumbnail ..local.. beach-map) => nil))
+         (is-passthrough-required ..original-mime-type.. beach-map) => false
+         (original->thumbnail ..local.. beach-map) => nil
+         (mime-type-of ..filename..) => ..original-mime-type..))
 
 (facts :get-or-generate-thumbnail
        ; get existing
@@ -94,7 +96,7 @@
        (get-or-generate-thumbnail ..store.. beach-map) => ..thumb..
        (provided
          (get-thumbnail ..store.. beach-map) => false
-         (generate-thumbnail ..store.. beach-map) => ..thumb..)
+         (generate-thumbnail ..store.. beach-map nil) => ..thumb..)
 
        ; generate new - fail
        (let [image-dne (assoc beach-map :original "doesnotexist.jpg")]
@@ -107,14 +109,18 @@
        (let [option-map (assoc-in beach-map [:options :replace] "true")]
          (get-or-generate-thumbnail ..store.. option-map) => ..new-thumb..
          (provided
-           (generate-thumbnail ..store.. option-map) => ..new-thumb..)))
+           (generate-thumbnail ..store.. option-map nil) => ..new-thumb..)))
 
 (facts :route-map->thumb-args
        (route-map->thumb-args beach-map) => (contains ["--height" "100" "--width" "100"
                                                        "--mode" "thumbnail"] :in-any-order))
 
 (facts :passthrough-mime-types
-       (is-passthrough-required nil) => false
-       (is-passthrough-required "") => false
-       (is-passthrough-required "file.jpg") => false
-       (is-passthrough-required "file.ogv") => true)
+       (is-passthrough-required "image/png" {}) => false
+       (is-passthrough-required "image/jpeg" {}) => false
+       (is-passthrough-required "audio/ogg" {}) => true
+       (is-passthrough-required "video/ogg" {}) => true
+       (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {}}) => true
+       (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {:format nil}}) => true
+       (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => false
+       (is-passthrough-required "image/bmp" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => true)
