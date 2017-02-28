@@ -47,8 +47,7 @@
     (provided
       (sp/get-thumbnail ..store.. original-forced-image-params) => nil
       (sp/get-original ..store.. original-forced-image-params) => ..original..
-      (sp/filename ..original..) => ..filename..
-      (mime-type-of ..filename..) => ..mime_type..
+      (sp/content-type ..original..) => ..mime_type..
       (u/is-passthrough-required ..mime_type.. original-forced-image-params) => true
       (create-image-response ..original.. {}) => ..response..
       )
