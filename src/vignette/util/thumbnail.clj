@@ -21,7 +21,8 @@
          background-delete-file
          generate-thumbnail
          background-save-thumbnail
-         background-check-and-delete-original)
+         background-check-and-delete-original
+         webp-override)
 
 (def thumbnail-bin (env :vignette-thumbnail-bin (if (file-exists? "/usr/local/bin/thumbnail")
                                                   "/usr/local/bin/thumbnail"
@@ -37,8 +38,12 @@
 
 (def passthrough-mime-types #{"audio/ogg" "video/ogg"})
 (defn is-passthrough-required
-  [file]
-  (contains? passthrough-mime-types (mime-type-of (or file ""))))
+  [original-mime-type thumb-map]
+  (or
+    (contains? passthrough-mime-types original-mime-type)
+    (and
+      (= "type-convert" (:thumbnail-mode thumb-map))
+      (empty? (get-in (webp-override original-mime-type thumb-map) [:options :format])))))
 
 (defn route-map->thumb-args
   [thumb-map]
@@ -74,14 +79,13 @@
                     "thumbnailing error"))))
 
 (defn webp-override
-  [original thumb-map]
+  [original-mime-type thumb-map]
   (if (and (= webp-format (get-in thumb-map [:options :format]))
-          (not (webp-compatible-mime-type? (mime-type-of (or original "")))))
+           (not (webp-compatible-mime-type? original-mime-type)))
     (do
       (log/info "webp-override-remove" (select-keys thumb-map [:original :options])) ; todo: do we need it?
       (update-in thumb-map [:options] dissoc :format))
-      thumb-map)
-)
+      thumb-map))
 
 (defn get-or-generate-thumbnail
   [store thumb-map]
@@ -93,37 +97,28 @@
     (when-let [thumb (generate-thumbnail store thumb-map nil)]
     thumb)))
 
-(defn original->get-or-generate-thumbnail
-  [store thumb-map original]
-  (if-let [thumb (and (not (q/query-opt thumb-map :replace))
-                      (get-thumbnail store thumb-map))]
-    (do
-      (perf/publish {:thumbnail-cache-hit 1})
-      thumb)
-    (when-let [thumb (generate-thumbnail store thumb-map original)]
-      thumb)))
-
 (defn generate-thumbnail
   "Generate a thumbnail from the original specified in thumb-map.
   This function will download the original locally and thumbnail it.
   The original will be removed after the thumbnailing is completed."
   [store thumb-map original]
   (if-let [original (or original (get-original store thumb-map))]
-    (if (is-passthrough-required (filename original))
-      original
-      (when-let [local-original (original->local original)]
-        (try+
-          (let [thumb-params (webp-override local-original thumb-map)]
-            (when-let [thumb (original->thumbnail local-original thumb-params)]
-              (perf/publish {:generate-thumbail 1})
-              (background-check-and-delete-original
-                thumb-params thumb local-original)
-              (let [stored-object (ls/create-stored-object thumb)]
-                (background-save-thumbnail store stored-object thumb-map)
-                stored-object)))
-          (catch Object _
-            (background-delete-file local-original)
-            (throw+)))))
+    (let [original-mime-type (mime-type-of (or (filename original) ""))]
+      (if (is-passthrough-required original-mime-type thumb-map)
+          original
+          (when-let [local-original (original->local original)]
+            (try+
+              (let [thumb-params (webp-override original-mime-type thumb-map)]
+                (when-let [thumb (original->thumbnail local-original thumb-params)]
+                  (perf/publish {:generate-thumbail 1})
+                  (background-check-and-delete-original
+                    thumb-params thumb local-original)
+                  (let [stored-object (ls/create-stored-object thumb)]
+                    (background-save-thumbnail store stored-object thumb-map)
+                    stored-object)))
+              (catch Object _
+                     (background-delete-file local-original)
+                     (throw+))))))
     (throw+ {:type          :convert-error
              :thumb-map     thumb-map
              :response-code 404}
