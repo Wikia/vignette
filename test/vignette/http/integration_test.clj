@@ -171,7 +171,7 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"beach.webp\"; filename*=UTF-8''beach.webp"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 14050 50)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 17950 50)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000"
       (get (:headers response) "Content-Type") => "image/webp"
