@@ -40,7 +40,7 @@ CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256MB -limit map 256M
 JPEG_QUALITY_LEVEL=80
 
 # Quality used for generating WebP images from JPEG
-WEBP_JPEG_QUALITY_LEVEL=85
+WEBP_JPEG_QUALITY_LEVEL=90
 
 # When presenting PNG's using WebP we should use higher quality to avoid artifacts
 WEBP_PNG_QUALITY_LEVEL=90
