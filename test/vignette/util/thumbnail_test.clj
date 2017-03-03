@@ -36,7 +36,7 @@
        (generate-thumbnail ..store.. beach-map nil) => ..file..
        (provided
          (get-original ..store.. beach-map) => ..file..
-         (filename ..file..) => "file.ogv"))
+         (content-type ..file..) => "video/ogg"))
 
 (facts :orignal->local-maintains-file-extension
        (.getName (original->local
@@ -66,12 +66,11 @@
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
-         (filename ..original..) => ..filename..
+         (content-type ..original..) => ..original-mime-type..
          (is-passthrough-required ..original-mime-type.. beach-map) => false
          (original->thumbnail ..local.. beach-map) => ..thumb..
          (background-check-and-delete-original beach-map & anything) => nil
-         (create-stored-object ..thumb.. & anything) => ..object..
-         (mime-type-of ..filename..) => ..original-mime-type..)
+         (create-stored-object ..thumb.. & anything) => ..object..)
 
        (generate-thumbnail ..store.. beach-map nil) => (throws ExceptionInfo)
        (provided
@@ -81,10 +80,9 @@
        (provided
          (get-original ..store.. beach-map) => ..original..
          (original->local ..original..) => ..local..
-         (filename ..original..) => ..filename..
+         (content-type ..original..) => ..original-mime-type..
          (is-passthrough-required ..original-mime-type.. beach-map) => false
-         (original->thumbnail ..local.. beach-map) => nil
-         (mime-type-of ..filename..) => ..original-mime-type..))
+         (original->thumbnail ..local.. beach-map) => nil))
 
 (facts :get-or-generate-thumbnail
        ; get existing

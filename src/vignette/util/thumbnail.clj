@@ -103,12 +103,12 @@
   The original will be removed after the thumbnailing is completed."
   [store thumb-map original]
   (if-let [original (or original (get-original store thumb-map))]
-    (let [original-mime-type (mime-type-of (or (filename original) ""))]
-      (if (is-passthrough-required original-mime-type thumb-map)
+    (let [original-content-type (content-type original)]
+      (if (is-passthrough-required original-content-type thumb-map)
           original
           (when-let [local-original (original->local original)]
             (try+
-              (let [thumb-params (webp-override original-mime-type thumb-map)]
+              (let [thumb-params (webp-override original-content-type thumb-map)]
                 (when-let [thumb (original->thumbnail local-original thumb-params)]
                   (perf/publish {:generate-thumbail 1})
                   (background-check-and-delete-original
