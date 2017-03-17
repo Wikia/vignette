@@ -6,9 +6,8 @@
             [vignette.http.legacy.route-helpers :refer :all]))
 
 (facts :thumbnail-route
-  (let [matched (route-matches thumbnail-route
-                               (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.WEBP"))
-        matched (route->thumb-map matched)]
+  (let [request (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-SuperMario64_20.WEBP")
+        matched (route->thumb-map (route-matches thumbnail-route request) request)]
     (:request-type matched) => :thumbnail
     (archive? matched) => false
     (:original matched) => "SuperMario64_20.png"
@@ -21,9 +20,9 @@
     (:thumbname matched) => "SuperMario64_20.WEBP"
     (:format (:options matched)) => "webp")
 
-  (let [matched (route-matches thumbnail-route
-                               (request :get "/leagueoflegends/images/thumb/3/31/Cassiopeia_RVideo.ogv/mid-Cassiopeia_RVideo.ogv.jpg"))
-        matched (route->thumb-map matched)]
+  (let [request (request :get "/leagueoflegends/images/thumb/3/31/Cassiopeia_RVideo.ogv/mid-Cassiopeia_RVideo.ogv.jpg")
+        matched (route-matches thumbnail-route request)
+        matched (route->thumb-map matched request)]
     (:request-type matched) => :thumbnail
     (archive? matched) => false
     (:original matched) => "Cassiopeia_RVideo.ogv"
@@ -36,9 +35,8 @@
     (:thumbname matched) => "Cassiopeia_RVideo.ogv.jpg"
     (:format (:options matched)) => "jpg")
 
-  (let [matched (route->thumb-map
-                  (route-matches thumbnail-route
-                                 (request :get "/charmed/images/thumb/archive/b/b6/20101213101955!6x01-Phoebe.jpg/479px-6x01-Phoebe.jpg")))]
+  (let [request (request :get "/charmed/images/thumb/archive/b/b6/20101213101955!6x01-Phoebe.jpg/479px-6x01-Phoebe.jpg")
+        matched (route->thumb-map (route-matches thumbnail-route request) request)]
     (:request-type matched) => :thumbnail
     (:wikia matched) => "charmed"
     (:image-type matched) => "images"
@@ -52,9 +50,9 @@
     (:thumbname matched) => "6x01-Phoebe.jpg"
     (get (:options matched) :format nil) => nil?)
 
-  (let [matched (route->thumb-map
-                  (route-matches thumbnail-route
-                                 (request :get "/charmed/images/thumb/archive/b/b6/20101213101955!6x01-Phoebe.jpg/100x200x300-6x01-Phoebe.jpg")))]
+  (let [request (request :get "/charmed/images/thumb/archive/b/b6/20101213101955!6x01-Phoebe.jpg/100x200x300-6x01-Phoebe.jpg")
+        matched (route->thumb-map
+                  (route-matches thumbnail-route request) request)]
     (:request-type matched) => :thumbnail
     (:wikia matched) => "charmed"
     (:image-type matched) => "images"
@@ -68,9 +66,9 @@
     (:revision matched) => "20101213101955"
     (:thumbname matched) => "6x01-Phoebe.jpg")
 
-  (let [map (route->thumb-map
-              (route-matches thumbnail-route
-                             (request :get "/aigles-et-lys/fr/images/thumb/b/b7/Flag_of_Europe.svg/120px-Flag_of_Europe.svg.png")))]
+  (let [request (request :get "/aigles-et-lys/fr/images/thumb/b/b7/Flag_of_Europe.svg/120px-Flag_of_Europe.svg.png")
+        map (route->thumb-map
+              (route-matches thumbnail-route request) request)]
     (:request-type map) => :thumbnail
     (:wikia map) => "aigles-et-lys"
     (:top-dir map) => "b"
@@ -80,9 +78,9 @@
     (:thumbname map) => "Flag_of_Europe.svg.png"
     (:path-prefix (:options map)) => "fr")
 
-  (let [matched (route-matches thumbnail-route
-                               (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-0,120,0,240-SuperMario64_20.webp"))
-        matched (route->thumb-map matched)]
+  (let [request (request :get "/happywheels/images/thumb/b/bb/SuperMario64_20.png/185px-0,120,0,240-SuperMario64_20.webp")
+        matched (route-matches thumbnail-route request)
+        matched (route->thumb-map matched request)]
     (:request-type matched) => :thumbnail
     (archive? matched) => false
     (:original matched) => "SuperMario64_20.png"
@@ -102,9 +100,9 @@
     (:thumbnail-mode matched) => "window-crop"
     (:format (:options matched)) => "webp")
 
-  (let [matched (route-matches thumbnail-route
-                               (request :get "/thelastofus/images/thumb/5/58/Door_4.jpg/400x400-400,600,200,600-Door_4.jpg"))
-        matched (route->thumb-map matched)]
+  (let [request (request :get "/thelastofus/images/thumb/5/58/Door_4.jpg/400x400-400,600,200,600-Door_4.jpg")
+        matched (route-matches thumbnail-route request)
+        matched (route->thumb-map matched request)]
     (:thumbnail-mode matched) => "window-crop-fixed"
     (:wikia matched) => "thelastofus"
     (:top-dir matched) => "5"
@@ -117,9 +115,9 @@
     (:window-width matched) => "200"
     (:window-height matched) => "400")
 
-  (let [matched (route-matches thumbnail-route
-                               (request :get "/callofduty/images/thumb/1/1f/Undone/v,000000,200px--2,480,-15,255-Undone"))
-        matched (route->thumb-map matched)]
+  (let [request (request :get "/callofduty/images/thumb/1/1f/Undone/v,000000,200px--2,480,-15,255-Undone")
+        matched (route-matches thumbnail-route request)
+        matched (route->thumb-map matched request)]
     (:thumbnail-mode matched) => "window-crop"
     (:wikia matched) => "callofduty"
     (:top-dir matched) => "1"
@@ -131,18 +129,30 @@
     (:window-width matched) => "482"
     (:window-height matched) => "270")
 
-  (let [matched (route-matches thumbnail-route
-                               (request :get "/muppet/images/thumb/4/40/JohnvanBruggen.jpg/200px-JohnvanBruggen.jpg"))
-        matched (route->thumb-map matched)]
+  (let [request (request :get "/muppet/images/thumb/4/40/JohnvanBruggen.jpg/200px-JohnvanBruggen.jpg")
+        matched (route-matches thumbnail-route request)
+        matched (route->thumb-map matched request)]
     (:thumbnail-mode matched) => "scale-to-width"
     (:wikia matched) => "muppet"
     (:top-dir matched) => "4"
     (:middle-dir matched) => "40"
     (:original matched) => "JohnvanBruggen.jpg"
     (:width matched) => "200")
-  (let [matched (route-matches thumbnail-route
-                               (request :get "/muppet/images/thumb/temp/4/40/JohnvanBruggen.jpg/200px-JohnvanBruggen.jpg"))
-        matched (route->thumb-map matched)]
+
+   (let [request (assoc-in (request :get "/muppet/images/thumb/4/40/JohnvanBruggen.jpg/200px-JohnvanBruggen.jpg") [:headers "accept"] "image/webp")
+         matched (route-matches thumbnail-route request)
+         matched (route->thumb-map matched request)]
+     (:thumbnail-mode matched) => "scale-to-width"
+     (:wikia matched) => "muppet"
+     (:top-dir matched) => "4"
+     (:middle-dir matched) => "40"
+     (:original matched) => "JohnvanBruggen.jpg"
+     (:options matched) => {:format "webp"}
+     (:width matched) => "200")
+
+  (let [request (request :get "/muppet/images/thumb/temp/4/40/JohnvanBruggen.jpg/200px-JohnvanBruggen.jpg")
+        matched (route-matches thumbnail-route request)
+        matched (route->thumb-map matched request)]
     (:thumbnail-mode matched) => "scale-to-width"
     (zone matched) => "temp"
     (:wikia matched) => "muppet"
@@ -152,9 +162,9 @@
     (:width matched) => "200"))
 
 (facts :original-route
-       (let [map (route->original-map
-                   (route-matches original-route
-                                  (request :get "/happywheels/images/b/bb/SuperMario64_20.png")))]
+       (let [request (request :get "/happywheels/images/b/bb/SuperMario64_20.png")
+             map (route->original-map
+                   (route-matches original-route request) request)]
          (:request-type map) => :original
          (:wikia map) => "happywheels"
          (:top-dir map) => "b"
@@ -162,9 +172,9 @@
          (:original map) => "SuperMario64_20.png"
          (:revision map) => "latest")
 
-       (let [map (route->original-map
-                   (route-matches original-route
-                                  (request :get "/aigles-et-lys/fr/images/b/b7/Flag_of_Europe.svg")))]
+       (let [request (request :get "/aigles-et-lys/fr/images/b/b7/Flag_of_Europe.svg")
+             map (route->original-map
+                   (route-matches original-route request) request)]
          (:request-type map) => :original
          (:wikia map) => "aigles-et-lys"
          (:top-dir map) => "b"
@@ -172,9 +182,9 @@
          (:original map) => "Flag_of_Europe.svg"
          (:revision map) => "latest"
          (:path-prefix (:options map)) => "fr")
-       (let [map (route->original-map
-                   (route-matches original-route
-                                  (request :get "/aigles-et-lys/fr/images/temp/b/b7/Flag_of_Europe.svg")))]
+       (let [request (request :get "/aigles-et-lys/fr/images/temp/b/b7/Flag_of_Europe.svg")
+             map (route->original-map
+                   (route-matches original-route request) request)]
          (:request-type map) => :original
          (:wikia map) => "aigles-et-lys"
          (zone map) => "temp"
@@ -185,9 +195,9 @@
          (:path-prefix (:options map)) => "fr"))
 
 (facts :timeline-route
-  (let [map (route->timeline-map
-              (route-matches timeline-route
-                             (request :get "/television/es/images/timeline/bbe457792492f1b89f21a45aa6ca6088.png")))]
+  (let [request (request :get "/television/es/images/timeline/bbe457792492f1b89f21a45aa6ca6088.png")
+        map (route->timeline-map
+              (route-matches timeline-route request) request)]
     (:request-type map) => :original
     (:top-dir map) => "timeline"
     (:middle-dir map) => nil
@@ -197,9 +207,9 @@
     (:image-type map) => "images"))
 
 (facts :math-route
-       (let [map (route->original-map
-                   (route-matches math-route
-                                  (request :get "/nelsontest/images/math/3/9/f/39f9e908b194691eef95b328f9abc76c.png")))]
+       (let [request (request :get "/nelsontest/images/math/3/9/f/39f9e908b194691eef95b328f9abc76c.png")
+             map (route->original-map
+                   (route-matches math-route request) request)]
          (:request-type map) => :original
          (:top-dir map) => "3"
          (:middle-dir map) => "9/f"
@@ -208,9 +218,9 @@
          (:image-type map) => "images"))
 
 (facts :map-original-route
-  (let [map (route->interactive-maps-map
-              (route-matches interactive-maps-route
-                           (request :get "/intmap_tile_set_4823/20150205173220!phpZDfa00.jpg")))]
+  (let [request (request :get "/intmap_tile_set_4823/20150205173220!phpZDfa00.jpg")
+        map (route->interactive-maps-map
+              (route-matches interactive-maps-route request) request)]
     (:request-type map) => :original
     (:image-type map) => "arbitrary"
     (:original map) => "20150205173220!phpZDfa00.jpg"
@@ -218,9 +228,9 @@
     (:wikia map) => "intmap_tile_set_4823"))
 
 (facts :map-original-route-zoom
-  (let [map (route->interactive-maps-map
-              (route-matches interactive-maps-route
-                             (request :get "/intmap_tile_set_4692/3/1/2.png")))]
+  (let [request (request :get "/intmap_tile_set_4692/3/1/2.png")
+        map (route->interactive-maps-map
+              (route-matches interactive-maps-route request) request)]
     (:request-type map) => :original
     (:image-type map) => "arbitrary"
     (:original map) => "2.png"
@@ -228,9 +238,9 @@
     (:path-prefix (:options map)) => "3/1"))
 
 (facts :map-marker-route
-  (let [map (route->interactive-maps-map
-              (route-matches interactive-maps-marker-route
-                             (request :get "/intmap_markers_109/60px-20140716115821!phpZDweHO.png")))]
+  (let [request (request :get "/intmap_markers_109/60px-20140716115821!phpZDweHO.png")
+        map (route->interactive-maps-map
+              (route-matches interactive-maps-marker-route request) request)]
     (:request-type map) => :original
     (:image-type map) => "arbitrary"
     (:original map) => "60px-20140716115821!phpZDweHO.png"
@@ -238,9 +248,9 @@
     (:wikia map) => "intmap_markers_109"))
 
 (facts :map-thumbnail-route
-  (let [map (route->interactive-maps-thumbnail-map
-              (route-matches interactive-maps-thumbnail-route
-                             (request :get "/intmap_tile_set_4823/thumb/20150205173220%21phpZDfa00.jpg/1110x300x5-20150205173220%21phpZDfa00.jpg")))]
+  (let [request (request :get "/intmap_tile_set_4823/thumb/20150205173220%21phpZDfa00.jpg/1110x300x5-20150205173220%21phpZDfa00.jpg")
+        map (route->interactive-maps-thumbnail-map
+              (route-matches interactive-maps-thumbnail-route request) request)]
     (:width map) => "1110"
     (:height map) => "300"
     (:original map) => "20150205173220%21phpZDfa00.jpg"
