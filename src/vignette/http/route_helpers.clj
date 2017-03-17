@@ -10,8 +10,6 @@
 
 (def blocked-placeholder-param "bp")
 
-(def webp-accept-header-name "accept")
-
 (defn handle-thumbnail
   [store image-params request]
   (if-let [thumb (u/get-or-generate-thumbnail store image-params)]
@@ -38,20 +36,10 @@
                             #"^\/(.*)"
                             "$1")))
 
-(defn browser-supports-webp? [request]
-  (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
-    (.contains vary-string mt/webp-mime-type)))
-
-(defn add-webp-format-option-if-supported
-  [request options]
-  (if (browser-supports-webp? request)
-    (merge options {:format mt/webp-format})
-    options))
-
 (defn autodetect-request-format
   [request options]
   (if (empty? (:format options))
-    (add-webp-format-option-if-supported request options)
+    (mt/add-webp-format-option-if-supported request options)
       (if (= "original" (:format options))
           (dissoc options :format)
           options)))

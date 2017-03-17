@@ -2,12 +2,11 @@
   (:require [useful.experimental :refer [cond-let]]
             [vignette.protocols :refer :all]
             [vignette.storage.protocols :refer :all]
-            [vignette.media-types :refer [archive-dir]]
+            [vignette.media-types :refer [archive-dir add-webp-format-option-if-supported]]
             [vignette.media-types :as mt])
   (:import [java.net URLDecoder]))
 
 (def default-width 200)
-(def webp-accept-header-name "accept")
 
 (declare route->revision
          route->dimensions
@@ -23,21 +22,11 @@
 (defn archive? [map]
   (= (:zone map) (str "/" archive-dir)))
 
-(defn browser-supports-webp? [request]
-  (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
-    (.contains vary-string mt/webp-mime-type)))
-
-(defn autodetect-request-format
-  [request options]
-  (if (browser-supports-webp? request)
-    (merge options {:format mt/webp-format})
-    options))
-
 (defn route->webp-request-format
   "In case format was not specified in query options, try to set it to webp based on the accept header."
   [request-map request]
   (assoc request-map :requested-format (:format (:options request-map))
-                     :options (autodetect-request-format request (:options request-map))))
+                     :options (add-webp-format-option-if-supported request (:options request-map))))
 
 (defn zone [map]
   (if (and (not (empty? (:zone map)))
