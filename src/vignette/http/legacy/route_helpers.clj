@@ -27,15 +27,11 @@
   (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
     (.contains vary-string mt/webp-mime-type)))
 
-(defn add-webp-format-option-if-supported
+(defn autodetect-request-format
   [request options]
   (if (browser-supports-webp? request)
     (merge options {:format mt/webp-format})
     options))
-
-(defn autodetect-request-format
-  [request options]
-  (add-webp-format-option-if-supported request options))
 
 (defn route->webp-request-format
   "In case format was not specified in query options, try to set it to webp based on the accept header."
