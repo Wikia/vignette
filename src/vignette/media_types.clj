@@ -13,6 +13,17 @@
 (def webp-compatible-mime-types #{"image/jpeg" "image/png"})
 (def webp-mime-type "image/webp")
 (def webp-format "webp")
+(def webp-accept-header-name "accept")
+
+(defn browser-supports-webp? [request]
+  (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
+    (.contains vary-string webp-mime-type)))
+
+(defn add-webp-format-option-if-supported
+  [request options]
+  (if (browser-supports-webp? request)
+    (merge options {:format webp-format})
+    options))
 
 (defn webp-or-compatible-mime-type?
   [mime-type]
