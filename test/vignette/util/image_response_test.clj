@@ -51,4 +51,5 @@
        (add-vary-header {} {:requested-format nil :request-type :thumbnail} "image/bmp") => {}
        (add-vary-header {} {:requested-format "png" :request-type :thumbnail} "image/png") => {}
        (add-vary-header {} {:requested-format "original" :request-type :thumbnail} "image/png") => {}
-       (add-vary-header {} {:requested-format "original" :request-type :original} "image/png") => {})
+       (add-vary-header {} {:requested-format "original" :request-type :original} "image/png") => {},
+       (add-vary-header {} {:requested-format nil :request-type :original} "image/gif") => {:headers {"Vary" "Accept"}})
