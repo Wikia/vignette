@@ -32,7 +32,6 @@
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
       (get (:headers response) "Cache-Control") => "public, max-age=31536000")
-      ;(digest/sha1 (:body response)) => "8cda222a0fe951145839412322810ce3c946d880")
 
     (let [response (client/head (format "http://localhost:%d/bucket/a/ab/boat.jpg/revision/latest/scale-to-width/200" default-port) {:as :byte-array})]
       (:status response) => 200
@@ -53,7 +52,6 @@
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
       (get (:headers response) "Cache-Control") => "public, max-age=31536000")
-      ;(digest/sha1 (:body response)) => "2c44b2eace007623148ee8a33d0f66f4ea1b0175")
 
     (let [response (client/head (format "http://localhost:%d/bucket/a/ab/carousel.jpg/revision/latest/window-crop/width/200/x-offset/690/y-offset/250/window-width/1600/window-height/1900" default-port) {:as :byte-array})]
       (:status response) => 200
@@ -74,7 +72,6 @@
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
       (get (:headers response) "Cache-Control") => "public, max-age=31536000")
-      ;(digest/sha1 (:body response)) => "3f00690095caced27fdf2957f6b58929228d1326")
 
     (let [response (client/head (format "http://localhost:%d/bucket/a/ab/beach.jpg/revision/latest/window-crop-fixed/width/200/height/200/x-offset/60/y-offset/550/window-width/200/window-height/260?fill=blue" default-port) {:as :byte-array})]
       (:status response) => 200
@@ -93,7 +90,6 @@
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000")
-      ;(digest/sha1 (:body response)) => "bc34c07703035ae131aeb5615b45ea3eae7b82ba")
 
     (let [response (client/head (format "http://localhost:%d/bucket/a/ab/beach.jpg/revision/latest/fixed-aspect-ratio/width/200/height/200?fill=blue" default-port) {:as :byte-array})]
       (:status response) => 200
@@ -113,7 +109,6 @@
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
       (get (:headers response) "Cache-Control") => "public, max-age=31536000")
-      ;(digest/sha1 (:body response)) => "a8969142a23801ee3b2d28896f41e9339e1294e6")
 
     (let [response (client/head (format "http://localhost:%d/bucket/a/ab/beach.jpg/revision/latest" default-port) {:as :byte-array})]
       (:status response) => 200
@@ -128,7 +123,6 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"beach.webp\"; filename*=UTF-8''beach.webp"
-      ;(Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 162360 50)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/webp"
       (vec (:body response)) => (has-prefix riff-header)
@@ -139,7 +133,6 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "e77cd6979116303a6d50610962fa9790469574c2"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"baboon.webp\"; filename*=UTF-8''baboon.webp"
-      ;(Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 170350 50)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/webp"
       (vec (:body response)) => (has-prefix riff-header)
@@ -177,4 +170,3 @@
       (get (:headers response) "Content-Type") => "image/webp"
       (vec (:body response)) => (has-prefix riff-header)
       (vec (:body response)) => (contains webp-header))))
-      ;(digest/sha1 (:body response)) => "a8969142a23801ee3b2d28896f41e9339e1294e6")))

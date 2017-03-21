@@ -4,6 +4,7 @@
             [clojure.string :refer [split]]
             [clojure.java.shell :refer [sh]]
             [pantomime.mime :refer [mime-type-of]]
+            [pantomime.media :as mt]
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.media-types :refer :all]
             [vignette.protocols :refer :all]
@@ -36,11 +37,13 @@
                   :window-width   "window-width"
                   :window-height  "window-height"})
 
-(def passthrough-mime-types #{"audio/ogg" "video/ogg"})
 (defn is-passthrough-required
   [original-mime-type thumb-map]
   (or
-    (contains? passthrough-mime-types original-mime-type)
+    (or
+      (mt/video? original-mime-type)
+      (mt/audio? original-mime-type)
+    )
     (and
       (= "type-convert" (:thumbnail-mode thumb-map))
       (empty? (get-in (webp-override original-mime-type thumb-map) [:options :format])))))
