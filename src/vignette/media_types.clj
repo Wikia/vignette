@@ -10,7 +10,7 @@
 
 (def archive-dir "archive")
 
-(def webp-compatible-mime-types #{"image/jpeg" "image/png"})
+(def webp-compatible-mime-types #{"image/jpeg" "image/png" "image/gif"})
 (def webp-mime-type "image/webp")
 (def webp-format "webp")
 
