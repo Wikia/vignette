@@ -5,6 +5,7 @@
 IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local"}
 CONVERT=$IMAGEMAGICK_BASE/bin/convert
 IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
+GIF2WEBP=${GIF2WEBP:-"/usr/local/bin/gif2webp"}
 
 # timeout - run a command with a time limit
 # After 5 min of converting we can assume we will never get result. Time is in seconds.
@@ -47,6 +48,13 @@ WEBP_PNG_QUALITY_LEVEL=90
 
 # When presenting full size PNGs we should use even higher quality
 WEBP_FULLSIZE_PNG_QUALITY_LEVEL=95
+
+
+# Quality setting for imagemagick GIF->WebP conversion (non-animated GIF files)
+WEBP_GIF_QUALITY_LEVEL=90
+
+# Animated GIFs are converted to
+GIF2WEBP_OPTIONS="-mixed -q 90 -m 6 -min_size"
 
 # WebP compression method to use, 6 means slower processing but better compression ratio.
 WEBP_COMPRESSION_METHOD="-define webp:method=6"
@@ -372,6 +380,9 @@ function thumb_params() {
 	original_is ${TYPE_PNG}
 	png=$?
 
+	original_is ${TYPE_GIF}
+	gif=$?
+
 	target_webp ${OUT}
 	webp=$?
 
@@ -389,6 +400,10 @@ function thumb_params() {
 	    else
 	        QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
 	    fi
+	fi
+
+	if [[ $gif -eq 1 ]] && [[ $webp -eq 1 ]]; then
+	    QUALITY="-quality ${WEBP_GIF_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
 	fi
 
 	# fixed-aspect-ratio (was LS, read fixed-aspect-ratio): thumbnail using a fixed aspect ratio and fill to generate a thumbnail with the exact dimensions given; no upscaling.
@@ -554,6 +569,14 @@ function thumb() {
 
 		if eval ${magick}; then
 			echo ${magick}
+			if [[ $gif -eq 1 && $animated -eq 1 ]]; then
+			    WEBP_OUT=${OUT}.webp
+			    gif2webp_result="${TIMEOUT} ${TIMEOUT_TIME} ${GIF2WEBP} ${GIF2WEBP_OPTIONS} "${OUT}" -o "${WEBP_OUT}""
+			    if eval ${gif2webp_result}; then
+			        mv ${WEBP_OUT} ${OUT}
+			    fi
+                exit 0
+			fi
 			exit 0
 		elif [[ $animated -eq 1 ]]; then
 			# on a failed thumb due to a (probably) corrupted animated gif, try thumbnailing the first frame

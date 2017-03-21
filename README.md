@@ -69,6 +69,7 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `ENABLE_ACCESS_LOG`            enable the NCSA access log [false]
  * `ACCESS_LOG_FILE`              NCSA acces log file [/tmp/Vignette-access.log]
  * `IMAGEMAGICK_BASE`             path to the root of the ImageMagick installation [/usr/local]
+ * `GIF2WEBP`                     path to the gif2webp binary from libwebp package [/usr/local/bin/gif2webp]
  * `CONSUL_HOSTNAME`              Consul Agent's address [localhost]
  * `CONSUL_HTTP_PORT`             Consul Agent's port [8500]
  * `CONSUL_QUERY_TAG`             Default tag that will be used to query instances [prod]
