@@ -28,4 +28,5 @@ cache:
 script:
   - magick --version
   - convert --version | grep webp
+  - gif2webp -h | grep gif2webp
   - lein2 midje
