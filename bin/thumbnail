@@ -546,6 +546,9 @@ function thumb() {
 	is_animated "$IN"
 	animated=$?
 
+	target_webp ${OUT}
+    webp=$?
+
 	if [[ $gif -eq 1 && $animated -eq 1 ]]; then
 		animated_thumb_params
 	else
@@ -569,13 +572,12 @@ function thumb() {
 
 		if eval ${magick}; then
 			echo ${magick}
-			if [[ $gif -eq 1 && $animated -eq 1 ]]; then
+			if [[ $gif -eq 1 && $animated -eq 1 && $webp -eq 1 ]]; then
 			    WEBP_OUT=${OUT}.webp
 			    gif2webp_result="${TIMEOUT} ${TIMEOUT_TIME} ${GIF2WEBP} ${GIF2WEBP_OPTIONS} "${OUT}" -o "${WEBP_OUT}""
 			    if eval ${gif2webp_result}; then
 			        mv ${WEBP_OUT} ${OUT}
 			    fi
-                exit 0
 			fi
 			exit 0
 		elif [[ $animated -eq 1 ]]; then
