@@ -549,7 +549,7 @@ function thumb() {
 	target_webp ${OUT}
     webp=$?
 
-	if [[ $gif -eq 1 && $animated -eq 1 ]]; then
+	if [[ $gif -eq 1 && $animated -eq 1 && $STILL -ne 1 ]]; then
 		animated_thumb_params
 	else
 		thumb_params 
