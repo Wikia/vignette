@@ -91,7 +91,7 @@
            (:status response) => 200
            (get (:headers response) "Surrogate-Key") => "818d43fd30960d035baf60affcde0e05f921a6cc"
            (get (:headers response) "Content-Disposition") => "inline; filename=\"static.gif\"; filename*=UTF-8''static.gif"
-           (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 12800 300)
+           (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 12800 350)
            (get (:headers response) "Connection") => "close"
            (get (:headers response) "Cache-Control") => "public, max-age=31536000"
            (get (:headers response) "Content-Type") => "image/gif"
