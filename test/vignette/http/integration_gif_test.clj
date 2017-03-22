@@ -38,7 +38,7 @@
            (:status response) => 200
            (get (:headers response) "Surrogate-Key") => "936b19e79decb9240a0b65ff437ae5ea033c0f69"
            (get (:headers response) "Content-Disposition") => "inline; filename=\"chuck-large-animated.webp\"; filename*=UTF-8''chuck-large-animated.webp"
-           (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 183990 50)
+           (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 176260 8500)
            (get (:headers response) "Connection") => "close"
            (get (:headers response) "Cache-Control") => "public, max-age=31536000"
            (get (:headers response) "Content-Type") => "image/webp"
@@ -49,7 +49,7 @@
            (:status response) => 200
            (get (:headers response) "Surrogate-Key") => "936b19e79decb9240a0b65ff437ae5ea033c0f69"
            (get (:headers response) "Content-Disposition") => "inline; filename=\"chuck-large-animated.gif\"; filename*=UTF-8''chuck-large-animated.gif"
-           (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 519260 50)
+           (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 522200 3000)
            (get (:headers response) "Connection") => "close"
            (get (:headers response) "Cache-Control") => "public, max-age=31536000"
            (get (:headers response) "Content-Type") => "image/gif"
@@ -91,7 +91,7 @@
            (:status response) => 200
            (get (:headers response) "Surrogate-Key") => "818d43fd30960d035baf60affcde0e05f921a6cc"
            (get (:headers response) "Content-Disposition") => "inline; filename=\"static.gif\"; filename*=UTF-8''static.gif"
-           (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 12530 50)
+           (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 12800 300)
            (get (:headers response) "Connection") => "close"
            (get (:headers response) "Cache-Control") => "public, max-age=31536000"
            (get (:headers response) "Content-Type") => "image/gif"
