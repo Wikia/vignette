@@ -5,7 +5,7 @@
 IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local"}
 CONVERT=$IMAGEMAGICK_BASE/bin/convert
 IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
-GIF2WEBP=${GIF2WEBP:-"/usr/local/bin/gif2webp"}
+GIF2WEBP=${GIF2WEBP:-"/usr/bin/gif2webp"}
 
 # timeout - run a command with a time limit
 # After 5 min of converting we can assume we will never get result. Time is in seconds.
