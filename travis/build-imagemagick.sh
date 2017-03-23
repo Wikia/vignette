@@ -9,8 +9,8 @@ export CORES=$(nproc)
 
 if [[ `convert --version | grep $IMAGEMAGICK_VERSION` ]]; then
     echo "Found correct version of ImageMagick"
-    if [[ `gif2webp -h | grep gif2webp` ]]; then
-      echo "gif2webp found"
+    if [[ `gif2webp -version | grep $LIBWEBP_VERSION` ]]; then
+      echo "Found correct version of gif2webp with WebP Encoder"
       exit 0
     fi
 fi
