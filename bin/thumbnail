@@ -48,6 +48,9 @@ WEBP_PNG_QUALITY_LEVEL=90
 # When presenting full size PNGs we should use even higher quality
 WEBP_FULLSIZE_PNG_QUALITY_LEVEL=95
 
+# WebP compression method to use, 6 means slower processing but better compression ratio.
+WEBP_COMPRESSION_METHOD="-define webp:method=6"
+
 MODE_OPTIONS=(
 	"fixed-aspect-ratio"
 	"fixed-aspect-ratio-down"
@@ -374,7 +377,7 @@ function thumb_params() {
 
 	if [[ $jpeg -eq 1 ]]; then
 		if [[ $webp -eq 1 ]]; then
-			QUALITY="-quality ${WEBP_JPEG_QUALITY_LEVEL}"
+			QUALITY="-quality ${WEBP_JPEG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
 		else
 			QUALITY="-quality ${JPEG_QUALITY_LEVEL}"
 		fi
@@ -382,9 +385,9 @@ function thumb_params() {
 
 	if [[ $png -eq 1 ]] && [[ $webp -eq 1 ]]; then
 	    if [[ "${MODE}" = "type-convert" ]]; then
-	        QUALITY="-quality ${WEBP_FULLSIZE_PNG_QUALITY_LEVEL}"
+	        QUALITY="-quality ${WEBP_FULLSIZE_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
 	    else
-	        QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL}"
+	        QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
 	    fi
 	fi
 
