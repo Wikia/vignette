@@ -567,9 +567,7 @@ function thumb() {
 		echo ${magick}
 		exec ${magick}
 	else
-	    echo "###########"
-	    echo ${MODE}
-		if [[ $gif -eq 1 && $animated -eq 1 && $MODE -eq "type-convert" ]]; then
+		if [[ $gif -eq 1 && $animated -eq 1 && "$MODE" = "type-convert" ]]; then
 			# For animated GIFs imagemagick is likely to exhaust resources. So for full size GIFs
 			# when we only convert them the webp format (without extracting a frame), we can skip
 			# the thumbnailing parameters so imagemagick will just copy the file. The type
