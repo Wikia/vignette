@@ -49,15 +49,14 @@ WEBP_PNG_QUALITY_LEVEL=90
 # When presenting full size PNGs we should use even higher quality
 WEBP_FULLSIZE_PNG_QUALITY_LEVEL=95
 
-
 # Quality setting for imagemagick GIF->WebP conversion (non-animated GIF files)
 WEBP_GIF_QUALITY_LEVEL=90
 
-# Animated GIFs are converted to
-GIF2WEBP_OPTIONS="-mixed -q 90 -m 6 -min_size"
-
 # WebP compression method to use, 6 means slower processing but better compression ratio.
 WEBP_COMPRESSION_METHOD="-define webp:method=6"
+
+# Animated GIFs are converted to
+GIF2WEBP_OPTIONS="-mixed -q 90 -m 6 -min_size"
 
 MODE_OPTIONS=(
 	"fixed-aspect-ratio"
@@ -568,6 +567,8 @@ function thumb() {
 		echo ${magick}
 		exec ${magick}
 	else
+	    echo "###########"
+	    echo ${MODE}
 		if [[ $gif -eq 1 && $animated -eq 1 && $MODE -eq "type-convert" ]]; then
 			# For animated GIFs imagemagick is likely to exhaust resources. So for full size GIFs
 			# when we only convert them the webp format (without extracting a frame), we can skip
