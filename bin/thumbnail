@@ -568,14 +568,22 @@ function thumb() {
 		echo ${magick}
 		exec ${magick}
 	else
-		magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
+	    if [[ $gif -eq 1 && $animated -eq 1 && $MODE -eq "type-convert" ]]; then
+	        # For animated GIFs imagemagick is likely to exhaust resources. So for full size GIFs
+	        # when we only convert them the webp format (without extracting a frame), we can skip
+	        # the thumbnailing parameters so imagemagick will just copy the file. The type
+	        # conversion is done by gif2webp anyway.
+			magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "${OUT}""
+		else
+			magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
+		fi
 
 		if eval ${magick}; then
 			echo ${magick}
 			if [[ $gif -eq 1 && $animated -eq 1 && $webp -eq 1 ]]; then
 			    WEBP_OUT=${OUT}.webp
-			    gif2webp_result="${TIMEOUT} ${TIMEOUT_TIME} ${GIF2WEBP} ${GIF2WEBP_OPTIONS} "${OUT}" -o "${WEBP_OUT}""
-			    if eval ${gif2webp_result}; then
+			    gif2webp_call="${TIMEOUT} ${TIMEOUT_TIME} ${GIF2WEBP} ${GIF2WEBP_OPTIONS} "${OUT}" -o "${WEBP_OUT}""
+			    if eval ${gif2webp_call}; then
 			        mv ${WEBP_OUT} ${OUT}
 			    fi
 			fi
