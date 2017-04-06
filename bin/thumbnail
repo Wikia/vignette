@@ -31,7 +31,7 @@ GETOPT=${GETOPT:-"/usr/bin/getopt"}
 # Then 
 # $ export CONVERT_CONSTRAINTS=" "
 # The options below result in a segfault on OS X.
-CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256MB -limit map 256MB -limit disk 256MB -limit thread 2 -limit time 60 "}
+CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256MB -limit map 256MB -limit disk 1024MB -limit thread 2 -limit time 60 "}
 
 # dial down the quality level. this should save us some space without
 # sacrificing too much image quality. in the tests that were done, this
