@@ -4,9 +4,11 @@
             [pantomime.mime :refer [mime-type-of]]
             [vignette.storage.protocols :refer :all]
             [vignette.util.filesystem :refer :all]
+            [wikia.common.logger :as log]
             [wikia.common.perfmonitoring.core :as perf])
   (:use [environ.core])
-  (:import [com.amazonaws.services.s3.model AmazonS3Exception]))
+  (:import [com.amazonaws.services.s3.model AmazonS3Exception]
+           [com.amazonaws AmazonClientException]))
 
 
 ;;;; Note about timeouts: The timeouts you can specify to the s3 client don't
@@ -80,6 +82,12 @@
   [creds bucket path]
   (try
     (perf/timing :s3-get (s3/get-object creds bucket path))
+    (catch AmazonClientException ce
+      (if (instance? org.apache.http.conn.ConnectionPoolTimeoutException (.getCause ce))
+        (do
+          (perf/publish :connection-pool-timeout 1)
+          (log/error (str ce))
+          (throw ce))))
     (catch AmazonS3Exception e
       (if (= (.getStatusCode e) 404)
         nil

@@ -1,8 +1,9 @@
 (ns vignette.util.image-response
-  (:require [clojure.java.io :refer [file]]
+  (:require [clojure.java.io :as io]
             [clojure.string :as string]
             [compojure.route :refer [not-found]]
             [ring.util.response :refer [response status header]]
+            [ring.util.io :refer [piped-input-stream]]
             [pantomime.mime :refer [extension-for-name]]
             [digest :as digest]
             [vignette.media-types :refer :all]
@@ -24,7 +25,7 @@
    (if val
      (header resp key val) resp)))
 
-(def error-image-file (file "public/brokenImage.jpg"))
+(def error-image-file (io/file "public/brokenImage.jpg"))
 
 (defmulti error-image (fn [map]
                         (:request-type map)))
@@ -48,7 +49,11 @@
 (defn create-image-response
   ([image image-map]
     (let [image-mime-type (content-type image)]
-      (-> (response (->response-object image))
+      (-> (response
+            (piped-input-stream
+              (fn [out]
+                (with-open [in (io/input-stream (->response-object image))]
+                  (io/copy in out)))))
           (when-header-val "Content-Type" image-mime-type)
           (when-header-val "Content-Length" (content-length image))
           (when-header-val "ETag" (str "\"" (etag image) "\""))
@@ -77,10 +82,10 @@
      (let [target-filename
            (if-let [requested-path
                     (when image-mime-type (extension-for-name image-mime-type))]
-                      (if (re-find #"\.\w+$" filename)
-                        (string/replace filename #"\.\w+$" requested-path)
-                        (str filename requested-path))
-                      filename)]
+             (if (re-find #"\.\w+$" filename)
+               (string/replace filename #"\.\w+$" requested-path)
+               (str filename requested-path))
+             filename)]
        (header response-map "Content-Disposition" (format "inline; filename=\"%s\"; filename*=UTF-8''%s" target-filename (url-encode target-filename))))
      response-map))
   ([response-map image-map]
@@ -103,19 +108,19 @@
 (defn surrogate-key
   [image-map]
   (if-let [sk (:uuid image-map)] sk
-    (try
-      (digest/sha1 (fully-qualified-original-path image-map))
-      (catch Exception e
-        (str "vignette-" (:original image-map))))))
+                                 (try
+                                   (digest/sha1 (fully-qualified-original-path image-map))
+                                   (catch Exception e
+                                     (str "vignette-" (:original image-map))))))
 
 (defn add-vary-header
   "Add Vary: Accept header for supported thumbail types if format was not specified in query params"
   [response-map image-map image-mime-type]
   (if (and
         image-map
-        (contains? image-map :requested-format)   ;; legacy routes - don't emit Vary if :requested-format is not set
+        (contains? image-map :requested-format)             ;; legacy routes - don't emit Vary if :requested-format is not set
         (nil? (:requested-format image-map))
         (webp-or-compatible-mime-type? image-mime-type))
-      (-> response-map
-          (header "Vary" "Accept"))
-      response-map))
+    (-> response-map
+        (header "Vary" "Accept"))
+    response-map))
