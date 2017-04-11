@@ -121,4 +121,5 @@
        (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {}}) => true
        (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {:format nil}}) => true
        (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => false
-       (is-passthrough-required "image/bmp" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => true)
+       (is-passthrough-required "image/bmp" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => true
+       (is-passthrough-required "image/gif" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => false)

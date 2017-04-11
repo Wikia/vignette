@@ -19,6 +19,7 @@ before_install:
   - export VIGNETTE_THUMBNAIL_BIN=$TRAVIS_BUILD_DIR/bin/thumbnail
   - export PATH=$HOME/opt/bin:$PATH
   - export IMAGEMAGICK_BASE=$HOME/opt
+  - export GIF2WEBP=$HOME/opt/bin/gif2webp
 
 cache:
   directories:
@@ -27,4 +28,5 @@ cache:
 script:
   - magick --version
   - convert --version | grep webp
+  - gif2webp -version
   - lein2 midje
