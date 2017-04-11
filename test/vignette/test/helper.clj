@@ -18,3 +18,4 @@
 (def png-header [80 78 71 13 10 26 10])
 (def riff-header [82 73 70 70])
 (def webp-header [87 69 66 80])
+(def gif-header [0x47 0x49 0x46 0x38 0x39 0x61])

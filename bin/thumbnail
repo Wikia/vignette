@@ -5,6 +5,7 @@
 IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local"}
 CONVERT=$IMAGEMAGICK_BASE/bin/convert
 IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
+GIF2WEBP=${GIF2WEBP:-"/usr/bin/gif2webp"}
 
 # timeout - run a command with a time limit
 # After 5 min of converting we can assume we will never get result. Time is in seconds.
@@ -30,7 +31,7 @@ GETOPT=${GETOPT:-"/usr/bin/getopt"}
 # Then 
 # $ export CONVERT_CONSTRAINTS=" "
 # The options below result in a segfault on OS X.
-CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256MB -limit map 256MB -limit disk 256MB -limit thread 2 -limit time 60 "}
+CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256MB -limit map 256MB -limit disk 1024MB -limit thread 2 -limit time 60 "}
 
 # dial down the quality level. this should save us some space without
 # sacrificing too much image quality. in the tests that were done, this
@@ -48,8 +49,14 @@ WEBP_PNG_QUALITY_LEVEL=90
 # When presenting full size PNGs we should use even higher quality
 WEBP_FULLSIZE_PNG_QUALITY_LEVEL=95
 
+# Quality setting for imagemagick GIF->WebP conversion (non-animated GIF files)
+WEBP_GIF_QUALITY_LEVEL=90
+
 # WebP compression method to use, 6 means slower processing but better compression ratio.
 WEBP_COMPRESSION_METHOD="-define webp:method=6"
+
+# Animated GIFs are converted to
+GIF2WEBP_OPTIONS="-mixed -q 90 -m 6 -min_size"
 
 MODE_OPTIONS=(
 	"fixed-aspect-ratio"
@@ -292,11 +299,11 @@ function original_is() {
 }
 
 function target_webp() {
-    if [[ "$1" =~ ^webp: ]]; then
-        return 1
-    else
-        return 0
-    fi
+	if [[ "$1" =~ ^webp: ]]; then
+		return 1
+	else
+		return 0
+	fi
 }
 
 function remove_custom_type() {
@@ -322,12 +329,12 @@ function recalculate_requested_size_for_crop_down() {
 	local CODE=`cat <<EOF
 scale = 20
 define trunc(x) {
-    auto saved_scale
-    saved_scale = scale
-    scale = 0
-    x /= 1   /* round x down */
-    scale = saved_scale
-    return (x)
+	auto saved_scale
+	saved_scale = scale
+	scale = 0
+	x /= 1   /* round x down */
+	scale = saved_scale
+	return (x)
 }
 
 define round(x) {
@@ -372,6 +379,9 @@ function thumb_params() {
 	original_is ${TYPE_PNG}
 	png=$?
 
+	original_is ${TYPE_GIF}
+	gif=$?
+
 	target_webp ${OUT}
 	webp=$?
 
@@ -384,11 +394,15 @@ function thumb_params() {
 	fi
 
 	if [[ $png -eq 1 ]] && [[ $webp -eq 1 ]]; then
-	    if [[ "${MODE}" = "type-convert" ]]; then
-	        QUALITY="-quality ${WEBP_FULLSIZE_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
-	    else
-	        QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
-	    fi
+		if [[ "${MODE}" = "type-convert" ]]; then
+			QUALITY="-quality ${WEBP_FULLSIZE_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
+		else
+			QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
+		fi
+	fi
+
+	if [[ $gif -eq 1 ]] && [[ $webp -eq 1 ]]; then
+		QUALITY="-quality ${WEBP_GIF_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
 	fi
 
 	# fixed-aspect-ratio (was LS, read fixed-aspect-ratio): thumbnail using a fixed aspect ratio and fill to generate a thumbnail with the exact dimensions given; no upscaling.
@@ -488,7 +502,7 @@ function thumb_params() {
 			fi
 			;;
 		"type-convert")
-		    THUMB_PARAMS="${QUALITY}"
+			THUMB_PARAMS="${QUALITY}"
 	esac
 }
 
@@ -531,7 +545,10 @@ function thumb() {
 	is_animated "$IN"
 	animated=$?
 
-	if [[ $gif -eq 1 && $animated -eq 1 ]]; then
+	target_webp ${OUT}
+	webp=$?
+
+	if [[ $gif -eq 1 && $animated -eq 1 && $STILL -ne 1 ]]; then
 		animated_thumb_params
 	else
 		thumb_params 
@@ -550,10 +567,25 @@ function thumb() {
 		echo ${magick}
 		exec ${magick}
 	else
-		magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
+		if [[ $gif -eq 1 && $animated -eq 1 && "$MODE" = "type-convert" ]]; then
+			# For animated GIFs imagemagick is likely to exhaust resources. So for full size GIFs
+			# when we only convert them the webp format (without extracting a frame), we can skip
+			# the thumbnailing parameters so imagemagick will just copy the file. The type
+			# conversion is done by gif2webp anyway.
+			magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "${OUT}""
+		else
+			magick="${TIMEOUT} ${TIMEOUT_TIME} ${CONVERT} ${THUMB_PRE_OPTIONS} "${IN}" ${CONVERT_CONSTRAINTS} "-auto-orient" ${THUMB_PARAMS} "${OUT}""
+		fi
 
 		if eval ${magick}; then
 			echo ${magick}
+			if [[ $gif -eq 1 && $animated -eq 1 && $webp -eq 1 ]]; then
+				WEBP_OUT=${OUT}.webp
+				gif2webp_call="${TIMEOUT} ${TIMEOUT_TIME} ${GIF2WEBP} ${GIF2WEBP_OPTIONS} "${OUT}" -o "${WEBP_OUT}""
+				if eval ${gif2webp_call}; then
+					mv ${WEBP_OUT} ${OUT}
+				fi
+			fi
 			exit 0
 		elif [[ $animated -eq 1 ]]; then
 			# on a failed thumb due to a (probably) corrupted animated gif, try thumbnailing the first frame
