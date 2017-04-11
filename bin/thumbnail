@@ -9,7 +9,7 @@ IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
 # timeout - run a command with a time limit
 # After 5 min of converting we can assume we will never get result. Time is in seconds.
 TIMEOUT=${TIMEOUT:-"/usr/bin/timeout"}
-TIMEOUT_TIME=${TIMEOUT_TIME:-" 300"}
+TIMEOUT_TIME=${TIMEOUT_TIME:-" --kill-after=60 --signal=SIGKILL 300"}
 
 # If you are running on OS X, then install the gnu-getopt. The native getopt on OS X
 # is not compatible with the options used on Centos which is where this was originally targeted.
