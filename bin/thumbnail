@@ -160,7 +160,7 @@ THUMB_PARAMS=''
 THUMB_PRE_OPTIONS=''
 FUZZ=''
 
-eval set -- "$ARGS" 
+eval set -- "$ARGS"
 
 while true; do
 	case $1 in
@@ -562,7 +562,7 @@ function thumb() {
 	if [[ $gif -eq 1 && $animated -eq 1 && $STILL -ne 1 ]]; then
 		animated_thumb_params
 	else
-		thumb_params 
+		thumb_params
 	fi
 
 	original_is $TYPE_SVG
@@ -591,27 +591,27 @@ function thumb() {
 		if eval ${magick}; then
 			echo ${magick}
 			if [[ $png -eq 1 && $webp -eq 1 ]]; then
-			    remove_custom_type
+				remove_custom_type
 				if [[ "${MODE}" = "type-convert" ]]; then
 					CWEBP_QUALITY="-q ${CWEBP_FULLSIZE_PNG_QUALITY_LEVEL}"
 				else
 					CWEBP_QUALITY="-q ${CWEBP_PNG_QUALITY_LEVEL}"
 				fi
-			    LOSSY_OUT=${OUT}.webp
-			    cwebp_call="${TIMEOUT} ${CWEBP_TIMEOUT_TIME} ${CWEBP} ${CWEBP_OPTIONS} ${CWEBP_QUALITY} "${OUT}" -o "${LOSSY_OUT}""
-			    echo ${cwebp_call}
-                if eval ${cwebp_call}; then
-                    lossless_size=$(${STAT} -c%s ${OUT})
-                    # var2 contains size of file2
-                    lossy_size=$(${STAT} -c%s ${LOSSY_OUT})
-                    if [[ "${lossless_size}" -le "${lossy_size}" ]]; then
-                        # lossless file was smaller, remove the lossy version
-                        rm ${LOSSY_OUT}
-                    else
-                        # lossy version was smaller, use it
-                        mv ${LOSSY_OUT} ${OUT}
-                    fi
-                fi
+				LOSSY_OUT=${OUT}.webp
+				cwebp_call="${TIMEOUT} ${CWEBP_TIMEOUT_TIME} ${CWEBP} ${CWEBP_OPTIONS} ${CWEBP_QUALITY} "${OUT}" -o "${LOSSY_OUT}""
+				echo ${cwebp_call}
+				if eval ${cwebp_call}; then
+					lossless_size=$(${STAT} -c%s ${OUT})
+					# var2 contains size of file2
+					lossy_size=$(${STAT} -c%s ${LOSSY_OUT})
+					if [[ "${lossless_size}" -le "${lossy_size}" ]]; then
+						# lossless file was smaller, remove the lossy version
+						rm ${LOSSY_OUT}
+					else
+						# lossy version was smaller, use it
+						mv ${LOSSY_OUT} ${OUT}
+					fi
+				fi
 			fi
 
 			if [[ $gif -eq 1 && $animated -eq 1 && $webp -eq 1 ]]; then
