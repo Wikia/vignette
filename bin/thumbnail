@@ -159,7 +159,6 @@ while true; do
 		--in)
 			shift
 			IN=$1
-			echo "??? ${IN}"
 			;;
 		--out)
 			shift
