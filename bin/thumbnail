@@ -46,6 +46,9 @@ CONVERT_CONSTRAINTS=${CONVERT_CONSTRAINTS:-" -limit memory 256MB -limit map 256M
 # JPEG_QUALITY_LEVEL quality is used when generating JPEG thumbnails
 JPEG_QUALITY_LEVEL=80
 
+# When generating PNG thumbnails, this produces smaller file sizes
+PNG_QUALITY_LEVEL=100
+
 # Quality used for generating WebP images from JPEG
 WEBP_JPEG_QUALITY_LEVEL=90
 
@@ -405,8 +408,12 @@ function thumb_params() {
 		fi
 	fi
 
-	if [[ $png -eq 1 ]] && [[ $webp -eq 1 ]]; then
-		QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
+	if [[ $png -eq 1 ]]; then
+		if [[ $webp -eq 1 ]]; then
+			QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
+		else
+			QUALITY="-quality ${PNG_QUALITY_LEVEL}"
+		fi
 	fi
 
 	if [[ $gif -eq 1 ]] && [[ $webp -eq 1 ]]; then
