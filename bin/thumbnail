@@ -6,17 +6,23 @@ IMAGEMAGICK_BASE=${IMAGEMAGICK_BASE:-"/usr/local"}
 CONVERT=$IMAGEMAGICK_BASE/bin/convert
 IDENTIFY=$IMAGEMAGICK_BASE/bin/identify
 GIF2WEBP=${GIF2WEBP:-"/usr/bin/gif2webp"}
+CWEBP=${CWEBP:-"/usr/bin/cwebp"}
 
 # timeout - run a command with a time limit
 # After 5 min of converting we can assume we will never get result. Time is in seconds.
 TIMEOUT=${TIMEOUT:-"/usr/bin/timeout"}
 TIMEOUT_TIME=${TIMEOUT_TIME:-" --kill-after=30 --signal=SIGKILL 300"}
+GIF2WEBP_TIMEOUT_TIME=${GIF2WEBP_TIMEOUT_TIME:-" --kill-after=10 --signal=SIGKILL 60"}
+CWEBP_TIMEOUT_TIME=${CWEBP_TIMEOUT_TIME:-" --kill-after=5 --signal=SIGKILL 30"}
 
-# If you are running on OS X, then install the gnu-getopt. The native getopt on OS X
-# is not compatible with the options used on Centos which is where this was originally targeted.
-# $ brew install gnu-getopt
+# If you are running on OS X, then install the gnu-getopt and coreutils. The native getopt and stat
+# on OS X are not compatible with the options used on Centos which is where this was originally
+# targeted.
+# $ brew install gnu-getopt coreutils
 # $ export GETOPT=/usr/local/opt/gnu-getopt/bin/getopt
+# $ export STAT=/usr/local/opt/coreutils/bin/gstat
 GETOPT=${GETOPT:-"/usr/bin/getopt"}
+STAT=${STAT:-"/usr/bin/stat"}
 
 # what memory, mapping, thread and time constraints do we want to put on the
 # thumbnailing process? this will help to ensure that any given thumbnail
@@ -43,11 +49,17 @@ JPEG_QUALITY_LEVEL=80
 # Quality used for generating WebP images from JPEG
 WEBP_JPEG_QUALITY_LEVEL=90
 
+# When compressing PNG to WEBP, do the lossless compression first
+WEBP_PNG_QUALITY_LEVEL="100 -define webp:lossless=true"
+
+# Options for using cwebp when trying out the lossy version of an image
+CWEBP_OPTIONS="-m 6"
+
 # When presenting PNG's using WebP we should use higher quality to avoid artifacts
-WEBP_PNG_QUALITY_LEVEL=90
+CWEBP_PNG_QUALITY_LEVEL=90
 
 # When presenting full size PNGs we should use even higher quality
-WEBP_FULLSIZE_PNG_QUALITY_LEVEL=95
+CWEBP_FULLSIZE_PNG_QUALITY_LEVEL=95
 
 # Quality setting for imagemagick GIF->WebP conversion (non-animated GIF files)
 WEBP_GIF_QUALITY_LEVEL=90
@@ -394,11 +406,7 @@ function thumb_params() {
 	fi
 
 	if [[ $png -eq 1 ]] && [[ $webp -eq 1 ]]; then
-		if [[ "${MODE}" = "type-convert" ]]; then
-			QUALITY="-quality ${WEBP_FULLSIZE_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
-		else
-			QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
-		fi
+		QUALITY="-quality ${WEBP_PNG_QUALITY_LEVEL} ${WEBP_COMPRESSION_METHOD}"
 	fi
 
 	if [[ $gif -eq 1 ]] && [[ $webp -eq 1 ]]; then
@@ -529,7 +537,7 @@ function svg_preoptions() {
 	local orig_height=$($IDENTIFY -format "%h\n" "$IN" | head -1)
 	local orig_width=$($IDENTIFY -format "%w\n" "$IN" | head -1)
 
-	if [[ ${orig_width} -gt ${WIDTH} || ${orig_height} -gt ${HEIGHT} ]]; then
+	if [[ ${orig_width} -gt "${WIDTH}" || ${orig_height} -gt ${HEIGHT} ]]; then
 		THUMB_PRE_OPTIONS="-background none"
 	else
 		local width_density=`echo "(1.5 * ${WIDTH}) / (${orig_width} / ${default_density})" | bc -l`
@@ -544,6 +552,9 @@ function thumb() {
 	gif=$?
 	is_animated "$IN"
 	animated=$?
+
+	original_is ${TYPE_PNG}
+	png=$?
 
 	target_webp ${OUT}
 	webp=$?
@@ -579,9 +590,34 @@ function thumb() {
 
 		if eval ${magick}; then
 			echo ${magick}
+			if [[ $png -eq 1 && $webp -eq 1 ]]; then
+			    remove_custom_type
+				if [[ "${MODE}" = "type-convert" ]]; then
+					CWEBP_QUALITY="-q ${CWEBP_FULLSIZE_PNG_QUALITY_LEVEL}"
+				else
+					CWEBP_QUALITY="-q ${CWEBP_PNG_QUALITY_LEVEL}"
+				fi
+			    LOSSY_OUT=${OUT}.webp
+			    cwebp_call="${TIMEOUT} ${CWEBP_TIMEOUT_TIME} ${CWEBP} ${CWEBP_OPTIONS} ${CWEBP_QUALITY} "${OUT}" -o "${LOSSY_OUT}""
+			    echo ${cwebp_call}
+                if eval ${cwebp_call}; then
+                    lossless_size=$(${STAT} -c%s ${OUT})
+                    # var2 contains size of file2
+                    lossy_size=$(${STAT} -c%s ${LOSSY_OUT})
+                    if [[ "${lossless_size}" -le "${lossy_size}" ]]; then
+                        # lossless file was smaller, remove the lossy version
+                        rm ${LOSSY_OUT}
+                    else
+                        # lossy version was smaller, use it
+                        mv ${LOSSY_OUT} ${OUT}
+                    fi
+                fi
+			fi
+
 			if [[ $gif -eq 1 && $animated -eq 1 && $webp -eq 1 ]]; then
 				WEBP_OUT=${OUT}.webp
-				gif2webp_call="${TIMEOUT} ${TIMEOUT_TIME} ${GIF2WEBP} ${GIF2WEBP_OPTIONS} "${OUT}" -o "${WEBP_OUT}""
+				gif2webp_call="${TIMEOUT} ${GIF2WEBP_TIMEOUT_TIME} ${GIF2WEBP} ${GIF2WEBP_OPTIONS} "${OUT}" -o "${WEBP_OUT}""
+				echo ${gif2webp_call}
 				if eval ${gif2webp_call}; then
 					mv ${WEBP_OUT} ${OUT}
 				fi
