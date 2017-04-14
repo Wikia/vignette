@@ -20,6 +20,7 @@ before_install:
   - export PATH=$HOME/opt/bin:$PATH
   - export IMAGEMAGICK_BASE=$HOME/opt
   - export GIF2WEBP=$HOME/opt/bin/gif2webp
+  - export CWEBP=$HOME/opt/bin/cwebp
 
 cache:
   directories:
