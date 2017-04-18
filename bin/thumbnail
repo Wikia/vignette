@@ -536,13 +536,11 @@ function svg_preoptions() {
 			local width_density=`echo "(1.5 * ${WIDTH}) / (${orig_width} / ${default_density})" | bc -l`
 			THUMB_PRE_OPTIONS="-background none -density ${width_density}"
 		fi
-	else
-		if [[ ${orig_width} -le ${WIDTH} || ${orig_height} -le ${HEIGHT} ]]; then
-			local width_density=`echo "(1.5 * ${WIDTH}) / (${orig_width} / ${default_density})" | bc -l`
-			local height_density=`echo "(1.5 * ${HEIGHT}) / (${orig_height} / ${default_density})" | bc -l`
+	elif [[ ${orig_width} -le ${WIDTH} || ${orig_height} -le ${HEIGHT} ]]; then
+		local width_density=`echo "(1.5 * ${WIDTH}) / (${orig_width} / ${default_density})" | bc -l`
+		local height_density=`echo "(1.5 * ${HEIGHT}) / (${orig_height} / ${default_density})" | bc -l`
 
-			THUMB_PRE_OPTIONS="-background none -density ${width_density}x${height_density}"
-		fi
+		THUMB_PRE_OPTIONS="-background none -density ${width_density}x${height_density}"
 	fi
 }
 
