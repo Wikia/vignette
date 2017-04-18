@@ -58,7 +58,7 @@
   ([args thumb-map]
     (let [start-ms (System/currentTimeMillis)
           result (perf/timing :imagemagick (apply sh args))
-          elapsed-ms (- System/currentTimeMillis start-ms)]
+          elapsed-ms (- (System/currentTimeMillis) start-ms)]
       (if (> elapsed-ms 5000)
           (do
             (log/info "slow-thumbnailer-call" {:time_ms elapsed-ms :thumb_map thumb-map})
