@@ -56,15 +56,15 @@
 
 (defn run-thumbnailer
   ([args thumb-map]
-  (let [start-ms (System/currentTimeMillis)
-        result (perf/timing :imagemagick (apply sh args))
-        end-ms (System/currentTimeMillis)]
-    (if (> (- end-ms start-ms) 5000)
-        (do
-          (log/info "slow-thumbnailer-call" {:time_ms (- end-ms start-ms) :thumb_map thumb-map})
+    (let [start-ms (System/currentTimeMillis)
+          result (perf/timing :imagemagick (apply sh args))
+          elapsed-ms (- System/currentTimeMillis start-ms)]
+      (if (> elapsed-ms 5000)
+          (do
+            (log/info "slow-thumbnailer-call" {:time_ms elapsed-ms :thumb_map thumb-map})
+            result)
           result)
-        result)
-    ))
+      ))
   ([args]
     (run-thumbnailer args {})))
 
