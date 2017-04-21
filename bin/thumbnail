@@ -529,9 +529,14 @@ function svg_preoptions() {
 	local orig_height=$($IDENTIFY -format "%h\n" "$IN" | head -1)
 	local orig_width=$($IDENTIFY -format "%w\n" "$IN" | head -1)
 
-	if [[ ${orig_width} -gt ${WIDTH} || ${orig_height} -gt ${HEIGHT} ]]; then
-		THUMB_PRE_OPTIONS="-background none"
-	else
+	THUMB_PRE_OPTIONS="-background none"
+
+	if [ "${HEIGHT}" == ":auto" ]; then
+		 if [[ ${orig_width} -le ${WIDTH} ]]; then
+			local width_density=`echo "(1.5 * ${WIDTH}) / (${orig_width} / ${default_density})" | bc -l`
+			THUMB_PRE_OPTIONS="-background none -density ${width_density}"
+		fi
+	elif [[ ${orig_width} -le ${WIDTH} || ${orig_height} -le ${HEIGHT} ]]; then
 		local width_density=`echo "(1.5 * ${WIDTH}) / (${orig_width} / ${default_density})" | bc -l`
 		local height_density=`echo "(1.5 * ${HEIGHT}) / (${orig_height} / ${default_density})" | bc -l`
 
@@ -548,18 +553,18 @@ function thumb() {
 	target_webp ${OUT}
 	webp=$?
 
-	if [[ $gif -eq 1 && $animated -eq 1 && $STILL -ne 1 ]]; then
-		animated_thumb_params
-	else
-		thumb_params 
-	fi
-
 	original_is $TYPE_SVG
 	svg=$?
 
 	if [[ $svg -eq 1 ]]; then
 		set_custom_type $TYPE_PNG
 		svg_preoptions
+	fi
+
+	if [[ $gif -eq 1 && $animated -eq 1 && $STILL -ne 1 ]]; then
+		animated_thumb_params
+	else
+		thumb_params
 	fi
 
 	if [[ $animated -eq 1 && $STILL -eq 1 ]]; then
