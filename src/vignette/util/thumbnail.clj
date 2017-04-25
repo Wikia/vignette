@@ -78,7 +78,7 @@
         query-options (q/query-opts->thumb-args thumb-map)
         thumb-options (reduce conj route-options query-options)
         args (reduce conj base-command thumb-options)
-        sh-out (run-thumbnailer args)]
+        sh-out (run-thumbnailer args thumb-map)]
     (cond
       (or (zero? (:exit sh-out))
           (and (= 1 (:exit sh-out))
