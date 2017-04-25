@@ -55,18 +55,15 @@
           thumb-map))
 
 (defn run-thumbnailer
-  ([args thumb-map]
-    (let [start-ms (System/currentTimeMillis)
-          result (perf/timing :imagemagick (apply sh args))
-          elapsed-ms (- (System/currentTimeMillis) start-ms)]
-      (if (> elapsed-ms 5000)
-          (do
-            (log/info "slow-thumbnailer-call" {:time_ms elapsed-ms :thumb_map thumb-map})
-            result)
+  [args thumb-map]
+  (let [start-ms (System/currentTimeMillis)
+        result (perf/timing :imagemagick (apply sh args))
+        elapsed-ms (- (System/currentTimeMillis) start-ms)]
+    (if (> elapsed-ms 5000)
+        (do
+          (log/info "slow-thumbnailer-call" {:time_ms elapsed-ms :thumb_map thumb-map})
           result)
-      ))
-  ([args]
-    (run-thumbnailer args {})))
+        result)))
 
 (defn original->thumbnail
   [resource thumb-map]
@@ -78,7 +75,7 @@
         query-options (q/query-opts->thumb-args thumb-map)
         thumb-options (reduce conj route-options query-options)
         args (reduce conj base-command thumb-options)
-        sh-out (run-thumbnailer args)]
+        sh-out (run-thumbnailer args thumb-map)]
     (cond
       (or (zero? (:exit sh-out))
           (and (= 1 (:exit sh-out))
