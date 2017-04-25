@@ -25,12 +25,12 @@
        ; successful run
        (original->thumbnail beach-file beach-map) => truthy
        (provided
-         (run-thumbnailer anything any-params) => {:exit 0})
+         (run-thumbnailer anything anything) => {:exit 0})
 
        ; failed run
        (original->thumbnail beach-file beach-map) => (throws Exception)
        (provided
-         (run-thumbnailer anything any-params) => {:exit 1 :err 256 :out "testing failure"})
+         (run-thumbnailer anything anything) => {:exit 1 :err 256 :out "testing failure"})
 
        ;special mime type
        (generate-thumbnail ..store.. beach-map nil) => ..file..
