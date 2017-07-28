@@ -31,7 +31,8 @@
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
-      (get (:headers response) "Cache-Control") => "public, max-age=31536000")
+      (get (:headers response) "Cache-Control") => "public, max-age=31536000"
+      (get (:headers response) "Access-Control-Allow") => "*")
       ;(digest/sha1 (:body response)) => "8cda222a0fe951145839412322810ce3c946d880")
 
     (let [response (client/head (format "http://localhost:%d/bucket/a/ab/boat.jpg/revision/latest/scale-to-width/200" default-port) {:as :byte-array})]

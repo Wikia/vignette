@@ -51,7 +51,8 @@
           (header "X-Served-By" hostname)
           (header "X-Cache" "ORIGIN")
           (header "X-Cache-Hits" "ORIGIN")
-          (header "Connection" "close")))))
+          (header "Connection" "close")
+          (header "Access-Control-Allow" "*")))))
 
 (defn add-cache-control-header
   [response]
