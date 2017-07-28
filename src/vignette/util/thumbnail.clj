@@ -36,7 +36,7 @@
                   :window-height  "window-height"})
 
 (defn is-image?
-  [mime-type]req.url ~ "/fonts/"req.url ~ "/fonts/"
+  [mime-type]
   (.startsWith mime-type "image/"))
 
 (defn is-passthrough-required
