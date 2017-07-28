@@ -1,7 +1,6 @@
 (ns vignette.util.thumbnail
   (:require [cheshire.core :refer :all]
             [clojure.java.io :as io]
-            [clojure.string :refer [split]]
             [clojure.java.shell :refer [sh]]
             [pantomime.mime :refer [mime-type-of]]
             [slingshot.slingshot :refer [try+ throw+]]
@@ -36,11 +35,14 @@
                   :window-width   "window-width"
                   :window-height  "window-height"})
 
-(def passthrough-mime-types #{"audio/ogg" "video/ogg"})
+(defn is-image?
+  [mime-type]req.url ~ "/fonts/"req.url ~ "/fonts/"
+  (.startsWith mime-type "image/"))
+
 (defn is-passthrough-required
   [original-mime-type thumb-map]
   (or
-    (contains? passthrough-mime-types original-mime-type)
+    (not (is-image? original-mime-type))
     (and
       (= "type-convert" (:thumbnail-mode thumb-map))
       (empty? (get-in (webp-override original-mime-type thumb-map) [:options :format])))))
