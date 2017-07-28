@@ -52,7 +52,7 @@
           (header "X-Cache" "ORIGIN")
           (header "X-Cache-Hits" "ORIGIN")
           (header "Connection" "close")
-          (header "Access-Control-Allow" "*")))))
+          (header "Access-Control-Allow-Origin" "*")))))
 
 (defn add-cache-control-header
   [response]
