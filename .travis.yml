@@ -1,5 +1,5 @@
 language: clojure
-lein: lein2
+lein: lein
 jdk:
   - oraclejdk8
 env:
@@ -29,4 +29,4 @@ script:
   - magick --version
   - convert --version | grep webp
   - gif2webp -version
-  - lein2 midje
+  - lein midje
