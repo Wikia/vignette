@@ -56,7 +56,7 @@
       (put* (:store this)
         resource
         thumb-map
-        mt/thumbnail-path)))
+        mt/thumbnail-path))
 
   (get-thumbnail [this thumb-map]
        (get* (:store this)
