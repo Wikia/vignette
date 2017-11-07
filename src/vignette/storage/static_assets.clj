@@ -2,7 +2,8 @@
   (:require [vignette.storage.protocols :refer :all]
             [org.httpkit.client :as http]
             [vignette.util.filesystem :as fs]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [vignette.media-types :as mt]))
 
 (defn- parse-content-disp
   [header]
@@ -32,9 +33,22 @@
             (first-available (rest image-urls))))))))
 
 (defrecord StaticImageStorage [static-image-url] ImageStorageProtocol
-  (save-thumbnail [_ _ _] nil)
-  (get-thumbnail [_ _] nil)
-  (save-original [_ _ _] nil)
+  (save-thumbnail [this resource thumb-map]
+      (put* (:store this)
+        resource
+        thumb-map
+        mt/thumbnail-path)))
+
+  (get-thumbnail [this thumb-map]
+       (get* (:store this)
+         thumb-map
+         mt/thumbnail-path))
+
+  (save-original [this resource original-map]
+     (put* (:store this)
+       resource
+       original-map
+       mt/original-path))
 
   (get-original [_ original-map]
     (let [uuid (:uuid original-map)
@@ -45,7 +59,7 @@
     (if-let [uuid (:uuid image-map)]
       (let [static-image-response (http/head (static-image-url uuid))]
         (-> @static-image-response :status (= 200))))))
-             
+
 
 (defn create-static-image-storage [static-image-url]
   (->StaticImageStorage static-image-url))
