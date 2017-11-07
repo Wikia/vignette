@@ -5,6 +5,25 @@
             [clojure.java.io :as io]
             [vignette.media-types :as mt]))
 
+(defn get*
+      [store object-map get-path]
+      (get-object store
+                  (mt/wikia object-map)
+                  (get-path object-map)))
+
+(defn put*
+      [store resource object-map get-path]
+      (put-object store
+                  resource
+                  (mt/wikia object-map)
+                  (get-path object-map)))
+
+(defn exists?
+      [store object-map get-path]
+      (object-exists? store
+                      (mt/wikia object-map)
+                      (get-path object-map)))
+
 (defn- parse-content-disp
   [header]
   (when-let [m (if header (re-find #"(?i)filename=\"(.*)\"" header))]
