@@ -1,9 +1,11 @@
 (ns vignette.storage.static-assets-test
   (:require [midje.sweet :refer :all]
             [org.httpkit.client :as http]
-            [vignette.storage.protocols :refer :all]
+            [vignette.storage.core :refer :all]
+            [vignette.storage.local :refer :all]
             [vignette.storage.static-assets :as sa]
-            ))
+            [vignette.storage.protocols :refer :all]
+  ))
 
 (facts :static-assets :get-original
      (let [store (create-image-storage ..disk-store..)]
