@@ -32,7 +32,7 @@
           (if (= 451 status)
             (first-available (rest image-urls))))))))
 
-(defrecord StaticImageStorage [static-image-url] ImageStorageProtocol
+(defrecord StaticImageStorage [store, static-image-url] ImageStorageProtocol
   (save-thumbnail [this resource thumb-map]
       (put* (:store this)
         resource
@@ -61,5 +61,5 @@
         (-> @static-image-response :status (= 200))))))
 
 
-(defn create-static-image-storage [static-image-url]
-  (->StaticImageStorage static-image-url))
+(defn create-static-image-storage [store static-image-url]
+  (->StaticImageStorage store static-image-url))
