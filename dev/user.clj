@@ -45,7 +45,7 @@
 (def los (create-local-storage-system itg/integration-path))
 (def lis (create-image-storage los))
 
-(def system-local (create-stores lis))
+(def system-local (create-system (create-stores lis)))
 
 (def s3os (create-s3-storage-system storage-creds))
 (def s3s (create-image-storage s3os))

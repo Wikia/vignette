@@ -20,7 +20,7 @@
 (defn create-stores [opts]
   {
     :wikia-store  (create-image-storage (create-object-storage opts) (:cache-thumbnails opts))
-    :static-store (create-static-image-storage materialize-static-asset-url)
+    :static-store (create-image-storage (create-static-image-storage materialize-static-asset-url) (:cache-thumbnails opts))
    })
 
 (defn image-routes [stores]
