@@ -56,18 +56,14 @@
       (put* (:store this)
         resource
         thumb-map
-        mt/thumbnail-path))
+        mt/static-assets-thumbnail-path))
 
   (get-thumbnail [this thumb-map]
        (get* (:store this)
          thumb-map
-         mt/thumbnail-path))
+         mt/static-assets-thumbnail-path))
 
-  (save-original [this resource original-map]
-     (put* (:store this)
-       resource
-       original-map
-       mt/original-path))
+  (save-original [_ _ _] nil)
 
   (get-original [_ original-map]
     (let [uuid (:uuid original-map)
