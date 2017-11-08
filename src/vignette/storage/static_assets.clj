@@ -8,20 +8,20 @@
 (defn get*
       [store object-map get-path]
       (get-object store
-                  (mt/wikia object-map)
+                  "static-assets"
                   (get-path object-map)))
 
 (defn put*
       [store resource object-map get-path]
       (put-object store
                   resource
-                  (mt/wikia object-map)
+                  "static-assets"
                   (get-path object-map)))
 
 (defn exists?
       [store object-map get-path]
       (object-exists? store
-                      (mt/wikia object-map)
+                      "static-assets"
                       (get-path object-map)))
 
 (defn- parse-content-disp

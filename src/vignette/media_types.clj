@@ -156,7 +156,7 @@
 
 (defn static-assets-thumbnail-path
       [data]
-      (let [thumb-path (clojure.string/join "/" [ "static-assets" (:uuid data) ])]
+      (let [thumb-path (clojure.string/join "/" [ "thumbs" (:uuid data) ])]
            (thumb-map->path data thumb-path)))
 
 (defn thumbnail-path
