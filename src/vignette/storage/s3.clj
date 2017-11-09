@@ -104,7 +104,7 @@
           (create-stored-object stream meta-data file-name)))))
   (put-object [this resource bucket path]
     (let [file (file-stream resource)
-          mime-type (content-type resource)] {
+          mime-type (content-type resource)]
       (if (perf/timing :s3-get (not (s3/bucket-exists? creds bucket)))
         (perf/timing :s3-put (s3/create-bucket creds bucket)))
       (when-let [response (perf/timing :s3-put (s3/put-object (add-timeouts :put (:creds this))
@@ -112,7 +112,7 @@
                                                               path
                                                               file
                                                               {:content-type mime-type}))]
-        response)}))
+        response)))
   (delete-object [this bucket path])
   (object-exists? [this bucket path]
     (s3/object-exists? (add-timeouts :head (:creds this))
