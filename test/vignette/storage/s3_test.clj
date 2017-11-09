@@ -37,6 +37,7 @@
 (facts :s3 :put-object
   (put-object (create-s3-storage-system ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => ..response..
   (provided
+    (s3/bucket-exists? ..timeout-creds.. ..bucket..) => true
     (add-timeouts :put ..creds..) => ..timeout-creds..
     (file-stream ..resource..) => ..file..
     (content-type ..resource..) => ..content-type..
@@ -45,10 +46,20 @@
   ; this may not be realistic. we'll probably get an error before we get nil
   (put-object (create-s3-storage-system ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => nil
   (provided
+    (s3/bucket-exists? ..creds.. ..bucket..) => true
     (add-timeouts :put ..creds..) => ..timeout-creds..
     (file-stream ..resource..) => ..file..
     (content-type ..resource..) => ..content-type..
     (s3/put-object ..timeout-creds.. "bucket" "a/ab/image.jpg" ..file.. {:content-type ..content-type..}) => nil))
+
+  (put-object (create-s3-storage-system ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => ..response..
+  (provided
+    (s3/bucket-exists? ..creds.. ..bucket..) => false
+    (s3/create-bucket ..creds.. ..bucket..) => nil
+    (add-timeouts :put ..creds..) => ..timeout-creds..
+    (file-stream ..resource..) => ..file..
+    (content-type ..resource..) => ..content-type..
+    (s3/put-object ..timeout-creds.. "bucket" "a/ab/image.jpg" ..file.. {:content-type ..content-type..}) => ..response..)
 
 (facts :s3 :object-exists
   (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => true
