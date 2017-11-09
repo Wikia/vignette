@@ -5,23 +5,26 @@
             [clojure.java.io :as io]
             [vignette.media-types :as mt]))
 
+(defn get-bucket-name [uuid]
+      (subs uuid 32 36))
+
 (defn get*
       [store object-map get-path]
       (get-object store
-                  "static-assets"
+                  (get-bucket-name (:uuid object-map))
                   (get-path object-map)))
 
 (defn put*
       [store resource object-map get-path]
       (put-object store
                   resource
-                  "static-assets"
+                  (get-bucket-name (:uuid object-map))
                   (get-path object-map)))
 
 (defn exists?
       [store object-map get-path]
       (object-exists? store
-                      "static-assets"
+                      (get-bucket-name (:uuid object-map))
                       (get-path object-map)))
 
 (defn- parse-content-disp
