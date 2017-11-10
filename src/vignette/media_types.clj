@@ -154,7 +154,7 @@
 
 (defn static-assets-thumb-map->path [data image-path]
       (let [prefix (thumb-map->prefix data)
-            name (format "%spx-%spx-%s%s"  (or (width data) "X") (or (height data) "X") (mode data) (query-opts-str data))]
+            name (format "%spx-%spx-%s%s"  (width data) (height data) (mode data) (query-opts-str data))]
            (clojure.string/join "/" (filter not-empty [prefix image-path name]))))
 
 (defn static-assets-thumbnail-path
