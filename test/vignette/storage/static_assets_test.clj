@@ -77,3 +77,29 @@
               (put-object #vignette.storage.core.ImageStorage{:store ..disk-store.., :cache-thumbnails true}
                           ..resource..
                           "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/nullpx-nullpx-null[format=webp]") => nil)))
+
+(facts :static-assets :get-thumbnail
+       (let [store (create-image-storage ..disk-store..)]
+
+            (get-thumbnail (sa/create-static-image-storage store --static-asset-get--)
+                            {:height         :auto, :requested-format nil, :options {:format "webp"},
+                             :image-type     "images", :request-type :thumbnail,
+                             :thumbnail-mode "scale-to-width-down", :width 690,
+                             :uuid           "d6f0194a-ea6a-410d-9c45-81411b43abcd"}) => ..resource..
+            (provided
+              (get-object #vignette.storage.core.ImageStorage{:store ..disk-store.., :cache-thumbnails true}
+                          "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/690px-autopx-scale-to-width-down[format=webp]") => ..resource..)
+
+            (get-thumbnail (sa/create-static-image-storage store --static-asset-get--)
+                            {:height         :auto, :requested-format nil, :options {:format "webp"},
+                             :image-type     "images", :request-type :thumbnail,
+                             :thumbnail-mode "scale-to-width-down", :width 690,
+                             :uuid           "wrong-uuid"}) => (throws #"Incorrect UUID")
+
+            (get-thumbnail (sa/create-static-image-storage store --static-asset-get--)
+                            {:requested-format nil, :options {:format "webp"},
+                             :image-type       "images", :request-type :thumbnail,
+                             :thumbnail-mode   nil, :uuid "d6f0194a-ea6a-410d-9c45-81411b43abcd"}) => ..resource..
+            (provided
+              (get-object #vignette.storage.core.ImageStorage{:store ..disk-store.., :cache-thumbnails true}
+                          "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/nullpx-nullpx-null[format=webp]") => ..resource..)))
