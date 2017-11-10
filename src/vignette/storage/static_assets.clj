@@ -1,12 +1,14 @@
 (ns vignette.storage.static-assets
   (:require [vignette.storage.protocols :refer :all]
+            [slingshot.slingshot :refer [throw+]]
             [org.httpkit.client :as http]
             [vignette.util.filesystem :as fs]
             [clojure.java.io :as io]
             [vignette.media-types :as mt]))
 
 (defn get-bucket-name [uuid]
-      (subs uuid 32 36))
+      (if-let [[id bucket] (re-matches #"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8}([0-9a-f]{4})" uuid)]
+              bucket (throw+ {:type :convert-error :uuid uuid} "Incorrect UUID")))
 
 (defn get*
       [store object-map get-path]

@@ -64,6 +64,12 @@
                           "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/690px-autopx-scale-to-width-down[format=webp]") => nil)
 
             (save-thumbnail (sa/create-static-image-storage store --static-asset-get--) ..resource..
+                            {:height         :auto, :requested-format nil, :options {:format "webp"},
+                             :image-type     "images", :request-type :thumbnail,
+                             :thumbnail-mode "scale-to-width-down", :width 690,
+                             :uuid           "wrong-uuid"}) => (throws #"Incorrect UUID")
+
+            (save-thumbnail (sa/create-static-image-storage store --static-asset-get--) ..resource..
                             {:requested-format nil, :options {:format "webp"},
                              :image-type       "images", :request-type :thumbnail,
                              :thumbnail-mode   nil, :uuid "d6f0194a-ea6a-410d-9c45-81411b43abcd"}) => nil
