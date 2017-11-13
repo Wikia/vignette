@@ -7,7 +7,7 @@
             [vignette.media-types :as mt]))
 
 (defn get-bucket-name [uuid]
-      (if-let [[id bucket] (re-matches #"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8}([0-9a-f]{4})" uuid)]
+      (if-let [[_ bucket] (re-matches #"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8}([0-9a-f]{4})" uuid)]
               bucket (throw+ {:type :convert-error :uuid uuid} "Incorrect UUID")))
 
 (defn get*

@@ -105,8 +105,8 @@
   (put-object [this resource bucket path]
     (let [file (file-stream resource)
           mime-type (content-type resource)]
-      (if (perf/timing :s3-get (not (s3/bucket-exists? creds bucket)))
-        (perf/timing :s3-put (s3/create-bucket creds bucket)))
+      (if (perf/timing :s3-bucket-exists (not (s3/bucket-exists? creds bucket)))
+        (perf/timing :s3-bucket-create (s3/create-bucket creds bucket)))
       (when-let [response (perf/timing :s3-put (s3/put-object (add-timeouts :put (:creds this))
                                                               bucket
                                                               path
