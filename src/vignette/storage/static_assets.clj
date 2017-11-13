@@ -1,8 +1,33 @@
 (ns vignette.storage.static-assets
   (:require [vignette.storage.protocols :refer :all]
+            [slingshot.slingshot :refer [throw+]]
             [org.httpkit.client :as http]
             [vignette.util.filesystem :as fs]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [vignette.media-types :as mt]))
+
+(defn get-bucket-name [uuid]
+      (if-let [[_ bucket] (re-matches #"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{8}([0-9a-f]{4})" uuid)]
+              bucket (throw+ {:type :convert-error :uuid uuid} "Incorrect UUID")))
+
+(defn get*
+      [store object-map get-path]
+      (get-object store
+                  (get-bucket-name (:uuid object-map))
+                  (get-path object-map)))
+
+(defn put*
+      [store resource object-map get-path]
+      (put-object store
+                  resource
+                  (get-bucket-name (:uuid object-map))
+                  (get-path object-map)))
+
+(defn exists?
+      [store object-map get-path]
+      (object-exists? store
+                      (get-bucket-name (:uuid object-map))
+                      (get-path object-map)))
 
 (defn- parse-content-disp
   [header]
@@ -31,9 +56,18 @@
           (if (= 451 status)
             (first-available (rest image-urls))))))))
 
-(defrecord StaticImageStorage [static-image-url] ImageStorageProtocol
-  (save-thumbnail [_ _ _] nil)
-  (get-thumbnail [_ _] nil)
+(defrecord StaticImageStorage [store, static-image-url] ImageStorageProtocol
+  (save-thumbnail [this resource thumb-map]
+      (put* (:store this)
+        resource
+        thumb-map
+        mt/static-assets-thumbnail-path))
+
+  (get-thumbnail [this thumb-map]
+       (get* (:store this)
+         thumb-map
+         mt/static-assets-thumbnail-path))
+
   (save-original [_ _ _] nil)
 
   (get-original [_ original-map]
@@ -45,7 +79,7 @@
     (if-let [uuid (:uuid image-map)]
       (let [static-image-response (http/head (static-image-url uuid))]
         (-> @static-image-response :status (= 200))))))
-             
 
-(defn create-static-image-storage [static-image-url]
-  (->StaticImageStorage static-image-url))
+
+(defn create-static-image-storage [store static-image-url]
+  (->StaticImageStorage store static-image-url))

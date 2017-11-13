@@ -152,6 +152,16 @@
         window-width (:window-width data)]
     (window-format width x-offset window-width)))
 
+(defn static-assets-thumb-map->path [data image-path]
+      (let [prefix (thumb-map->prefix data)
+            name (format "%spx-%spx-%s%s"  (width data) (height data) (mode data) (query-opts-str data))]
+           (clojure.string/join "/" (filter not-empty [prefix image-path name]))))
+
+(defn static-assets-thumbnail-path
+      [data]
+      (let [thumb-path (:uuid data)]
+           (static-assets-thumb-map->path data thumb-path)))
+
 (defn thumbnail-path
   [data]
   (let [thumb-path (clojure.string/join "/" (filter not-empty ((juxt top-dir middle-dir) data)))]
