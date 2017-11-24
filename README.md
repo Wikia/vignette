@@ -70,9 +70,8 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `ACCESS_LOG_FILE`              NCSA acces log file [/tmp/Vignette-access.log]
  * `IMAGEMAGICK_BASE`             path to the root of the ImageMagick installation [/usr/local]
  * `GIF2WEBP`                     path to the gif2webp binary from libwebp package [/usr/bin/gif2webp]
- * `CONSUL_HOSTNAME`              Consul Agent's address [localhost]
- * `CONSUL_HTTP_PORT`             Consul Agent's port [8500]
- * `CONSUL_QUERY_TAG`             Default tag that will be used to query instances [prod]
+ * `WIKIA_ENVIRONMENT`            Environment value (dev, prod, staging) [dev]
+ * `WIKIA_DATACENTER`             Server datacenter location (poz, sjc, res) [poz]
  * `GETOPT`                       when running on osx, install gnu-getopt using brew. see bin/thumbnail
  * `CONVERT_CONSTRAINTS`          universal options to pass to ImageMagick. see bin/thumbnail
  * `UNSUPPORTED_REDIRECT_HOST`    on an unsupported legacy thumbnail request, host to redirect
