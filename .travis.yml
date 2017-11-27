@@ -20,6 +20,8 @@ before_install:
   - export PATH=$HOME/opt/bin:$PATH
   - export IMAGEMAGICK_BASE=$HOME/opt
   - export GIF2WEBP=$HOME/opt/bin/gif2webp
+  - export WIKIA_ENVIRONMENT=dev
+  - export WIKIA_DATACENTER=sjc
 
 cache:
   directories:
