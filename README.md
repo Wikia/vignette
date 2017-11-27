@@ -70,8 +70,8 @@ Below is a list of environment variables that will affect the vignette runtime.
  * `ACCESS_LOG_FILE`              NCSA acces log file [/tmp/Vignette-access.log]
  * `IMAGEMAGICK_BASE`             path to the root of the ImageMagick installation [/usr/local]
  * `GIF2WEBP`                     path to the gif2webp binary from libwebp package [/usr/bin/gif2webp]
- * `WIKIA_ENVIRONMENT`            Environment value (dev, prod, staging) [dev]
- * `WIKIA_DATACENTER`             Server datacenter location (poz, sjc, res) [poz]
+ * `WIKIA_ENVIRONMENT`            Environment value (dev, prod, staging)
+ * `WIKIA_DATACENTER`             Server datacenter location (poz, sjc, res)
  * `GETOPT`                       when running on osx, install gnu-getopt using brew. see bin/thumbnail
  * `CONVERT_CONSTRAINTS`          universal options to pass to ImageMagick. see bin/thumbnail
  * `UNSUPPORTED_REDIRECT_HOST`    on an unsupported legacy thumbnail request, host to redirect
