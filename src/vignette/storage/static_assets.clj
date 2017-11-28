@@ -49,7 +49,7 @@
 
 (defn first-available [image-urls]
   (if-let [url (first image-urls)]
-    (let [response @(http/get url {:as :stream})]
+    (let [response @(http/get url {:as :stream :user-agent "vignette"})]
       (let [status (:status response)]
         (if (= 200 status)
           (->AsyncResponseStoredObject response)
@@ -77,7 +77,7 @@
 
   (original-exists? [_ image-map] nil
     (if-let [uuid (:uuid image-map)]
-      (let [static-image-response (http/head (static-image-url uuid))]
+      (let [static-image-response (http/head (static-image-url uuid) {:user-agent "vignette"})]
         (-> @static-image-response :status (= 200))))))
 
 

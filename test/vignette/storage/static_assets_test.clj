@@ -14,13 +14,13 @@
               (sa/create-static-image-storage store --static-asset-get--) {:uuid ..uuid..}) => ..object..
             (provided
               (--static-asset-get-- ..uuid..) => ..static-asset-url..
-              (http/get ..static-asset-url.. {:as :stream}) => (future {:status 200})
+              (http/get ..static-asset-url.. {:as :stream :user-agent "vignette"}) => (future {:status 200})
               (sa/->AsyncResponseStoredObject {:status 200}) => ..object..)
             (get-original
               (sa/create-static-image-storage store --static-asset-get--) {:uuid ..uuid.. :options {:status ..statuses..}}) => nil
             (provided
               (--static-asset-get-- ..uuid..) => ..static-asset-url..
-              (http/get ..static-asset-url.. {:as :stream}) => (future {:status 404}))))
+              (http/get ..static-asset-url.. {:as :stream :user-agent "vignette"}) => (future {:status 404}))))
 
 (facts :static-assets :filename
        (filename
@@ -45,9 +45,9 @@
               (sa/create-static-image-storage store --static-asset-get--) {:uuid ..uuid.. :blocked-placeholder ..placeholder-id..}) => ..placeholder..
             (provided
               (--static-asset-get-- ..uuid..) => ..static-asset-url..
-              (http/get ..static-asset-url.. {:as :stream}) => (future {:status 451})
+              (http/get ..static-asset-url.. {:as :stream :user-agent "vignette"}) => (future {:status 451})
               (--static-asset-get-- ..placeholder-id..) => ..placeholder-url..
-              (http/get ..placeholder-url.. {:as :stream}) => (future {:status 200})
+              (http/get ..placeholder-url.. {:as :stream :user-agent "vignette"}) => (future {:status 200})
               (sa/->AsyncResponseStoredObject {:status 200}) => ..placeholder..)))
 
 (facts :static-assets :save-thumbnail
