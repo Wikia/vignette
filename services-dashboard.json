@@ -1,0 +1,21 @@
+{
+  "name": "vignette",
+  "owner": {
+    "team": "services",
+    "slack": "#services",
+    "e-mail": "services-l@wikia-inc.com"
+  },
+  "contributors": [
+    "Adam Robak <adamr@wikia-inc.com>",
+    "Jacek 'mech' Woźniak <mech@wikia-inc.com>",
+    "Łukasz 'Harnaś` Harasimowicz <harnas@wikia-inc.com>"
+  ],
+  "dashboards": [
+    "https://metrics.wikia-inc.com/dashboard/db/vignette"
+  ],
+  "documentation": [
+    "https://wikia-inc.atlassian.net/wiki/spaces/PLAT/pages/33292412/Vignette"
+  ],
+  "other-links": {
+  }
+}
