@@ -18,5 +18,5 @@
   ],
   "other-links": {
   },
-  "markdown": "# Vignette \n\nA Clojure library for thumbnail generation and storage."
+  "markdown": "# Vignette \n\nA Clojure application for thumbnail generation and storage."
 }
