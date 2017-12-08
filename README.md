@@ -2,7 +2,7 @@
 
 # Vignette
 
-A Clojure library for thumbnail generation and storage.
+A Clojure application for thumbnail generation and storage.
 
 # Table of Contents
 
