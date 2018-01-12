@@ -71,6 +71,9 @@
       (add-content-disposition-header image-map)
       (add-surrogate-header image-map)))
 
+(defn create-ok-response []
+  (-> (response "")))
+
 (defn- base-filename [image-map object]
   (or (if-let [orig (if image-map (original image-map))]
         (string/replace orig "\"" "\\\""))

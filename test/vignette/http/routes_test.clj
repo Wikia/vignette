@@ -4,7 +4,7 @@
             [midje.sweet :refer :all]
             [ring.mock.request :refer :all]
             [vignette.http.routes :refer :all]
-            [vignette.http.api-routes :refer [def-api-context wiki-context uuid-context]]
+            [vignette.http.api-routes :refer [wiki-context]]
             [vignette.protocols :refer :all]
             [vignette.util.image-response :refer :all]
             [vignette.storage.core :refer :all]

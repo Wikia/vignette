@@ -28,6 +28,10 @@
     (create-head-response image-params)
     (error-response 404 image-params)))
 
+(defn handle-delete
+  [store image-params]
+  (create-ok-response))
+
 (defn route-params->image-type
   [route-params]
   (if (clojure.string/blank? (:image-type route-params))
