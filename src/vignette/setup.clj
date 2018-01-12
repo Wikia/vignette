@@ -27,5 +27,5 @@
   (concat
     (list
       (uuid-routes (:static-store stores))
-      (wiki-routes (:static-store stores)))
+      (wiki-routes (:wikia-store stores)))
     (hlr/legacy-routes (:wikia-store stores))))
