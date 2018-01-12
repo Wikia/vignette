@@ -5,19 +5,24 @@
             [ring.mock.request :refer :all]
             [vignette.test.helper :refer [context-route-matches]]
             [vignette.http.route-helpers :refer :all]
-            [vignette.http.proto-routes :as proto]
+            [vignette.http.api-routes :refer :all]
             [vignette.util.image-response :refer :all]
             [vignette.storage.core :refer :all]
             [vignette.storage.local :refer [create-stored-object]]
             [vignette.util.image-response :as ir]
-            [ring.util.codec :refer [url-encode]]))
+            [ring.util.codec :refer [url-encode]]
+            [vignette.util.regex :refer :all]))
 
-(def in-wiki-context-route-matches (partial context-route-matches vignette.http.api-routes/wiki-context))
+(def in-wiki-context-route-matches (partial context-route-matches ["/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
+                                                                   :wikia wikia-regex
+                                                                   :image-type image-type-regex
+                                                                   :top-dir top-dir-regex
+                                                                   :middle-dir middle-dir-regex]))
 
 (facts :create-image-response
        (let [image-map
              (route->original-map (in-wiki-context-route-matches
-                                    proto/original-route
+                                    original-route
                                     (request :get "/lotr/3/35/ropes.jpg/revision/latest"))
                                   {})
              response (create-image-response (create-stored-object "image-samples/ropes.jpg") image-map)

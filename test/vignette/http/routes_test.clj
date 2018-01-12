@@ -15,7 +15,8 @@
             [vignette.util.thumbnail :as u]
             [vignette.setup :refer [image-routes]]
             [vignette.http.legacy.routes :as hlr]
-            [vignette.media-types :as mt]))
+            [vignette.media-types :as mt]
+            [vignette.util.regex :refer :all]))
 
 (def in-wiki-context-route-matches (partial context-route-matches ["/:wikia:image-type/:top-dir/:middle-dir/:original/revision/:revision"
                                                                    :wikia wikia-regex
