@@ -11,6 +11,7 @@
 (defprotocol ImageStorageProtocol
   (save-thumbnail [this resource thumb-map])
   (get-thumbnail [this thumb-map])
+  (delete-thumbnails [this original-map])
 
   (save-original  [this resource original-map])
   (get-original  [this original-map])

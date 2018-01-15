@@ -104,6 +104,10 @@
     (when-let [thumb (generate-thumbnail store thumb-map nil)]
     thumb)))
 
+(defn delete-all-thumbnails
+  [store thumb-map]
+  (delete-thumbnails store thumb-map))
+
 (defn generate-thumbnail
   "Generate a thumbnail from the original specified in thumb-map.
   This function will download the original locally and thumbnail it.

@@ -30,7 +30,8 @@
 
 (defn handle-delete
   [store image-params]
-  (create-ok-response))
+  (if-let [delete (u/delete-all-thumbnails store image-params)]
+    (create-ok-response)))
 
 (defn route-params->image-type
   [route-params]

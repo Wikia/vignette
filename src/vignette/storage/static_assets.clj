@@ -23,6 +23,10 @@
                   (get-bucket-name (:uuid object-map))
                   (get-path object-map)))
 
+(defn delete*
+  [store object-map get-path]
+  (delete-object store (get-bucket-name (:uuid object-map)) (get-path object-map)))
+
 (defn exists?
       [store object-map get-path]
       (object-exists? store
@@ -67,6 +71,9 @@
        (get* (:store this)
          thumb-map
          mt/static-assets-thumbnail-path))
+
+  (delete-thumbnails [this original-map]
+    (delete* (:store this) original-map mt/static-assets-thumb-map->dir-path))
 
   (save-original [_ _ _] nil)
 

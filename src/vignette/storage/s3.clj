@@ -113,13 +113,17 @@
                                                               file
                                                               {:content-type mime-type}))]
         response)))
-  (delete-object [this bucket path])
+  (delete-object [this bucket path]
+    (if (object-exists? this bucket path)
+        (perf/timing :s3-delete (s3/delete-object creds bucket path))))
+
   (object-exists? [this bucket path]
     (s3/object-exists? (add-timeouts :head (:creds this))
                        bucket
                        path))
   (list-buckets [this])
-  (list-objects [this bucket]))
+  (list-objects [this bucket]
+    (map :key (:objects (perf/timing :s3-list-objects (s3/list-objects creds bucket))))))
 
 (defrecord S3StoredObject [stream meta-data file-name]
   StoredObjectProtocol
