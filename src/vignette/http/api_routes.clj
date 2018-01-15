@@ -87,7 +87,7 @@
        (GET window-crop-fixed-route request (handle-thumbnail store (route->thumbnail-map (:route-params request) request) request))
        (HEAD thumbnail-route request (handle-head store (route->thumbnail-map (:route-params request) request)))
        (GET thumbnail-route request (handle-thumbnail store (route->thumbnail-map (:route-params request) request) request))
-       (DELETE original-route request (handle-delete store (route->original-map (:route-params request) request)))
+       (DELETE original-route request (handle-delete store (route->original-map (:route-params request) request) request))
        (HEAD original-route request (handle-head store (route->original-map (:route-params request) request)))
        (GET original-route request (handle-original store (route->original-map (:route-params request) request) request))]
       )))

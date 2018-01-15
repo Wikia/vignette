@@ -71,8 +71,11 @@
       (add-content-disposition-header image-map)
       (add-surrogate-header image-map)))
 
-(defn create-ok-response []
-  (-> (response "")))
+(defn create-response
+  ([] (create-response 200 ""))
+  ([code data] (-> (response data)
+                 (status code)
+                 (header "X-Thumbnailer" "Vignette"))))
 
 (defn- base-filename [image-map object]
   (or (if-let [orig (if image-map (original image-map))]

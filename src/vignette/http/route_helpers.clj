@@ -6,7 +6,10 @@
             [vignette.storage.core :refer :all]
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :as u]
-            [vignette.media-types :as mt]))
+            [vignette.media-types :as mt]
+            [wikia.common.logger :as log]
+            [wikia.common.perfmonitoring.core :as perf]
+            [slingshot.slingshot :refer [try+]]))
 
 (def blocked-placeholder-param "bp")
 
@@ -28,10 +31,24 @@
     (create-head-response image-params)
     (error-response 404 image-params)))
 
+(defn error-catcher [request handler]
+  (try+
+    (apply handler [])
+    (catch Exception e
+      (println (.getMessage e) ":" (:uri request))
+      (perf/publish {:exception-count 1})
+      (log/warn (str e) {:path  (:uri request)
+                         :query (:query-string request)})
+      (create-response 500 "Internal Server Error"))))
+
 (defn handle-delete
-  [store image-params]
-  (if-let [delete (u/delete-all-thumbnails store image-params)]
-    (create-ok-response)))
+  [store image-params request]
+  (if-let [internal (get (:headers request) "x-wikia-internal-request")]
+    (error-catcher
+      request
+      #(if-let [delete (u/delete-all-thumbnails store image-params)]
+         (create-response)))
+    (create-response 400 "Bad Request")))
 
 (defn route-params->image-type
   [route-params]
