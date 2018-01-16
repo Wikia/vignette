@@ -65,6 +65,22 @@
       (sp/get-thumbnail ..store.. original-forced-image-params) => nil
       (sp/get-original ..store.. original-forced-image-params) => nil)))
 
+(facts :handle-delete
+  (let [original-image-params {}]
+    (handle-delete ..store.. original-image-params ..request..) =>
+    {:body "Bad Request", :headers {"X-Thumbnailer" "Vignette"}, :status 400}
+
+    (handle-delete ..store.. original-image-params {:headers {"x-wikia-internal-request" ""}}) =>
+    {:body "", :headers {"X-Thumbnailer" "Vignette"}, :status 200}
+    (provided
+      (sp/delete-thumbnails ..store.. original-image-params) => true)
+
+    (handle-delete ..store.. original-image-params {:headers {"x-wikia-internal-request" ""}}) =>
+    {:body "Server Error", :headers {"X-Thumbnailer" "Vignette"}, :status 500}
+    (provided
+      (sp/delete-thumbnails ..store.. original-image-params) =throws=> (Exception. "Any exception"))
+    ))
+
 (facts :route-params->image-type
        (route-params->image-type {:image-type ""}) => "images"
        (route-params->image-type {:image-type "/images"}) => "images"

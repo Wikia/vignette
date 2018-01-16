@@ -123,3 +123,8 @@
        (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => false
        (is-passthrough-required "image/bmp" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => true
        (is-passthrough-required "image/gif" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => false)
+
+(facts :delete-all-thumbnails
+  (delete-all-thumbnails ..store.. beach-map) => ..value..
+  (provided
+    (delete-thumbnails ..store.. beach-map) => ..value..))
