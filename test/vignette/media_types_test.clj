@@ -143,3 +143,27 @@
         (hlrh/route->thumb-map
           (route-matches hlr/thumbnail-route request) request)]
     (thumbnail-path new-thumbnail-map) => (thumbnail-path legacy-thumbnail-map)))
+
+(def static-assets-map {:uuid           "d6f0194a-ea6a-410d-9c45-81411b43bcab"
+                        :thumbnail-mode "thumbnail"
+                        :width          "200"
+                        :height         "300"
+                        :image-type     "images"
+                        :options        {}})
+
+(facts :static-assets-thumb-map->dir-path
+  (let [data static-assets-map]
+    (static-assets-thumb-map->dir-path data) => "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43bcab"))
+
+(facts :static-assets-thumbnail-path
+  (let [data static-assets-map]
+    (static-assets-thumbnail-path data) => "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43bcab/200px-300px-thumbnail"))
+
+(def static-assets-minimal-map {:uuid           "d6f0194a-ea6a-410d-9c45-81411b43bcab"
+                                :thumbnail-mode "thumbnail"
+                                :image-type     "images"
+                                :options        {}})
+
+(facts :static-assets-thumbnail-path-minimal
+  (let [data static-assets-minimal-map]
+    (static-assets-thumbnail-path data) => "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43bcab/nullpx-nullpx-thumbnail"))
