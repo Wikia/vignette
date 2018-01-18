@@ -120,7 +120,6 @@
       (list-objects store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/") => {:objects [{:key "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/test-thumb"}]}
       (delete-object store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/test-thumb") => nil)
 
-
     (delete-thumbnails (sa/create-static-image-storage store --static-asset-get--)
       {:options {}, :image-type "images", :uuid "d6f0194a-ea6a-410d-9c45-81411b43abcd"}) => true
     (provided

@@ -32,6 +32,8 @@
     (error-response 404 image-params)))
 
 (defn error-catcher [request handler]
+  ; this overrides default error handling
+  ; delete method shouldn't return image on failure
   (try+
     (apply handler [])
     (catch Exception e
@@ -48,7 +50,7 @@
       request
       #(if-let [delete (u/delete-all-thumbnails store image-params)]
          (create-response)))
-    (create-response 400 "Bad Request")))
+    (create-response 403 "Forbidden")))
 
 (defn route-params->image-type
   [route-params]

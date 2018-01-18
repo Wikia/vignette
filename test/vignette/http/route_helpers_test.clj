@@ -68,7 +68,7 @@
 (facts :handle-delete
   (let [original-image-params {}]
     (handle-delete ..store.. original-image-params ..request..) =>
-    {:body "Bad Request", :headers {"X-Thumbnailer" "Vignette"}, :status 400}
+    {:body "Forbidden", :headers {"X-Thumbnailer" "Vignette"}, :status 403}
 
     (handle-delete ..store.. original-image-params {:headers {"x-wikia-internal-request" ""}}) =>
     {:body "", :headers {"X-Thumbnailer" "Vignette"}, :status 200}

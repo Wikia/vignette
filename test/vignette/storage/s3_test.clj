@@ -64,7 +64,7 @@
 (facts :s3 :object-exists
   (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => true
   (provided
-    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) => {:test 1})
+    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) => {:not-empty-map true})
 
   (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => false
   (provided
