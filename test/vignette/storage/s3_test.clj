@@ -64,10 +64,18 @@
 (facts :s3 :object-exists
   (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => true
   (provided
-    (add-timeouts :head ..creds..) => ..timeout-creds..
-    (s3/object-exists? ..timeout-creds.. ..bucket.. ..path..) => true)
+    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) => {:test 1})
 
   (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => false
   (provided
-    (add-timeouts :head ..creds..) => ..timeout-creds..
-    (s3/object-exists? ..timeout-creds.. ..bucket.. ..path..) => false))
+    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) => nil)
+
+  (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => false
+  (provided
+    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) =throws=> (let [e (AmazonS3Exception. "test")]
+                                                                                      (.setErrorCode e "AccessDenied") e))
+
+  (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => (throws AmazonS3Exception)
+  (provided
+    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) =throws=> (let [e (AmazonS3Exception. "test")]
+                                                                                      (.setErrorCode e "Other") e)))

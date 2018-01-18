@@ -25,9 +25,11 @@
 
 (defn delete*
   [store object-map get-path]
-  (if-let [objects (list-objects store (get-bucket-name (:uuid object-map)) (get-path object-map))]
-    (let [keys (map :key (:objects objects))]
-      (doseq [key keys] (delete-object store (get-bucket-name (:uuid object-map)) key)))))
+  (let [bucket (get-bucket-name (:uuid object-map))
+        path (get-path object-map)]
+    (if (object-exists? store bucket path)
+      (let [keys (map :key (:objects (list-objects store bucket path)))]
+        (doseq [key keys] (delete-object store bucket key))))))
 
 (defn exists?
       [store object-map get-path]
