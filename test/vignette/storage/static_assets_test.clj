@@ -103,3 +103,35 @@
             (provided
               (get-object #vignette.storage.core.ImageStorage{:store ..disk-store.., :cache-thumbnails true}
                           "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/nullpx-nullpx-null[format=webp]") => ..resource..)))
+
+(facts :static-assets :delete-thumbnails
+  (let [store (create-image-storage ..disk-store..)]
+
+    (delete-thumbnails (sa/create-static-image-storage store --static-asset-get--)
+      {:options {}, :image-type "images", :uuid "d6f0194a-ea6a-410d-9c45-81411b43abcd"}) => true
+    (provided
+      (object-exists? store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/") => true
+      (list-objects store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/") => {})
+
+    (delete-thumbnails (sa/create-static-image-storage store --static-asset-get--)
+      {:options {}, :image-type "images", :uuid "d6f0194a-ea6a-410d-9c45-81411b43abcd"}) => true
+    (provided
+      (object-exists? store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/") => true
+      (list-objects store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/") => {:objects [{:key "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/test-thumb"}]}
+      (delete-object store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/test-thumb") => nil)
+
+
+    (delete-thumbnails (sa/create-static-image-storage store --static-asset-get--)
+      {:options {}, :image-type "images", :uuid "d6f0194a-ea6a-410d-9c45-81411b43abcd"}) => true
+    (provided
+      (object-exists? store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/") => false)
+
+    (delete-thumbnails (sa/create-static-image-storage store --static-asset-get--)
+      {:options {}, :image-type "images", :uuid "d6f0194a-ea6a-410d-9c45-81411b43abcd"}) => true
+    (provided
+      (object-exists? store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/") => true
+      (list-objects store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/") => {:objects [{:key "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/test-thumb"},
+                                                                                                     {:key "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/test-other-thumb"}]}
+      (delete-object store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/test-thumb") => nil
+      (delete-object store "abcd" "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43abcd/test-other-thumb") => nil)
+    ))
