@@ -25,7 +25,9 @@
 
 (defn delete*
   [store object-map get-path]
-  (delete-object store (get-bucket-name (:uuid object-map)) (get-path object-map)))
+  (if-let [objects (list-objects store (get-bucket-name (:uuid object-map)) (get-path object-map))]
+    (let [keys (map :key (:objects objects))]
+      (doseq [key keys] (delete-object store (get-bucket-name (:uuid object-map)) key)))))
 
 (defn exists?
       [store object-map get-path]
@@ -73,7 +75,7 @@
          mt/static-assets-thumbnail-path))
 
   (delete-thumbnails [this original-map]
-    (delete* (:store this) original-map mt/static-assets-thumb-map->dir-path))
+    (do (delete* (:store this) original-map mt/static-assets-thumb-map->dir-path) true))
 
   (save-original [_ _ _] nil)
 

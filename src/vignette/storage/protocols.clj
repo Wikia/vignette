@@ -6,7 +6,7 @@
   (delete-object [this bucket path])
   (object-exists? [this bucket path])
   (list-buckets [this])
-  (list-objects [this bucket]))
+  (list-objects [this bucket path]))
 
 (defprotocol ImageStorageProtocol
   (save-thumbnail [this resource thumb-map])

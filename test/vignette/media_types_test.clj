@@ -153,7 +153,7 @@
 
 (facts :static-assets-thumb-map->dir-path
   (let [data static-assets-map]
-    (static-assets-thumb-map->dir-path data) => "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43bcab"))
+    (static-assets-thumb-map->dir-path data) => "images/thumb/d6f0194a-ea6a-410d-9c45-81411b43bcab/"))
 
 (facts :static-assets-thumbnail-path
   (let [data static-assets-map]
