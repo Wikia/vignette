@@ -1,7 +1,7 @@
 (ns vignette.setup
   (:require [cheshire.core :refer :all]
             [vignette.http.legacy.routes :as hlr]
-            [vignette.http.api-routes :refer [def-api-context wiki-context uuid-context]]
+            [vignette.http.api-routes :refer [uuid-routes wiki-routes]]
             [vignette.util.integration :as i]
             [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
             [vignette.storage.core :refer [create-image-storage]]
@@ -26,6 +26,6 @@
 (defn image-routes [stores]
   (concat
     (list
-      (def-api-context wiki-context (:wikia-store stores))
-      (def-api-context uuid-context (:static-store stores)))
+      (uuid-routes (:static-store stores))
+      (wiki-routes (:wikia-store stores)))
     (hlr/legacy-routes (:wikia-store stores))))

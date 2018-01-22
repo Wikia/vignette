@@ -38,7 +38,7 @@
       (file-exists? real-file)))
 
   (list-buckets [this])
-  (list-objects [this bucket]))
+  (list-objects [this bucket path]))
 
 (defrecord LocalStoredObject [file]
   StoredObjectProtocol
