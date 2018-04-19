@@ -20,6 +20,7 @@
   (create-query-opt #"\w+") => (contains {:regex #"\w+" :side-effects true}))
 
 (facts :request-options
+       (extract-query-opts {:query-params {"format" ["webp" "jpg"]}}) => {:format "webp"}
        (extract-query-opts {:query-params {"fill" "blue"
                                            "unused" "foo"
                                            "unused2" "bar"}}) => {:fill "blue"}
