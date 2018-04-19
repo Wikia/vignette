@@ -42,10 +42,10 @@
   [request]
   (reduce
    (fn [running [key val]]
-     (let [first (first (flatten [val]))]
+     (let [single (last (flatten [val]))]
        (if (and (contains? query-opts-map (keyword key))
-                (re-matches (query-opt-regex (get query-opts-map (keyword key))) first))
-         (assoc running (keyword key) first)
+                (re-matches (query-opt-regex (get query-opts-map (keyword key))) single))
+         (assoc running (keyword key) single)
          running)))
    {} (:query-params request)))
 
