@@ -121,7 +121,7 @@
       (not (empty? (s3/list-objects creds bucket {:prefix path :max-keys 1})))
       (catch AmazonS3Exception e
         ; list-objects will throw access denied error on missing paths
-        (if (= (.getErrorCode e) "AccessDenied") false (throw e)))))
+        (if (or (= (.getErrorCode e) "AccessDenied") (= (.getErrorCode e) "NoSuchBucket")) false (throw e)))))
   (list-buckets [this])
   (list-objects [this bucket path]
     (perf/timing :s3-list-objects (s3/list-objects creds bucket {:prefix path}))))
