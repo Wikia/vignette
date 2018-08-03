@@ -41,6 +41,7 @@ spec:
         app: vignette-test
         stage: deployed
     spec:
+      serviceAccountName: k8s-pod
       volumes:
       - name: tmp-dir
         emptyDir: {}
