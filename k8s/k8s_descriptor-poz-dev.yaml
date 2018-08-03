@@ -45,6 +45,15 @@ spec:
       - name: tmp-dir
         emptyDir: {}
       containers:
+      - name: vignette-tmp-cleaner
+        image: alpine:3.8
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp-vignette
+          command:  # remove files older than 10 minutes
+           - /bin/sh
+           - -c
+           - "while true; find '/tmp-vignette' -type f -mmin +10 -exec /bin/rm {} \\; 2> /dev/null; sleep 600; done"
       - name: vignette-test
         image: ${IMAGE_PATH}
         volumeMounts:
@@ -73,12 +82,14 @@ spec:
           value: dev.dfs.service.poz-dev.consul
         - name: STORAGE_PROXY_PORT
           value: "80"
+        - name: VIGNETTE_TEMP-FILE-LOCATION   # temporary vignette files
+          value: /tmp-vignette
+        - name: MAGICK_TEMPORARY_PATH   # temporary ImageMagick files
+          value: /tmp-vignette
         - name: LOGGER_TYPE
           value: syslog
         - name: LOGGER_FILE_OUTPUT
           value: /tmp/vignette.log
-        - name: VIGNETTE_TEMP-FILE-LOCATION
-          value: /tmp-vignette
         - name: LOGGER_APPLICATION
           value: vignette
         - name: IMAGEMAGICK_BASE
