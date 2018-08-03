@@ -1,6 +1,6 @@
 FROM clojure:lein-2.8.1-alpine
 
-RUN apk --no-cache add libwebp imagemagick bash
+RUN apk --no-cache add libwebp libwebp-tools imagemagick bash
 
 ADD target/vignette-standalone.jar /vignette.jar
 ADD bin/thumbnail /thumbnail
