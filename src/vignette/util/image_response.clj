@@ -25,7 +25,7 @@
    (if val
      (header resp key val) resp)))
 
-(def error-image-file (io/file "public/brokenImage.jpg"))
+(def error-image-file (io/file "/public/brokenImage.jpg"))
 
 (defmulti error-image (fn [map]
                         (:request-type map)))
