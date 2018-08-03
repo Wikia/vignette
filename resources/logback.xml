@@ -1,15 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <appender name="stash" class="net.logstash.logback.appender.LogstashSocketAppender">
-        <syslogHost>localhost</syslogHost>
-        <port>1410</port>
-        <includeMdc>true</includeMdc>
-        <includeContext>true</includeContext>
-        <customFields>{"appname":"${LOGGER_APPLICATION}"}</customFields>
-        <fieldNames>
-          <message>@message</message>
-        </fieldNames>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{
+                "appname": "vignette",
+                "env": "${WIKIA_ENVIRONMENT}",
+                "datacenter":"${WIKIA_DATACENTER}"
+                }
+            </customFields>
+            <fieldNames>
+                <message>rawMessage</message>
+                <level>rawLevel</level>
+                <tags>rawTags</tags>
+                <context>rawContext</context>
+            </fieldNames>
+        </encoder>
     </appender>
-    <root level="info">
-        <appender-ref ref="stash"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
