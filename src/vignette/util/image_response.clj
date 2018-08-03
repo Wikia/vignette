@@ -12,7 +12,8 @@
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :refer :all]
             [ring.util.codec :refer [url-encode]]
-            [io.clj.logging :as log]))
+            [io.clj.logging :as log])
+  (:use [environ.core]))
 
 (declare create-image-response
          add-content-disposition-header
@@ -25,7 +26,7 @@
    (if val
      (header resp key val) resp)))
 
-(def error-image-file (io/file "/public/brokenImage.jpg"))
+(def error-image-file (io/file (env :vignette-broken-image "public/brokenImage.jpg")))
 
 (defmulti error-image (fn [map]
                         (:request-type map)))

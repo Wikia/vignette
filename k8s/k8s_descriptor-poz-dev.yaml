@@ -77,6 +77,8 @@ spec:
           value: /usr
         - name: VIGNETTE_THUMBNAIL_BIN
           value: /thumbnail
+        - name: VIGNETTE_BROKEN_IMAGE
+          value: /public/brokenImage.jpg
         - name: GETOPT
           value: /bin/getopt
         - name: TIMEOUT
