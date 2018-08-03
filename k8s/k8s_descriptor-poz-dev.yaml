@@ -53,7 +53,7 @@ spec:
         command:  # remove files older than 10 minutes
          - /bin/sh
          - -c
-         - "while true; find '/tmp-vignette' -type f -mmin +10 -exec /bin/rm {} \\; 2> /dev/null; sleep 600; done"
+         - "while true; do find '/tmp-vignette' -type f -mmin +10 -exec /bin/rm {} \\; 2> /dev/null; sleep 600; done"
       - name: vignette-test
         image: ${IMAGE_PATH}
         volumeMounts:
