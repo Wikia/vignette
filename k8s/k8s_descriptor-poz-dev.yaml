@@ -115,8 +115,8 @@ spec:
           limits:
             memory: 1024Mi
           requests:
-            cpu: 0.1
-            memory: 1024Mi
+            cpu: "1000m"
+            memory: 900Mi
         ports:
         - containerPort: 8080
 ---
