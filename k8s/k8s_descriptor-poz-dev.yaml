@@ -106,7 +106,7 @@ spec:
         - name: TIMEOUT_TIME
           value: "-t 30"
         - name: GIF2WEBP
-          value: /gif2webp
+          value: /usr/bin/gif2webp
         - name: WIKIA_ENVIRONMENT
           value: dev
         - name: WIKIA_DATACENTER
