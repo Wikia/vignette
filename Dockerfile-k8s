@@ -12,5 +12,4 @@ EXPOSE 8080
 
 USER service_user
 
-ENTRYPOINT ["java"]
-CMD ["-Xmx1024m", "-server", "-Dcom.sun.management.jmxremote", "-Dcom.sun.management.jmxremote.authenticate=false", "-Dcom.sun.management.jmxremote.ssl=false", "-jar", "/vignette.jar", "-m", "s3", "-p", "8080", "-C"]
+CMD ["sh", "-c", "source /var/lib/secrets/export.env && java -Xmx1024m -server -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /vignette.jar -m s3 -p 8080 -C" ]
