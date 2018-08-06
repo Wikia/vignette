@@ -52,8 +52,8 @@ spec:
       - name: init-vault
         image: artifactory.wikia-inc.com/ops/init-vault:0.0.36
         args:
-        - "STORAGE_ACCESS_KEY=secret/app/dev/vignette/aws_credentials.access_key"
-        - "STORAGE_SECRET_KEY=secret/app/dev/vignette/aws_credentials.secret_key"
+        - "STORAGE_ACCESS_KEY=secret/app/dev/vignette/ceph_tokens_poz.access_key"
+        - "STORAGE_SECRET_KEY=secret/app/dev/vignette/ceph_tokens_poz.secret_key"
         env:
         - name: SERVICE_ACCOUNT
           valueFrom:
