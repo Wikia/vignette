@@ -1,7 +1,5 @@
 DOCKER_IMAGE := artifactory.wikia-inc.com/services/vignette
 
-TARGET_JAR=target/vignette-standalone.jar
-
 # Injecting project version and build time
 VERSION_GIT := $(shell sh -c 'git describe --always --tags')
 
@@ -10,7 +8,7 @@ CURRENT_DIR := $(shell pwd)
 uberjar:
 	lein uberjar
 
-bumpversion: ./target/vignette-standalone.jar
+bumpversion:
 	bumpversion patch
 
 docker_build:
