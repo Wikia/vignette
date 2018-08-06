@@ -46,6 +46,8 @@ spec:
       - name: secrets-dir
         emptyDir:
           medium: Memory
+      - name: tmp-dir
+        emptyDir: {}
       initContainers:
       - name: init-vault
         image: artifactory.wikia-inc.com/ops/init-vault:0.0.36
@@ -69,8 +71,17 @@ spec:
         - name: secrets-dir
           mountPath: /var/lib/secrets
       containers:
+      - name: vignette-tmp-cleaner
+        image: alpine:3.8
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp-vignette
+        command:  # remove files older than 10 minutes
+         - /bin/sh
+         - -c
+         - "while true; do find '/tmp-vignette' -type f -mmin +10 -exec /bin/rm {} \\; 2> /dev/null; sleep 300; done"
       - name: vignette
-        image: artifactory.wikia-inc.com/services/vignette:0.4
+        image: ${IMAGE_PATH}
         # required for vault secrets to load
         lifecycle:
           preStop:
@@ -95,6 +106,10 @@ spec:
           value: dev.dfs.service.poz-dev.consul
         - name: STORAGE_PROXY_PORT
           value: "80"
+        - name: VIGNETTE_TEMP_FILE_LOCATION   # temporary vignette files
+          value: /tmp-vignette
+        - name: MAGICK_TEMPORARY_PATH   # temporary ImageMagick files
+          value: /tmp-vignette
         - name: LOGGER_TYPE
           value: syslog
         - name: LOGGER_FILE_OUTPUT
@@ -105,6 +120,8 @@ spec:
           value: /usr
         - name: VIGNETTE_THUMBNAIL_BIN
           value: /thumbnail
+        - name: VIGNETTE_BROKEN_IMAGE
+          value: /public/brokenImage.jpg
         - name: GETOPT
           value: /bin/getopt
         - name: TIMEOUT
@@ -121,12 +138,14 @@ spec:
         - name: secrets-dir
           readOnly: true
           mountPath: /var/lib/secrets
+        - name: tmp-dir
+          mountPath: /tmp-vignette
         resources:
           limits:
             memory: 1024Mi
           requests:
-            cpu: 0.1
-            memory: 1024Mi
+            cpu: 0.9
+            memory: 900Mi
         ports:
         - containerPort: 8080
 ---
