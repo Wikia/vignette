@@ -41,7 +41,7 @@ spec:
         app: vignette
         stage: deployed
     spec:
-      serviceAccountName: k8s-pod-dev
+      serviceAccountName: k8s-pod
       volumes:
       - name: secrets-dir
         emptyDir:
