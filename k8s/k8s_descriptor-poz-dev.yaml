@@ -137,7 +137,7 @@ spec:
         - name: PERFMONITORING_HOST
           value: prod.app-metrics-etl.service.sjc.consul
         - name: PERFMONITORING_PORT
-          value: 5551   # 4444 for prod
+          value: "5551"   # 4444 for prod
         - name: PERFMONITORING_APP
           value: vignette
         volumeMounts:
