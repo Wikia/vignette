@@ -5,6 +5,10 @@ VERSION_GIT := $(shell sh -c 'git describe --always --tags')
 
 CURRENT_DIR := $(shell pwd)
 
+build_vignette:
+	docker build -f Dockerfile-build-k8s -t build-vignette .
+	docker run -v ${CURRENT_DIR}:/project build-vignette
+
 uberjar:
 	lein uberjar
 
@@ -29,3 +33,6 @@ docker_deploy: .k8s
 
 docker_deploy_poz_dev:
 	$(MAKE) docker_deploy K8S_DESCRIPTOR=k8s_descriptor-poz-dev.yaml K8S_CONTEXT=kube-poz-dev NAMESPACE=dev
+
+docker_deploy_sjc_dev:
+	$(MAKE) docker_deploy K8S_DESCRIPTOR=k8s_descriptor-sjc-dev.yaml K8S_CONTEXT=kube-sjc-dev NAMESPACE=dev
