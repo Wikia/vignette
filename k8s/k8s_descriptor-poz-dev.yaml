@@ -140,6 +140,10 @@ spec:
           value: "5551"   # 4444 for prod
         - name: PERFMONITORING_APP
           value: vignette
+        - name: VIGNETTE_SERVER_MAX_THREADS
+          value: 200
+        - name: VIGNETTE_SERVER_QUEUE_SIZE
+          value: 12000
         volumeMounts:
         - name: secrets-dir
           readOnly: true
