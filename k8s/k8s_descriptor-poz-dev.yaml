@@ -170,6 +170,27 @@ metadata:
   namespace: dev
 spec:
   rules:
+  - host: images.wikia-dev.pl
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vignette
+          servicePort: 80
+  - host: static.wikia-dev.pl
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vignette
+          servicePort: 80
+  - host: vignette.wikia-dev.pl
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vignette
+          servicePort: 80
   - host: poz-dev.k8s.wikia.net
     http:
       paths:

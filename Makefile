@@ -36,3 +36,9 @@ docker_deploy_poz_dev:
 
 docker_deploy_sjc_dev:
 	$(MAKE) docker_deploy K8S_DESCRIPTOR=k8s_descriptor-sjc-dev.yaml K8S_CONTEXT=kube-sjc-dev NAMESPACE=dev
+
+docker_deploy_sjc_prod:
+	$(MAKE) docker_deploy K8S_DESCRIPTOR=k8s_descriptor-sjc-prod.yaml K8S_CONTEXT=kube-sjc-prod NAMESPACE=prod
+
+docker_deploy_res_prod:
+	$(MAKE) docker_deploy K8S_DESCRIPTOR=k8s_descriptor-res-prod.yaml K8S_CONTEXT=kube-res-prod NAMESPACE=prod

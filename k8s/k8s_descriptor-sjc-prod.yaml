@@ -4,7 +4,7 @@ metadata:
   labels:
     app: vignette
   name: vignette
-  namespace: dev
+  namespace: prod
 spec:
   ports:
   - port: 80
@@ -22,7 +22,7 @@ metadata:
     app: vignette
     stage: deployed
   name: vignette
-  namespace: dev
+  namespace: prod
 spec:
   selector:
     matchLabels:
@@ -52,8 +52,8 @@ spec:
       - name: init-vault
         image: artifactory.wikia-inc.com/ops/init-vault:0.0.36
         args:
-        - "STORAGE_ACCESS_KEY=secret/app/dev/vignette/ceph_tokens_sjc.access_key"
-        - "STORAGE_SECRET_KEY=secret/app/dev/vignette/ceph_tokens_sjc.secret_key"
+        - "STORAGE_ACCESS_KEY=secret/app/prod/vignette/ceph_tokens_sjc.access_key"
+        - "STORAGE_SECRET_KEY=secret/app/prod/vignette/ceph_tokens_sjc.secret_key"
         env:
         - name: SERVICE_ACCOUNT
           valueFrom:
@@ -66,7 +66,7 @@ spec:
         - name: VAULT_ADDR
           value: active.vault.service.sjc.consul:8200
         - name: ENV
-          value: dev
+          value: prod
         volumeMounts:
         - name: secrets-dir
           mountPath: /var/lib/secrets
@@ -103,7 +103,7 @@ spec:
         - name: STORAGE_ENDPOINT
           value: http://dfs
         - name: STORAGE_PROXY
-          value: dev.dfs.service.sjc-dev.consul
+          value: prod.dfs.service.sjc.consul
         - name: STORAGE_PROXY_PORT
           value: "80"
         - name: VIGNETTE_TEMP_FILE_LOCATION   # temporary vignette files
@@ -131,7 +131,7 @@ spec:
         - name: GIF2WEBP
           value: /usr/bin/gif2webp
         - name: WIKIA_ENVIRONMENT
-          value: dev
+          value: prod
         - name: WIKIA_DATACENTER
           value: sjc
         - name: PERFMONITORING_HOST
@@ -167,38 +167,38 @@ metadata:
   labels:
     app: vignette
   name: vignette
-  namespace: dev
+  namespace: prod
 spec:
   rules:
-  - host: images.wikia-dev.us
+  - host: images.wikia.nocookie.com
     http:
       paths:
       - path: /
         backend:
           serviceName: vignette
           servicePort: 80
-  - host: static.wikia-dev.us
+  - host: static.wikia.nocookie.com
     http:
       paths:
       - path: /
         backend:
           serviceName: vignette
           servicePort: 80
-  - host: vignette.wikia-dev.us
+  - host: vignette.wikia.nocookie.com
     http:
       paths:
       - path: /
         backend:
           serviceName: vignette
           servicePort: 80
-  - host: sjc-dev.k8s.wikia.net
+  - host: sjc.k8s.wikia.net
     http:
       paths:
       - path: /vignette
         backend:
           serviceName: vignette
           servicePort: 80
-  - host: dev.sjc-dev.k8s.wikia.net
+  - host: prod.sjc.k8s.wikia.net
     http:
       paths:
       - path: /vignette
