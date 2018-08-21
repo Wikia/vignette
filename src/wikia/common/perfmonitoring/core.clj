@@ -1,6 +1,7 @@
 (ns wikia.common.perfmonitoring.core
   (:import (java.net DatagramSocket DatagramPacket InetAddress))
   (:require [cheshire.core :as json]
+            [wikia.common.logger :as log]
             [environ.core :refer [env]]))
 
 (declare format-content
@@ -54,7 +55,7 @@
 (defn publish
   ([series-name point]
     (when @config
-      (let [point (merge {:series-name (format-series-name series-name)} point)]
+      (let [point (merge {:series-name (format-series-name series-name), :k8s "k8s"} point)]
         (future (send-data (json/generate-string (format-content point)))))))
   ([point]
     (publish (get-series-name) point)))
