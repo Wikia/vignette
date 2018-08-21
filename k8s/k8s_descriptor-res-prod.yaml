@@ -137,7 +137,7 @@ spec:
         - name: PERFMONITORING_HOST
           value: prod.app-metrics-etl.service.sjc.consul
         - name: PERFMONITORING_PORT
-          value: "5551"   # 4444 for prod
+          value: "4444"   # 5551 for dev
         - name: PERFMONITORING_APP
           value: vignette
         - name: VIGNETTE_SERVER_MAX_THREADS
