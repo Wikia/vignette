@@ -55,7 +55,7 @@
 (defn publish
   ([series-name point]
     (when @config
-      (let [point (merge {:series-name (format-series-name series-name), :k8s "k8s"} point)]
+      (let [point (merge {:series-name (format-series-name series-name) :k8s "k8s"} point)]
         (future (send-data (json/generate-string (format-content point)))))))
   ([point]
     (publish (get-series-name) point)))
