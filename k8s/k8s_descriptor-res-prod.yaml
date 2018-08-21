@@ -135,7 +135,7 @@ spec:
         - name: WIKIA_DATACENTER
           value: res
         - name: PERFMONITORING_HOST
-          value: prod.app-metrics-etl.service.res.consul
+          value: prod.app-metrics-etl.service.sjc.consul
         - name: PERFMONITORING_PORT
           value: "5551"   # 4444 for prod
         - name: PERFMONITORING_APP
