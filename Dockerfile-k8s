@@ -1,8 +1,9 @@
-FROM clojure:lein-2.8.1-alpine
+FROM alpine:3.7
 
 RUN adduser -S -D -h /nonexistent -H service_user
 
-RUN apk --no-cache add libwebp libwebp-tools imagemagick bash
+# libraries versions available are strictly connected to alpine repo version
+RUN apk --no-cache add openjdk8-jre=8.171.11-r0 libwebp libwebp-tools imagemagick=7.0.7.11-r1 bash
 
 ADD public/brokenImage.jpg /public/brokenImage.jpg
 ADD bin/thumbnail /thumbnail
