@@ -20,6 +20,8 @@
                  [useful "0.8.8"]
                  [http-kit "2.1.18"]
                  [clj-logging-config "1.9.12"]
+                 ; metrics
+                 [com.soundcloud/prometheus-clj "2.4.1"]
                  ; logger
                  [com.fasterxml.jackson.core/jackson-core "2.9.6"]
                  [com.fasterxml.jackson.core/jackson-databind "2.9.6"]
