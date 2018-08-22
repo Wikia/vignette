@@ -8,6 +8,7 @@
             [vignette.system :refer :all]
             [vignette.setup :refer [create-stores]]
             [vignette.util.integration :as i]
+            [prometheus.core :as prometheus]
             [wikia.common.perfmonitoring.core :as perf]
             [vignette.storage.static-assets :as sa])
   (:use [environ.core])

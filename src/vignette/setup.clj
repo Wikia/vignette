@@ -1,7 +1,7 @@
 (ns vignette.setup
   (:require [cheshire.core :refer :all]
             [vignette.http.legacy.routes :as hlr]
-            [vignette.http.api-routes :refer [uuid-routes wiki-routes]]
+            [vignette.http.api-routes :refer [uuid-routes wiki-routes metrics-routes]]
             [vignette.util.integration :as i]
             [vignette.storage.s3 :refer [create-s3-storage-system storage-creds]]
             [vignette.storage.core :refer [create-image-storage]]
@@ -21,11 +21,14 @@
   {
     :wikia-store  (create-image-storage (create-object-storage opts) (:cache-thumbnails opts))
     :static-store (create-static-image-storage (create-object-storage opts) (materialize-static-asset-url))
+    :metrics-store (atom nil)
    })
 
 (defn image-routes [stores]
   (concat
     (list
+      (metrics-routes (:metrics-store stores))
       (uuid-routes (:static-store stores))
-      (wiki-routes (:wikia-store stores)))
+      (wiki-routes (:wikia-store stores))
+     )
     (hlr/legacy-routes (:wikia-store stores))))

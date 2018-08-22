@@ -1,5 +1,6 @@
 (ns vignette.http.api-routes
   (:require [cheshire.core :refer :all]
+            [prometheus.core :as prometheus]
             [clout.core :refer [route-compile route-matches]]
             [compojure.core :refer [context routes GET ANY HEAD DELETE]]
             [vignette.http.middleware :refer :all]
@@ -92,3 +93,5 @@
        (GET original-route request (handle-original store (route->original-map (:route-params request) request) request))]
       )))
 
+(defn metrics-routes [store]
+ (GET "/metrics" [] (prometheus/dump-metrics store)))
