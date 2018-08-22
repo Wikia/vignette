@@ -1,0 +1,16 @@
+FROM alpine:3.7
+
+RUN adduser -S -D -h /nonexistent -H service_user
+
+# libraries versions available are strictly connected to alpine repo version
+RUN apk --no-cache add openjdk8-jre=8.171.11-r0 libwebp libwebp-tools imagemagick=7.0.7.11-r1 bash
+
+ADD public/brokenImage.jpg /public/brokenImage.jpg
+ADD bin/thumbnail /thumbnail
+ADD target/vignette-standalone.jar /vignette.jar
+
+EXPOSE 8080
+
+USER service_user
+
+CMD ["sh", "-c", "source /var/lib/secrets/export.env && java -Xmx1024m -server -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -jar /vignette.jar -m s3 -p 8080 -C" ]

@@ -12,3 +12,4 @@ pom.xml.asc
 *.iml
 /logs
 *.swp
+.k8s/

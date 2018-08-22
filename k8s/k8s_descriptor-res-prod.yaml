@@ -1,0 +1,207 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: vignette
+  name: vignette
+  namespace: prod
+spec:
+  ports:
+  - port: 80
+    name: main
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: vignette
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: vignette
+    stage: deployed
+  name: vignette
+  namespace: prod
+spec:
+  selector:
+    matchLabels:
+      app: vignette
+      stage: deployed
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 2
+  progressDeadlineSeconds: 120
+  template:
+    metadata:
+      labels:
+        app: vignette
+        stage: deployed
+    spec:
+      serviceAccountName: k8s-pod
+      volumes:
+      - name: secrets-dir
+        emptyDir:
+          medium: Memory
+      - name: tmp-dir
+        emptyDir: {}
+      initContainers:
+      - name: init-vault
+        image: artifactory.wikia-inc.com/ops/init-vault:0.0.36
+        args:
+        - "STORAGE_ACCESS_KEY=secret/app/prod/vignette/ceph_tokens_res.access_key"
+        - "STORAGE_SECRET_KEY=secret/app/prod/vignette/ceph_tokens_res.secret_key"
+        env:
+        - name: SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: K8S_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: VAULT_ADDR
+          value: active.vault.service.res.consul:8200
+        - name: ENV
+          value: prod
+        volumeMounts:
+        - name: secrets-dir
+          mountPath: /var/lib/secrets
+      containers:
+      - name: vignette-tmp-cleaner
+        image: alpine:3.8
+        volumeMounts:
+        - name: tmp-dir
+          mountPath: /tmp-vignette
+        command:  # remove files older than 10 minutes
+         - /bin/sh
+         - -c
+         - "while true; do find '/tmp-vignette' -type f -mmin +10 -exec /bin/rm {} \\; 2> /dev/null; sleep 300; done"
+      - name: vignette
+        image: ${IMAGE_PATH}
+        # required for vault secrets to load
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sleep", "3"]
+        env:
+        - name: HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: KUBERNETES_POD
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: INSTANCE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: STORAGE_ENDPOINT
+          value: http://dfs
+        - name: STORAGE_PROXY
+          value: prod.dfs.service.res.consul
+        - name: STORAGE_PROXY_PORT
+          value: "80"
+        - name: VIGNETTE_TEMP_FILE_LOCATION   # temporary vignette files
+          value: /tmp-vignette
+        - name: MAGICK_TEMPORARY_PATH   # temporary ImageMagick files
+          value: /tmp-vignette
+        - name: LOGGER_TYPE
+          value: syslog
+        - name: LOGGER_FILE_OUTPUT
+          value: /tmp/vignette.log
+        - name: LOGGER_APPLICATION
+          value: vignette
+        - name: IMAGEMAGICK_BASE
+          value: /usr
+        - name: VIGNETTE_THUMBNAIL_BIN
+          value: /thumbnail
+        - name: VIGNETTE_BROKEN_IMAGE
+          value: /public/brokenImage.jpg
+        - name: GETOPT
+          value: /bin/getopt
+        - name: TIMEOUT
+          value: timeout
+        - name: TIMEOUT_TIME
+          value: "-t 30"
+        - name: GIF2WEBP
+          value: /usr/bin/gif2webp
+        - name: WIKIA_ENVIRONMENT
+          value: prod
+        - name: WIKIA_DATACENTER
+          value: res
+        - name: PERFMONITORING_HOST
+          value: prod.app-metrics-etl.service.sjc.consul
+        - name: PERFMONITORING_PORT
+          value: "4444"   # 5551 for dev
+        - name: PERFMONITORING_APP
+          value: vignette
+        - name: VIGNETTE_SERVER_MAX_THREADS
+          value: "200"
+        - name: VIGNETTE_SERVER_QUEUE_SIZE
+          value: "12000"
+        volumeMounts:
+        - name: secrets-dir
+          readOnly: true
+          mountPath: /var/lib/secrets
+        - name: tmp-dir
+          mountPath: /tmp-vignette
+        resources:
+          limits:
+            memory: 1024Mi
+          requests:
+            cpu: 0.9
+            memory: 900Mi
+        ports:
+        - containerPort: 8080
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.frontend.rule.type: PathPrefixStrip
+  labels:
+    app: vignette
+  name: vignette
+  namespace: prod
+spec:
+  rules:
+  - host: images.wikia.nocookie.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vignette
+          servicePort: 80
+  - host: static.wikia.nocookie.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vignette
+          servicePort: 80
+  - host: vignette.wikia.nocookie.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vignette
+          servicePort: 80
+  - host: res.k8s.wikia.net
+    http:
+      paths:
+      - path: /vignette
+        backend:
+          serviceName: vignette
+          servicePort: 80
+  - host: prod.res.k8s.wikia.net
+    http:
+      paths:
+      - path: /vignette
+        backend:
+          serviceName: vignette
+          servicePort: 80
