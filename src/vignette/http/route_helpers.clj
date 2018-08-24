@@ -7,8 +7,8 @@
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :as u]
             [vignette.media-types :as mt]
-            [wikia.common.logger :as log]
-            [wikia.common.perfmonitoring.core :as perf]
+            [vignette.common.logger :as log]
+            [vignette.perfmonitoring.core :as perf]
             [slingshot.slingshot :refer [try+]]))
 
 (def blocked-placeholder-param "bp")
@@ -41,7 +41,7 @@
       (perf/publish {:exception-count 1})
       (log/warn (str e) {:path  (:uri request)
                          :query (:query-string request)})
-      (create-response 500 "Server Error"))))
+      (create-response 500 "Server Error" "delete"))))
 
 (defn handle-delete
   [store image-params request]
@@ -49,8 +49,8 @@
     (error-catcher
       request
       #(if-let [delete (u/delete-all-thumbnails store image-params)]
-         (create-response)))
-    (create-response 403 "Forbidden")))
+         (create-response image-params)))
+    (create-response 403 "Forbidden" image-params)))
 
 (defn route-params->image-type
   [route-params]

@@ -5,8 +5,8 @@
             [ring.util.response :refer [response status charset header get-header]]
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.util.image-response :refer :all]
-            [wikia.common.logger :as log]
-            [wikia.common.perfmonitoring.core :as perf])
+            [vignette.common.logger :as log]
+            [vignette.perfmonitoring.core :as perf])
   (:import [java.net InetAddress]))
 
 (def hostname (.getHostName (InetAddress/getLocalHost)))
@@ -33,6 +33,7 @@
           (error-response response-code thumb-map)))
       (catch Exception e
         (println (.getMessage e) ":" (:uri request))
+        (println (.printStackTrace e))
         (perf/publish {:exception-count 1})
         (log/warn (str e) {:path (:uri request)
                            :query (:query-string request)})
@@ -40,6 +41,13 @@
 
 (declare add-cache-control-header
          hours-to-seconds)
+
+(defn add-meta
+  [handler]
+  (fn [request]
+    (let [response (handler request)
+          meta (meta response)]
+      (with-meta response {:path (get meta :path (get meta :thumbnail-mode (name (get meta :request-type (:uri request)))))}))))
 
 (defn add-headers
   [handler]
@@ -92,5 +100,6 @@
     (perf/publish {:bad-request-path-count 1})
     (log/warn "bad-request-path" (cond-> {:path (:uri request)}
                                          (get-header request "referer") (assoc :referer (get-header request "referer"))))
-    (-> (render "Unrecognized request path!\nSee https://github.com/Wikia/vignette for documentation.\n" request)
-        (status 404))))
+    (with-meta (-> (render "Unrecognized request path!\nSee https://github.com/Wikia/vignette for documentation.\n" request)
+                   (status 404))
+     {:path "unrecognized-path"})))

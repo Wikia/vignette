@@ -1,4 +1,4 @@
-(ns wikia.common.logger
+(ns vignette.common.logger
   (:require [io.clj.logging :as log]))
 
 (defmacro debug

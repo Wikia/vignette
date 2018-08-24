@@ -12,8 +12,8 @@
             [vignette.util.filesystem :refer :all]
             [vignette.util.query-options :as q]
             [vignette.util.thumb-verifier :as verify]
-            [wikia.common.logger :as log]
-            [wikia.common.perfmonitoring.core :as perf])
+            [vignette.common.logger :as log]
+            [vignette.perfmonitoring.core :as perf])
   (:use [environ.core]))
 
 (declare original->local
@@ -121,7 +121,7 @@
             (try+
               (let [thumb-params (webp-override original-content-type thumb-map)]
                 (when-let [thumb (original->thumbnail local-original thumb-params)]
-                  (perf/publish {:generate-thumbail 1})
+                  (perf/publish {:generate-thumbnail 1})
                   (background-check-and-delete-original
                     thumb-params thumb local-original)
                   (let [stored-object (ls/create-stored-object thumb)]

@@ -9,7 +9,6 @@
             [vignette.setup :refer [create-stores]]
             [vignette.util.integration :as i]
             [prometheus.core :as prometheus]
-            [wikia.common.perfmonitoring.core :as perf]
             [vignette.storage.static-assets :as sa])
   (:use [environ.core])
   (:gen-class))
@@ -35,8 +34,6 @@
     (when (:errors parsed-opts)
       (println (:errors parsed-opts))
       (System/exit 1))
-
-    (perf/init)
 
     (let [system (create-system (create-stores opts))]
       (println (format "Mode: %s. Starting server on %d..." (:mode opts) (:port opts)))

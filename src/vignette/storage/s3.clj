@@ -4,8 +4,8 @@
             [pantomime.mime :refer [mime-type-of]]
             [vignette.storage.protocols :refer :all]
             [vignette.util.filesystem :refer :all]
-            [wikia.common.logger :as log]
-            [wikia.common.perfmonitoring.core :as perf])
+            [vignette.common.logger :as log]
+            [vignette.perfmonitoring.core :as perf])
   (:use [environ.core])
   (:import [com.amazonaws.services.s3.model AmazonS3Exception]
            [com.amazonaws AmazonClientException]))
@@ -85,7 +85,7 @@
     (catch AmazonClientException ce
       (if (instance? org.apache.http.conn.ConnectionPoolTimeoutException (.getCause ce))
         (do
-          (perf/publish :connection-pool-timeout 1)
+          (perf/publish {:connection-pool-timeout 1})
           (log/error (str ce))
           (throw ce))))
     (catch AmazonS3Exception e

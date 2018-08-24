@@ -7,7 +7,8 @@
             [vignette.storage.core :refer [create-image-storage]]
             [vignette.storage.local :refer [create-local-storage-system]]
             [vignette.util.services :refer [materialize-static-asset-url]]
-            [vignette.storage.static-assets :refer [create-static-image-storage]]))
+            [vignette.storage.static-assets :refer [create-static-image-storage]]
+            [prometheus.core :as prometheus]))
 
 
 (defn- create-object-storage [opts]
@@ -21,13 +22,12 @@
   {
     :wikia-store  (create-image-storage (create-object-storage opts) (:cache-thumbnails opts))
     :static-store (create-static-image-storage (create-object-storage opts) (materialize-static-asset-url))
-    :metrics-store (atom nil)
    })
 
 (defn image-routes [stores]
   (concat
     (list
-      (metrics-routes (:metrics-store stores))
+      (metrics-routes)
       (uuid-routes (:static-store stores))
       (wiki-routes (:wikia-store stores))
      )
