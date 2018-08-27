@@ -41,7 +41,7 @@
       (perf/publish {:exception-count 1})
       (log/warn (str e) {:path  (:uri request)
                          :query (:query-string request)})
-      (create-response 500 "Server Error" {:path "delete"}))))
+      (create-response 500 "Server Error" {:path "original"}))))
 
 (defn handle-delete
   [store image-params request]
