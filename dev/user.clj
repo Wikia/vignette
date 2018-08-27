@@ -52,6 +52,8 @@
 
 (def system-s3 (create-system (create-stores s3s)))
 
+(perf/init)
+
 (comment
   (start S 8080)
   (stop S))
