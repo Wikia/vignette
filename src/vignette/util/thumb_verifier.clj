@@ -1,5 +1,5 @@
 (ns vignette.util.thumb-verifier
-  (:require [wikia.common.logger :as log]
+  (:require [vignette.common.logger :as log]
             [clojure.java.shell :refer [sh]]
             [clojure.string :refer [trim]])
   (:use [environ.core]))

@@ -12,8 +12,8 @@
             [vignette.util.filesystem :refer :all]
             [vignette.util.query-options :as q]
             [vignette.util.thumb-verifier :as verify]
-            [wikia.common.logger :as log]
-            [wikia.common.perfmonitoring.core :as perf])
+            [vignette.common.logger :as log]
+            [vignette.perfmonitoring.core :as perf])
   (:use [environ.core]))
 
 (declare original->local
@@ -57,7 +57,7 @@
 (defn run-thumbnailer
   [args thumb-map]
   (let [start-ms (System/currentTimeMillis)
-        result (perf/timing :imagemagick (apply sh args))
+        result (perf/timing :imagemagick-seconds (apply sh args))
         elapsed-ms (- (System/currentTimeMillis) start-ms)]
     (if (> elapsed-ms 5000)
         (do
@@ -99,7 +99,7 @@
   (if-let [thumb (and (not (q/query-opt thumb-map :replace))
                       (get-thumbnail store thumb-map))]
     (do
-      (perf/publish {:thumbnail-cache-hit 1})
+      (perf/publish {:thumbnail-cache-hit-total 1})
       thumb)
     (when-let [thumb (generate-thumbnail store thumb-map nil)]
     thumb)))
@@ -121,7 +121,7 @@
             (try+
               (let [thumb-params (webp-override original-content-type thumb-map)]
                 (when-let [thumb (original->thumbnail local-original thumb-params)]
-                  (perf/publish {:generate-thumbail 1})
+                  (perf/publish {:generate-thumbnail-total 1})
                   (background-check-and-delete-original
                     thumb-params thumb local-original)
                   (let [stored-object (ls/create-stored-object thumb)]

@@ -134,10 +134,6 @@ spec:
           value: prod
         - name: WIKIA_DATACENTER
           value: sjc
-        - name: PERFMONITORING_HOST
-          value: prod.app-metrics-etl.service.sjc.consul
-        - name: PERFMONITORING_PORT
-          value: "4444"   # 5551 for dev
         - name: PERFMONITORING_APP
           value: vignette
         - name: VIGNETTE_SERVER_MAX_THREADS
@@ -205,3 +201,23 @@ spec:
         backend:
           serviceName: vignette
           servicePort: 80
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vignette
+  labels:
+    app: vignette
+  namespace: prod
+spec:
+  jobLabel: app
+  selector:
+    matchLabels:
+      app: vignette
+  namespaceSelector:
+    matchNames:
+    - prod
+  endpoints:
+  - port: main
+    path: /metrics
+    interval: 10s

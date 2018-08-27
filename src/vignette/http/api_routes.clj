@@ -1,10 +1,13 @@
 (ns vignette.http.api-routes
   (:require [cheshire.core :refer :all]
+            [prometheus.core :as prometheus]
             [clout.core :refer [route-compile route-matches]]
             [compojure.core :refer [context routes GET ANY HEAD DELETE]]
+            [vignette.common.logger :as log]
             [vignette.http.middleware :refer :all]
             [vignette.http.route-helpers :refer :all]
-            [vignette.util.regex :refer :all]))
+            [vignette.util.regex :refer :all]
+            [vignette.perfmonitoring.core :refer [metrics-registry]]))
 
 (def original-route
   (route-compile "/"))
@@ -92,3 +95,6 @@
        (GET original-route request (handle-original store (route->original-map (:route-params request) request) request))]
       )))
 
+(defn metrics-routes []
+  (apply routes
+     [(GET "/metrics" [] (prometheus/dump-metrics (:registry @metrics-registry)))]))
