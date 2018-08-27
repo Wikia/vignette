@@ -14,21 +14,21 @@
 (defn register [store]
   (->
    store
-   (prometheus/register-counter app (normalize :convert-error) "Conversion error" [])
-   (prometheus/register-counter app (normalize :exception-count) "Total exception occured" [])
-   (prometheus/register-counter app (normalize :request-count) "Total requests number" [])
-   (prometheus/register-counter app (normalize :bad-request-path-count) "Total bad path requests" [])
-   (prometheus/register-counter app (normalize :thumbnail-cache-hit) "Cache hit counter" [])
-   (prometheus/register-counter app (normalize :generate-thumbnail) "Thumbnail generation counter" [])
-   (prometheus/register-counter app (normalize :connection-pool-timeout) "Timeout counter" [])
-   (prometheus/register-histogram app (normalize :request-time) "Requests time histogram in ms" [] [1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1500.0, 2000.0, 3000.0, 5000.0])
-   (prometheus/register-histogram app (normalize :imagemagick) "Imagemagick time histogram in ms" [] [1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1500.0, 2000.0, 3000.0, 5000.0])
-   (prometheus/register-histogram app (normalize :s3-get) "s3 get image time histogram in ms" [] [1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1500.0, 2000.0, 3000.0, 5000.0])
-   (prometheus/register-histogram app (normalize :s3-put) "s3 put image time histogram in ms" [] [1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1500.0, 2000.0, 3000.0, 5000.0])
-   (prometheus/register-histogram app (normalize :s3-delete) "s3 delete image time histogram in ms" [] [1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1500.0, 2000.0, 3000.0, 5000.0])
-   (prometheus/register-histogram app (normalize :s3-bucket-exists) "s3 check bucket image time histogram in ms" [] [1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1500.0, 2000.0, 3000.0, 5000.0])
-   (prometheus/register-histogram app (normalize :s3-bucket-create) "s3 create bucket image time histogram in ms" [] [1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1500.0, 2000.0, 3000.0, 5000.0])
-   (prometheus/register-histogram app (normalize :s3-list-objects) "s3 list objects time histogram in ms" [] [1.0, 2.0, 5.0, 10.0, 25.0, 50.0, 75.0, 100.0, 200.0, 400.0, 600.0, 800.0, 1000.0, 1500.0, 2000.0, 3000.0, 5000.0])
+   (prometheus/register-counter app (normalize :convert-error-total) "Conversion error" [])
+   (prometheus/register-counter app (normalize :exception-count-total) "Total exception occured" [])
+   (prometheus/register-counter app (normalize :request-count-total) "Total requests number" [])
+   (prometheus/register-counter app (normalize :bad-request-path-count-total) "Total bad path requests" [])
+   (prometheus/register-counter app (normalize :thumbnail-cache-hit-total) "Cache hit counter" [])
+   (prometheus/register-counter app (normalize :generate-thumbnail-total) "Thumbnail generation counter" [])
+   (prometheus/register-counter app (normalize :connection-pool-timeout-total) "Timeout counter" [])
+   (prometheus/register-histogram app (normalize :request-time-seconds) "Requests time histogram" [] [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 2.0, 3.0, 5.0])
+   (prometheus/register-histogram app (normalize :imagemagick-seconds) "Imagemagick time histogram" [] [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 2.0, 3.0, 5.0])
+   (prometheus/register-histogram app (normalize :s3-get-seconds) "s3 get image time histogram" [] [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 2.0, 3.0, 5.0])
+   (prometheus/register-histogram app (normalize :s3-put-seconds) "s3 put image time histogram" [] [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 2.0, 3.0, 5.0])
+   (prometheus/register-histogram app (normalize :s3-delete-seconds) "s3 delete image time histogram" [] [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 2.0, 3.0, 5.0])
+   (prometheus/register-histogram app (normalize :s3-bucket-exists-seconds) "s3 check bucket image time histogram" [] [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 2.0, 3.0, 5.0])
+   (prometheus/register-histogram app (normalize :s3-bucket-create-seconds) "s3 create bucket image time histogram" [] [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 2.0, 3.0, 5.0])
+   (prometheus/register-histogram app (normalize :s3-list-objects-seconds) "s3 list objects time histogram" [] [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 2.0, 3.0, 5.0])
   ))
 
 (defn init []
@@ -52,6 +52,6 @@
       ~@body
       (finally
           (try
-            (prometheus/track-observation @metrics-registry app (normalize ~metric) (- (current-time) start#) [])
+            (prometheus/track-observation @metrics-registry app (normalize ~metric) (/ (- (current-time) start#) 1000.0) [])
             (catch Exception e#
               (log/warn "prometheus timer failed" {:exception (str e#) :counter ~metric})))))))

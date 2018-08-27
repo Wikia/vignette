@@ -23,7 +23,7 @@
               response-code (or (:response-code e) 500)
               context (assoc (dissoc e :type :thumb-map :response-code) :host hostname)]
           (when (>= response-code 500)
-            (perf/publish {:convert-error 1})
+            (perf/publish {:convert-error-total 1})
             (println message ":" (:uri request))
             (log/warn message
                       (merge {:path (:uri request)
@@ -34,7 +34,7 @@
       (catch Exception e
         (println (.getMessage e) ":" (:uri request))
         (println (.printStackTrace e))
-        (perf/publish {:exception-count 1})
+        (perf/publish {:exception-count-total 1})
         (log/warn (str e) {:path (:uri request)
                            :query (:query-string request)})
         (error-response 500)))))
@@ -91,13 +91,13 @@
 (defn request-timer
   [handler]
   (fn [request]
-    (perf/publish {:request-count 1})
-    (perf/timing :request-time (handler request))))
+    (perf/publish {:request-count-total 1})
+    (perf/timing :request-time-seconds (handler request))))
 
 (defn bad-request-path
   []
   (fn [request]
-    (perf/publish {:bad-request-path-count 1})
+    (perf/publish {:bad-request-path-count-total 1})
     (log/warn "bad-request-path" (cond-> {:path (:uri request)}
                                          (get-header request "referer") (assoc :referer (get-header request "referer"))))
     (with-meta (-> (render "Unrecognized request path!\nSee https://github.com/Wikia/vignette for documentation.\n" request)

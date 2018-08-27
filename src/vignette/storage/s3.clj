@@ -81,11 +81,11 @@
 (defn safe-get-object
   [creds bucket path]
   (try
-    (perf/timing :s3-get (s3/get-object creds bucket path))
+    (perf/timing :s3-get-seconds (s3/get-object creds bucket path))
     (catch AmazonClientException ce
       (if (instance? org.apache.http.conn.ConnectionPoolTimeoutException (.getCause ce))
         (do
-          (perf/publish {:connection-pool-timeout 1})
+          (perf/publish {:connection-pool-timeout-total 1})
           (log/error (str ce))
           (throw ce))))
     (catch AmazonS3Exception e
@@ -105,16 +105,16 @@
   (put-object [this resource bucket path]
     (let [file (file-stream resource)
           mime-type (content-type resource)]
-      (if (perf/timing :s3-bucket-exists (not (s3/bucket-exists? creds bucket)))
-        (perf/timing :s3-bucket-create (s3/create-bucket creds bucket)))
-      (when-let [response (perf/timing :s3-put (s3/put-object (add-timeouts :put (:creds this))
+      (if (perf/timing :s3-bucket-exists-seconds (not (s3/bucket-exists? creds bucket)))
+        (perf/timing :s3-bucket-create-seconds (s3/create-bucket creds bucket)))
+      (when-let [response (perf/timing :s3-put-seconds (s3/put-object (add-timeouts :put (:creds this))
                                                               bucket
                                                               path
                                                               file
                                                               {:content-type mime-type}))]
         response)))
   (delete-object [this bucket path]
-    (perf/timing :s3-delete (s3/delete-object creds bucket path)))
+    (perf/timing :s3-delete-seconds (s3/delete-object creds bucket path)))
 
   (object-exists? [this bucket path]
     (try
@@ -124,7 +124,7 @@
         (if (or (= (.getErrorCode e) "AccessDenied") (= (.getStatusCode e) 404)) false (throw e)))))
   (list-buckets [this])
   (list-objects [this bucket path]
-    (perf/timing :s3-list-objects (s3/list-objects creds bucket {:prefix path}))))
+    (perf/timing :s3-list-objects-seconds (s3/list-objects creds bucket {:prefix path}))))
 
 (defrecord S3StoredObject [stream meta-data file-name]
   StoredObjectProtocol

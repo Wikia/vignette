@@ -38,7 +38,7 @@
     (apply handler [])
     (catch Exception e
       (println (.getMessage e) ":" (:uri request))
-      (perf/publish {:exception-count 1})
+      (perf/publish {:exception-count-total 1})
       (log/warn (str e) {:path  (:uri request)
                          :query (:query-string request)})
       (create-response 500 "Server Error" {:path "original"}))))
