@@ -201,3 +201,23 @@ spec:
         backend:
           serviceName: vignette
           servicePort: 80
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vignette
+  labels:
+    app: vignette
+  namespace: prod
+spec:
+  jobLabel: app
+  selector:
+    matchLabels:
+      app: vignette
+  namespaceSelector:
+    matchNames:
+    - prod
+  endpoints:
+  - port: main
+    path: /metrics
+    interval: 10s
