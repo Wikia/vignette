@@ -1,6 +1,5 @@
 (ns vignette.perfmonitoring.core-test
   (:require [midje.sweet :refer :all]
-            [vignette.common.logger :as log]
             [vignette.perfmonitoring.core :refer :all]
             [prometheus.core :as prometheus]))
 
