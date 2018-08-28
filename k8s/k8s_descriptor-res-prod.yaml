@@ -228,3 +228,25 @@ spec:
   - port: main
     path: /metrics
     interval: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: vignette
+  labels:
+    app: vignette
+    prometheus: prod
+    role: alert-rules
+  namespace: prod
+spec:
+  groups:
+    - name: "vignette.rules"
+      rules:
+        - alert: "vignette-5xx-ratio"
+          expr: "100 * sum by(pod) (rate(vignette_http_request_latency_seconds_count{statusClass=\"5XX\"}[10m])) / sum by(pod) (rate(vignette_http_request_latency_seconds_count[10m])) > 1"
+          labels:
+            severity: "warning"
+            slack_channel: "#services-alerts"
+          annotations:
+            summary: "vignette returns a lot of 5xx responses"
+            description: "vignette: {{ $value | humanize }}% of requests to pod {{ $labels.pod }} fail with 5xx response"
