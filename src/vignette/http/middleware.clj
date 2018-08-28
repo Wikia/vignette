@@ -47,7 +47,7 @@
   (fn [request]
     (let [response (handler request)
           meta (meta response)]
-      (with-meta response {:path (get meta :path (get meta :thumbnail-mode (name (get meta :request-type (:uri request)))))}))))
+      (with-meta response {:path (get meta :path (get meta :thumbnail-mode (name (get meta :request-type "unknown"))))}))))
 
 (defn add-headers
   [handler]
