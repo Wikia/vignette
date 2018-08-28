@@ -103,7 +103,7 @@ spec:
         - name: STORAGE_ENDPOINT
           value: http://dfs
         - name: STORAGE_PROXY
-          value: dev.dfs.service.sjc-dev.consul
+          value: dev.dfs.service.sjc.consul
         - name: STORAGE_PROXY_PORT
           value: "80"
         - name: VIGNETTE_TEMP_FILE_LOCATION   # temporary vignette files
