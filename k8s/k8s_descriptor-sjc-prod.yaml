@@ -166,6 +166,13 @@ metadata:
   namespace: prod
 spec:
   rules:
+  - host: origin-images.wikia.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: vignette
+          servicePort: 80
   - host: images.wikia.nocookie.com
     http:
       paths:
