@@ -245,8 +245,9 @@ spec:
         - alert: "vignette-5xx-ratio"
           expr: "100 * sum by(pod) (rate(vignette_http_requests_total{statusClass=\"5XX\"}[10m])) / sum by(pod) (rate(vignette_http_requests_total[10m])) > 1"
           labels:
-            severity: "warning"
+            severity: "critical"
             slack_channel: "#services-alerts"
+            team: "services"
           annotations:
             summary: "vignette returns a lot of 5xx responses"
             description: "vignette: {{ $value | humanize }}% of requests to pod {{ $labels.pod }} fail with 5xx response"
