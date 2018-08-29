@@ -32,13 +32,22 @@ spec:
   groups:
     - name: "vignette-legacy.rules"
       rules:
+        - alert: "vignette-legacy-exceptions-ratio"
+          expr: "100 * sum by(instance) (rate(vignette_exception_count_total{job=\"vignette-legacy\"}[10m])) / sum by(instance) (rate(vignette_request_count_total{job=\"vignette-legacy\"}[10m])) > 1"
+          labels:
+            severity: "warning"
+            slack_channel: "#services-alerts"
+            team: "services"
+            pd: "send"
+          annotations:
+            summary: "legacy vignette throwing a lot of exceptions"
+            description: "vignette: {{ $value | humanize }}% of requests to pod {{ $labels.pod }} fail with 5xx response"
         - alert: "vignette-legacy-5xx-ratio"
-          expr: "100 * sum by(instance) (rate(vignette_http_requests_total{job=\"vignette-legacy\",statusClass=\"5XX\"}[10m])) / sum by(instance) (rate(vignette_http_requests_total{job=\"vignette-legacy\"}[10m])) > 1"
+          expr: "100 * sum by(instance) (rate(vignette_http_requests_total{job=\"vignette-legacy\",statusClass=\"5XX\"}[10m])) / sum by(instance) (rate(vignette_http_requests_total{job=\"vignette-legacy\"}[10m])) > 10"
           labels:
             severity: "critical"
             slack_channel: "#services-alerts"
             team: "services"
-            pd: "send"
           annotations:
             summary: "legacy vignette returns a lot of 5xx responses"
             description: "vignette: {{ $value | humanize }}% of requests to pod {{ $labels.pod }} fail with 5xx response"
