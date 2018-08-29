@@ -248,6 +248,7 @@ spec:
             severity: "critical"
             slack_channel: "#services-alerts"
             team: "services"
+            pd: "send"
           annotations:
             summary: "vignette returns a lot of 5xx responses"
             description: "vignette: {{ $value | humanize }}% of requests to pod {{ $labels.pod }} fail with 5xx response"
