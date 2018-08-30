@@ -1,0 +1,52 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vignette-legacy
+  labels:
+    app: vignette-legacy
+  namespace: dev
+spec:
+  jobLabel: job
+  targetLabels:
+  - instance
+  selector:
+    matchLabels:
+      app: vignette-legacy
+  namespaceSelector:
+    matchNames:
+    - ops
+  endpoints:
+  - port: http-metrics
+    interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: vignette-legacy
+  labels:
+    app: vignette-legacy
+    prometheus: dev
+    role: alert-rules
+  namespace: dev
+spec:
+  groups:
+    - name: "vignette-legacy.rules"
+      rules:
+        - alert: "vignette-legacy-exceptions-ratio"
+          expr: "100 * sum by(instance) (rate(vignette_exception_count_total{job=\"vignette-legacy\"}[10m])) / sum by(instance) (rate(vignette_request_count_total{job=\"vignette-legacy\"}[10m])) > 1"
+          labels:
+            severity: "warning"
+            slack_channel: "#services-alerts-dev"
+            team: "services"
+          annotations:
+            summary: "legacy vignette throwing a lot of exceptions"
+            description: "vignette: {{ $value | humanize }}% of requests to pod {{ $labels.pod }} fail with 5xx response"
+        - alert: "vignette-legacy-5xx-ratio"
+          expr: "100 * sum by(instance) (rate(vignette_http_requests_total{job=\"vignette-legacy\",statusClass=\"5XX\"}[10m])) / sum by(instance) (rate(vignette_http_requests_total{job=\"vignette-legacy\"}[10m])) > 10"
+          labels:
+            severity: "warning"
+            slack_channel: "#services-alerts-dev"
+            team: "services"
+          annotations:
+            summary: "legacy vignette returns a lot of 5xx responses"
+            description: "vignette: {{ $value | humanize }}% of requests to instance {{ $labels.instance }} fail with 5xx response"

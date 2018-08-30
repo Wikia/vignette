@@ -5,6 +5,12 @@ VERSION_GIT := $(shell sh -c 'git describe --always --tags')
 
 CURRENT_DIR := $(shell pwd)
 
+legacy_alerts:
+	docker run -it --rm -v ${CURRENT_DIR}/k8s/legacy-alerting/alert-dev.yaml:/desc.yaml artifactory.wikia-inc.com/ops/k8s-deployer:0.0.15 kubectl apply -f /desc.yaml -n dev --context=kube-poz-dev
+	docker run -it --rm -v ${CURRENT_DIR}/k8s/legacy-alerting/alert-dev.yaml:/desc.yaml artifactory.wikia-inc.com/ops/k8s-deployer:0.0.15 kubectl apply -f /desc.yaml -n dev --context=kube-sjc-dev
+	docker run -it --rm -v ${CURRENT_DIR}/k8s/legacy-alerting/alert-prod.yaml:/desc.yaml artifactory.wikia-inc.com/ops/k8s-deployer:0.0.15 kubectl apply -f /desc.yaml -n prod --context=kube-res-prod
+	docker run -it --rm -v ${CURRENT_DIR}/k8s/legacy-alerting/alert-prod.yaml:/desc.yaml artifactory.wikia-inc.com/ops/k8s-deployer:0.0.15 kubectl apply -f /desc.yaml -n prod --context=kube-sjc-prod
+
 build_vignette:
 	docker build -f Dockerfile-build-k8s -t build-vignette .
 	docker run -v ${CURRENT_DIR}:/project build-vignette
