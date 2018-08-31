@@ -24,6 +24,9 @@ bumpversion:
 docker_build:
 	docker build -f Dockerfile-k8s -t ${DOCKER_IMAGE}:$(VERSION_GIT) .
 
+docker_ubuntu_build:
+	docker build -f Dockerfile-ubuntu -t ${DOCKER_IMAGE}:$(VERSION_GIT) .
+
 docker_show_image:
 	@echo ${DOCKER_IMAGE}:${VERSION_GIT}
 
