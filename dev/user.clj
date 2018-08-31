@@ -22,8 +22,8 @@
             [vignette.util.thumbnail :as u]
             [vignette.util.query-options :as q]
             [vignette.setup :refer [create-stores]]
-            [wikia.common.logger :as log]
-            [wikia.common.perfmonitoring.core :as perf]
+            [vignette.common.logger :as log]
+            [vignette.perfmonitoring.core :as perf]
             [vignette.storage.static-assets :as sa])
   (:use [environ.core]))
 
@@ -51,6 +51,8 @@
 (def s3s (create-image-storage s3os))
 
 (def system-s3 (create-system (create-stores s3s)))
+
+(perf/init)
 
 (comment
   (start S 8080)

@@ -2,7 +2,7 @@
   (:require [clout.core :refer [route-matches]]
             [midje.sweet :refer :all]
             [ring.mock.request :refer :all]
-            [vignette.http.proto-routes :refer :all]
+            [vignette.http.api-routes :refer :all]
             [vignette.http.route-helpers :refer :all]
             [vignette.util.external-hotlinking :refer :all]))
 

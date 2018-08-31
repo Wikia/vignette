@@ -6,11 +6,12 @@
             [vignette.storage.core :refer :all]
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :as u]
-            [vignette.media-types :as mt]))
+            [vignette.media-types :as mt]
+            [vignette.common.logger :as log]
+            [vignette.perfmonitoring.core :as perf]
+            [slingshot.slingshot :refer [try+]]))
 
 (def blocked-placeholder-param "bp")
-
-(def webp-accept-header-name "accept")
 
 (defn handle-thumbnail
   [store image-params request]
@@ -30,6 +31,27 @@
     (create-head-response image-params)
     (error-response 404 image-params)))
 
+(defn error-catcher [request handler]
+  ; this overrides default error handling
+  ; delete method shouldn't return image on failure
+  (try+
+    (apply handler [])
+    (catch Exception e
+      (println (.getMessage e) ":" (:uri request))
+      (perf/publish {:exception-count-total 1})
+      (log/warn (str e) {:path  (:uri request)
+                         :query (:query-string request)})
+      (create-response 500 "Server Error" {:path "original"}))))
+
+(defn handle-delete
+  [store image-params request]
+  (if-let [internal (get (:headers request) "x-wikia-internal-request")]
+    (error-catcher
+      request
+      #(if-let [delete (u/delete-all-thumbnails store image-params)]
+         (create-response image-params)))
+    (create-response 403 "Forbidden" image-params)))
+
 (defn route-params->image-type
   [route-params]
   (if (clojure.string/blank? (:image-type route-params))
@@ -38,20 +60,10 @@
                             #"^\/(.*)"
                             "$1")))
 
-(defn browser-supports-webp? [request]
-  (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
-    (.contains vary-string mt/webp-mime-type)))
-
-(defn add-webp-format-option-if-supported
-  [request options]
-  (if (browser-supports-webp? request)
-    (merge options {:format mt/webp-format})
-    options))
-
 (defn autodetect-request-format
   [request options]
   (if (empty? (:format options))
-    (add-webp-format-option-if-supported request options)
+    (mt/add-webp-format-option-if-supported request options)
       (if (= "original" (:format options))
           (dissoc options :format)
           options)))

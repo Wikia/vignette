@@ -5,7 +5,8 @@
             [vignette.http.jetty :refer [configure-jetty]]
             [vignette.protocols :refer :all]
             [vignette.setup :refer [image-routes]]
-            [ring.middleware.reload :refer [wrap-reload]])
+            [ring.middleware.reload :refer [wrap-reload]]
+            [vignette.perfmonitoring.core :as perf])
   (:import [java.util.concurrent ArrayBlockingQueue]))
 
 (def default-max-threads 150)
@@ -16,6 +17,7 @@
   (stores [this]
     (-> this :state :stores))
   (start [this port]
+    (perf/init)
     (swap! (:running (:state this))
            (fn [_]
              (jet/run-jetty

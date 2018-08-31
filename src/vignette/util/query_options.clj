@@ -40,12 +40,14 @@
 
 (defn extract-query-opts
   [request]
-  (reduce (fn [running [key val]]
-            (if (and (contains? query-opts-map (keyword key))
-                     (re-matches (query-opt-regex (get query-opts-map (keyword key))) val))
-              (assoc running (keyword key) val)
-              running))
-          {} (:query-params request)))
+  (reduce
+   (fn [running [key val]]
+     (let [single (last (flatten [val]))]
+       (if (and (contains? query-opts-map (keyword key))
+                (re-matches (query-opt-regex (get query-opts-map (keyword key))) single))
+         (assoc running (keyword key) single)
+         running)))
+   {} (:query-params request)))
 
 (defn query-opts
   [data]

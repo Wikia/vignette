@@ -25,12 +25,12 @@
        ; successful run
        (original->thumbnail beach-file beach-map) => truthy
        (provided
-         (run-thumbnailer anything) => {:exit 0})
+         (run-thumbnailer anything anything) => {:exit 0})
 
        ; failed run
        (original->thumbnail beach-file beach-map) => (throws Exception)
        (provided
-         (run-thumbnailer anything) => {:exit 1 :err 256 :out "testing failure"})
+         (run-thumbnailer anything anything) => {:exit 1 :err 256 :out "testing failure"})
 
        ;special mime type
        (generate-thumbnail ..store.. beach-map nil) => ..file..
@@ -121,4 +121,10 @@
        (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {}}) => true
        (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {:format nil}}) => true
        (is-passthrough-required "image/png" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => false
-       (is-passthrough-required "image/bmp" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => true)
+       (is-passthrough-required "image/bmp" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => true
+       (is-passthrough-required "image/gif" {:thumbnail-mode "type-convert" :options {:format "webp"}}) => false)
+
+(facts :delete-all-thumbnails
+  (delete-all-thumbnails ..store.. beach-map) => ..value..
+  (provided
+    (delete-thumbnails ..store.. beach-map) => ..value..))

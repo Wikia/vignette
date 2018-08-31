@@ -53,5 +53,15 @@
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
+      (get (:headers response) "Cache-Control") => "public, max-age=31536000")
+
+    (let [response (client/get (format "http://localhost:%d/bucket/images/thumb/a/ab/beach.jpg/200px-beach.jpg" default-port) {:as :byte-array :accept "image/webp"})]
+      (:status response) => 200
+      (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 16822 50)
+      (get (:headers response) "Connection") => "close"
+      (get (:headers response) "Content-Type") => "image/webp"
+      (vec (:body response)) => (has-prefix riff-header)
+      (vec (:body response)) => (contains webp-header)
       (get (:headers response) "Cache-Control") => "public, max-age=31536000")))
       ;(digest/sha1 (:body response)) => "ffd6e8e3b5fc7eb3100857f273d6d1e6e19df51c")))

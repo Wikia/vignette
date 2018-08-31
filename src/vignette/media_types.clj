@@ -10,9 +10,20 @@
 
 (def archive-dir "archive")
 
-(def webp-compatible-mime-types #{"image/jpeg" "image/png"})
+(def webp-compatible-mime-types #{"image/jpeg" "image/png" "image/gif"})
 (def webp-mime-type "image/webp")
 (def webp-format "webp")
+(def webp-accept-header-name "accept")
+
+(defn browser-supports-webp? [request]
+  (if-let [vary-string (get-in request [:headers webp-accept-header-name])]
+    (.contains vary-string webp-mime-type)))
+
+(defn add-webp-format-option-if-supported
+  [request options]
+  (if (browser-supports-webp? request)
+    (merge options {:format webp-format})
+    options))
 
 (defn webp-or-compatible-mime-type?
   [mime-type]
@@ -140,6 +151,15 @@
         x-offset (:x-offset data)
         window-width (:window-width data)]
     (window-format width x-offset window-width)))
+
+(defn static-assets-thumb-map->dir-path [data]
+  (let [thumb-path (:uuid data)
+        prefix (thumb-map->prefix data)]
+    (clojure.string/join [(clojure.string/join "/" (filter not-empty [prefix thumb-path])) "/"])))
+
+(defn static-assets-thumbnail-path [data]
+      (let [name (format "%spx-%spx-%s%s"  (width data) (height data) (mode data) (query-opts-str data))]
+           (clojure.string/join (filter not-empty [(static-assets-thumb-map->dir-path data) name]))))
 
 (defn thumbnail-path
   [data]

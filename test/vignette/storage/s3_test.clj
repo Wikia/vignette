@@ -37,6 +37,7 @@
 (facts :s3 :put-object
   (put-object (create-s3-storage-system ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => ..response..
   (provided
+    (s3/bucket-exists? ..creds.. "bucket") => true
     (add-timeouts :put ..creds..) => ..timeout-creds..
     (file-stream ..resource..) => ..file..
     (content-type ..resource..) => ..content-type..
@@ -45,18 +46,36 @@
   ; this may not be realistic. we'll probably get an error before we get nil
   (put-object (create-s3-storage-system ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => nil
   (provided
+    (s3/bucket-exists? ..creds.. "bucket") => true
     (add-timeouts :put ..creds..) => ..timeout-creds..
     (file-stream ..resource..) => ..file..
     (content-type ..resource..) => ..content-type..
-    (s3/put-object ..timeout-creds.. "bucket" "a/ab/image.jpg" ..file.. {:content-type ..content-type..}) => nil))
+    (s3/put-object ..timeout-creds.. "bucket" "a/ab/image.jpg" ..file.. {:content-type ..content-type..}) => nil)
+
+ (put-object (create-s3-storage-system ..creds..) ..resource.. "bucket" "a/ab/image.jpg") => ..response..
+ (provided
+   (s3/bucket-exists? ..creds.. "bucket") => false
+   (s3/create-bucket ..creds.. "bucket" ) => ..response..
+   (add-timeouts :put ..creds..) => ..timeout-creds..
+   (file-stream ..resource..) => ..file..
+   (content-type ..resource..) => ..content-type..
+   (s3/put-object ..timeout-creds.. "bucket" "a/ab/image.jpg" ..file.. {:content-type ..content-type..}) => ..response..))
 
 (facts :s3 :object-exists
   (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => true
   (provided
-    (add-timeouts :head ..creds..) => ..timeout-creds..
-    (s3/object-exists? ..timeout-creds.. ..bucket.. ..path..) => true)
+    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) => {:not-empty-map true})
 
   (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => false
   (provided
-    (add-timeouts :head ..creds..) => ..timeout-creds..
-    (s3/object-exists? ..timeout-creds.. ..bucket.. ..path..) => false))
+    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) => nil)
+
+  (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => false
+  (provided
+    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) =throws=> (let [e (AmazonS3Exception. "test")]
+                                                                                      (.setErrorCode e "AccessDenied") e))
+
+  (object-exists? (create-s3-storage-system ..creds..) ..bucket.. ..path..) => (throws AmazonS3Exception)
+  (provided
+    (s3/list-objects ..creds.. ..bucket.. {:prefix ..path.. :max-keys 1}) =throws=> (let [e (AmazonS3Exception. "test")]
+                                                                                      (.setErrorCode e "Other") e)))

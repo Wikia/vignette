@@ -1,5 +1,5 @@
 language: clojure
-lein: lein2
+lein: lein
 jdk:
   - oraclejdk8
 env:
@@ -19,6 +19,9 @@ before_install:
   - export VIGNETTE_THUMBNAIL_BIN=$TRAVIS_BUILD_DIR/bin/thumbnail
   - export PATH=$HOME/opt/bin:$PATH
   - export IMAGEMAGICK_BASE=$HOME/opt
+  - export GIF2WEBP=$HOME/opt/bin/gif2webp
+  - export WIKIA_ENVIRONMENT=dev
+  - export WIKIA_DATACENTER=sjc
 
 cache:
   directories:
@@ -27,4 +30,5 @@ cache:
 script:
   - magick --version
   - convert --version | grep webp
-  - lein2 midje
+  - gif2webp -version
+  - lein midje

@@ -31,7 +31,8 @@
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Content-Type") => "image/jpeg"
       (vec (:body response)) => (has-prefix jpeg-header)
-      (get (:headers response) "Cache-Control") => "public, max-age=31536000")
+      (get (:headers response) "Cache-Control") => "public, max-age=31536000"
+      (get (:headers response) "Access-Control-Allow-Origin") => "*")
 
     (let [response (client/head (format "http://localhost:%d/bucket/a/ab/boat.jpg/revision/latest/scale-to-width/200" default-port) {:as :byte-array})]
       (:status response) => 200
@@ -153,7 +154,7 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "e77cd6979116303a6d50610962fa9790469574c2"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"baboon.webp\"; filename*=UTF-8''baboon.webp"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 18000 50)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 17790 50)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000"
       (get (:headers response) "Content-Type") => "image/webp"
@@ -164,7 +165,7 @@
       (:status response) => 200
       (get (:headers response) "Surrogate-Key") => "6f13d7df6b332e4945d90bd6785226b535f8b248"
       (get (:headers response) "Content-Disposition") => "inline; filename=\"beach.webp\"; filename*=UTF-8''beach.webp"
-      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 17950 50)
+      (Integer/parseInt (get (:headers response) "Content-Length")) => (roughly 16830 70)
       (get (:headers response) "Connection") => "close"
       (get (:headers response) "Cache-Control") => "public, max-age=31536000"
       (get (:headers response) "Content-Type") => "image/webp"
