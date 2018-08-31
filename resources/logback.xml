@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <!--legacy vignette logging-->
+    <appender name="stash" class="net.logstash.logback.appender.LogstashSocketAppender">
+        <syslogHost>localhost</syslogHost>
+        <port>1410</port>
+        <includeMdc>true</includeMdc>
+        <includeContext>true</includeContext>
+        <customFields>{
+            "appname": "${LOGGER_APPLICATION}",
+            "env": "${WIKIA_ENVIRONMENT}",
+            "datacenter":"${WIKIA_DATACENTER}"
+            }
+        </customFields>
+        <fieldNames>
+            <message>rawMessage</message>
+            <context>rawContext</context>
+        </fieldNames>
+    </appender>
+    <!--k8s vignette logging-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{
