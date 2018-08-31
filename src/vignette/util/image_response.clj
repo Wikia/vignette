@@ -12,7 +12,8 @@
             [vignette.storage.protocols :refer :all]
             [vignette.util.thumbnail :refer :all]
             [ring.util.codec :refer [url-encode]]
-            [io.clj.logging :as log]))
+            [io.clj.logging :as log])
+  (:use [environ.core]))
 
 (declare create-image-response
          add-content-disposition-header
@@ -25,7 +26,7 @@
    (if val
      (header resp key val) resp)))
 
-(def error-image-file (io/file "public/brokenImage.jpg"))
+(def error-image-file (io/file (env :vignette-broken-image "public/brokenImage.jpg")))
 
 (defmulti error-image (fn [map]
                         (:request-type map)))
@@ -42,14 +43,14 @@
    (let [resp (if-let [image (error-image map)]
                 (status (create-image-response image map) code)
                 (not-found "Unable to fetch or generate image"))]
-     (add-surrogate-header resp map)))
+     (with-meta (add-surrogate-header resp map) map)))
   ([code]
    (error-response code nil)))
 
 (defn create-image-response
   ([image image-map]
     (let [image-mime-type (content-type image)]
-      (-> (response
+      (with-meta (-> (response
             (piped-input-stream
               (fn [out]
                 (with-open [in (io/input-stream (->response-object image))]
@@ -60,16 +61,22 @@
           (header "X-Thumbnailer" "Vignette")
           (add-content-disposition-header image-map image image-mime-type)
           (add-surrogate-header image-map)
-          (add-vary-header image-map image-mime-type))))
+          (add-vary-header image-map image-mime-type)) image-map)))
   ([image]
    (create-image-response image nil)))
 
 (defn create-head-response
   [image-map]
-  (-> (response "")
+  (with-meta (-> (response "")
       (header "X-Thumbnailer" "Vignette")
       (add-content-disposition-header image-map)
-      (add-surrogate-header image-map)))
+      (add-surrogate-header image-map)) image-map))
+
+(defn create-response
+  ([image-params] (create-response 200 "" image-params))
+  ([code data image-params] (with-meta (-> (response data)
+                 (status code)
+                 (header "X-Thumbnailer" "Vignette")) image-params)))
 
 (defn- base-filename [image-map object]
   (or (if-let [orig (if image-map (original image-map))]
