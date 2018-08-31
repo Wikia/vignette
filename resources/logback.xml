@@ -18,7 +18,7 @@
         </fieldNames>
     </appender>
     <!--k8s vignette logging-->
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>{
                 "appname": "${LOGGER_APPLICATION}",
@@ -36,7 +36,7 @@
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
         <appender-ref ref="stash"/>
+        <appender-ref ref="stdout"/>
     </root>
 </configuration>
