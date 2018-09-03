@@ -137,9 +137,9 @@ spec:
         - name: PERFMONITORING_APP
           value: vignette
         - name: VIGNETTE_SERVER_MAX_THREADS
-          value: "200"
+          value: "100"
         - name: VIGNETTE_SERVER_QUEUE_SIZE
-          value: "12000"
+          value: "800"
         volumeMounts:
         - name: secrets-dir
           readOnly: true
