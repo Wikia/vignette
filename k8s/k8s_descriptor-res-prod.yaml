@@ -139,11 +139,7 @@ spec:
         - name: VIGNETTE_SERVER_MAX_THREADS
           value: "100"
         - name: VIGNETTE_SERVER_QUEUE_SIZE
-<<<<<<< HEAD
           value: "800"
-=======
-          value: "120"
->>>>>>> f997515fafa580a29bae9223074ff91ab6eb486d
         volumeMounts:
         - name: secrets-dir
           readOnly: true
