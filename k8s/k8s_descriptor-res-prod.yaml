@@ -251,13 +251,4 @@ spec:
             pd: "send"
           annotations:
             summary: "vignette is throwing a lot of exceptions"
-            description: "vignette: {{ $value | humanize }}% of requests to pod {{ $labels.pod }} fail with 5xx response"
-        - alert: "vignette-5xx-ratio"
-          expr: "100 * sum by(pod) (rate(vignette_http_requests_total{job=\"vignette\",statusClass=\"5XX\"}[10m])) / sum by(pod) (rate(vignette_http_requests_total{job=\"vignette\"}[10m])) > 10"
-          labels:
-            severity: "critical"
-            slack_channel: "#services-alerts"
-            team: "services"
-          annotations:
-            summary: "vignette returns a lot of 5xx responses"
-            description: "vignette: {{ $value | humanize }}% of requests to pod {{ $labels.pod }} fail with 5xx response"
+            description: "vignette: {{ $value | humanize }}% of requests to pod {{ $labels.pod }} fail with non conversion related exceptions"
