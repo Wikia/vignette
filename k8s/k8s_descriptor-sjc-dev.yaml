@@ -117,17 +117,17 @@ spec:
         - name: LOGGER_APPLICATION
           value: vignette
         - name: IMAGEMAGICK_BASE
-          value: /usr
+          value: /opt/imagemagick-7.0.5
         - name: VIGNETTE_THUMBNAIL_BIN
           value: /thumbnail
         - name: VIGNETTE_BROKEN_IMAGE
           value: /public/brokenImage.jpg
         - name: GETOPT
-          value: /bin/getopt
+          value: /usr/bin/getopt
         - name: TIMEOUT
           value: timeout
         - name: TIMEOUT_TIME
-          value: "-t 30"
+          value: "30"
         - name: GIF2WEBP
           value: /usr/bin/gif2webp
         - name: WIKIA_ENVIRONMENT
