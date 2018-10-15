@@ -10,7 +10,7 @@
                  [cheshire "5.6.3"]
                  [clj-aws-s3 "0.3.10"]
                  [compojure "1.4.0"]
-                 [com.novemberain/pantomime "2.3.0"]
+                 [com.novemberain/pantomime "2.9.0"]
                  [digest "1.4.4"]
                  [environ "0.5.0"]
                  [cc.qbits/jet "0.6.6"]

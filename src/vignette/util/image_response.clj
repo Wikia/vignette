@@ -86,9 +86,10 @@
 (defn add-content-disposition-header
   ([response-map image-map image-object image-mime-type]
    (if-let [filename (base-filename image-map image-object)]
-     (let [target-filename
+     (let [target-mime-type (when image-mime-type (extension-for-name image-mime-type))
+           target-filename
            (if-let [requested-path
-                    (when image-mime-type (extension-for-name image-mime-type))]
+                    (if (string/blank? target-mime-type) false target-mime-type)]
              (if (re-find #"\.\w+$" filename)
                (string/replace filename #"\.\w+$" requested-path)
                (str filename requested-path))
