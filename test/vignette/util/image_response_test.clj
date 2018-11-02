@@ -42,10 +42,9 @@
        (when-header-val {} "Content-Type" "type") => {:headers {"Content-Type" "type"}})
 
 (facts :add-surrogate-key-header
-       (add-surrogate-header {} {:uuid "123"}) => {:headers {"Surrogate-Key" "123", "X-Surrogate-Key" "123"}}
+       (add-surrogate-header {} {:uuid "123"}) => {:headers {"Surrogate-Key" "123"}}
        (add-surrogate-header {} {:wikia "wikia" :original "orig" :image-type "images"}) =>
-       {:headers {"Surrogate-Key"   "c8dfba77e9beb5c26ca20d4411674065d4a0ded5"
-                  "X-Surrogate-Key" "c8dfba77e9beb5c26ca20d4411674065d4a0ded5"}})
+       {:headers {"Surrogate-Key"   "c8dfba77e9beb5c26ca20d4411674065d4a0ded5"}})
 
 (facts :add-vary-header
        (add-vary-header {} {:requested-format nil :request-type :thumbnail } "image/png") => {:headers {"Vary" "Accept"}}
