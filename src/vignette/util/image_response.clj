@@ -108,8 +108,7 @@
         (:uuid image-map))
     (let [sk (surrogate-key image-map)]
       (-> response-map
-          (header "Surrogate-Key" sk)
-          (header "X-Surrogate-Key" sk)))
+          (header "Surrogate-Key" sk)))
     response-map))
 
 (defn surrogate-key
