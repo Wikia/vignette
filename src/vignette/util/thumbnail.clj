@@ -79,7 +79,7 @@
         args (reduce conj base-command thumb-options)
         sh-out (run-thumbnailer args thumb-map)]
     (do
-      (log/info (str "Thumbnailing result: " (:exit sh-out)) {:temp_file temp-file :temp_file_exists str((file-exists? temp-file))})
+      (log/info (str "Thumbnailing result: " (:exit sh-out)) {:temp_file temp-file :temp_file_exists (str (file-exists? temp-file))})
       (cond
         (or (zero? (:exit sh-out))
             (and (= 1 (:exit sh-out))
