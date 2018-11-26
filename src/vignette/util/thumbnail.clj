@@ -63,7 +63,7 @@
         (do
           (log/info "slow-thumbnailer-call" {:time_ms elapsed-ms :thumb_map thumb-map})
           result)
-        result)))
+        (do (log/info (str args)) result))))
 
 (defn original->thumbnail
   [resource thumb-map]
