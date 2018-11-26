@@ -78,14 +78,17 @@
         thumb-options (reduce conj route-options query-options)
         args (reduce conj base-command thumb-options)
         sh-out (run-thumbnailer args thumb-map)]
-    (cond
-      (or (zero? (:exit sh-out))
-          (and (= 1 (:exit sh-out))
-               (file-exists? temp-file))) (io/file temp-file)
-      :else (throw+ {:type         :convert-error
-                     :error-code   (:exit sh-out)
-                     :error-string (:err sh-out)}
-                    "thumbnailing error"))))
+    (do
+      (log/info (str "Thumbnailing result: " (:exit sh-out)) {:temp_file temp-file :temp_file_exists str((file-exists? temp-file))})
+      (cond
+        (or (zero? (:exit sh-out))
+            (and (= 1 (:exit sh-out))
+                 (file-exists? temp-file))) (io/file temp-file)
+        :else (throw+ {:type         :convert-error
+                       :error-code   (:exit sh-out)
+                       :error-string (:err sh-out)}
+                      "thumbnailing error")))
+  ))
 
 (defn webp-override
   [original-mime-type thumb-map]
