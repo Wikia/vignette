@@ -70,6 +70,7 @@
 (defn original->thumbnail
   [resource thumb-map]
   (let [temp-file (temp-filename (str (wikia thumb-map) "_thumb"))
+        temp-file-exists-before (str (file-exists? temp-file))
         base-command [thumbnail-bin
                       "--in" (.getAbsolutePath resource)
                       "--out" (q/modify-temp-file thumb-map temp-file)]
@@ -79,7 +80,9 @@
         args (reduce conj base-command thumb-options)
         sh-out (run-thumbnailer args thumb-map)]
     (do
-      (log/info (str "Thumbnailing result: " (:exit sh-out)) {:temp_file temp-file :temp_file_exists (str (file-exists? temp-file))})
+      (log/info
+        (str "Thumbnailing result: " (:exit sh-out))
+        {:temp_file temp-file :temp_file_exists (str (file-exists? temp-file)) :temp_file_exists_before temp-file-exists-before})
       (cond
         (or (zero? (:exit sh-out))
             (and (= 1 (:exit sh-out))
