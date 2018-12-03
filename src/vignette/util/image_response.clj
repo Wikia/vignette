@@ -115,7 +115,9 @@
   [image-map]
   (if-let [sk (:uuid image-map)] sk
                                  (try
-                                   (digest/sha1 (fully-qualified-original-path image-map))
+                                   (do
+                                     (log/info (str "sk path - "(fully-qualified-original-path image-map)) {})
+                                     (digest/sha1 (fully-qualified-original-path image-map)))
                                    (catch Exception e
                                      (str "vignette-" (:original image-map))))))
 
