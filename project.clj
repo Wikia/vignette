@@ -14,7 +14,6 @@
                  [digest "1.4.4"]
                  [environ "0.5.0"]
                  [cc.qbits/jet "0.6.6"]
-                 [digest "1.4.4"]
                  [slingshot "0.10.3"]
                  [ring/ring-devel "1.4.0"]
                  [useful "0.8.8"]

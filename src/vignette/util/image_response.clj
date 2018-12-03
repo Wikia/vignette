@@ -13,7 +13,8 @@
             [vignette.util.thumbnail :refer :all]
             [ring.util.codec :refer [url-encode]]
             [io.clj.logging :as log])
-  (:use [environ.core]))
+  (:use [environ.core]
+        [clojure.walk]))
 
 (declare create-image-response
          add-content-disposition-header
@@ -116,7 +117,7 @@
   (if-let [sk (:uuid image-map)] sk
                                  (try
                                    (do
-                                     (log/info (str "sk path - "(fully-qualified-original-path image-map)) {})
+                                     (log/info (str "sk path - "(fully-qualified-original-path image-map)) {:image_map (stringify-keys image-map)})
                                      (digest/sha1 (fully-qualified-original-path image-map)))
                                    (catch Exception e
                                      (str "vignette-" (:original image-map))))))
