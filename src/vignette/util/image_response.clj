@@ -117,7 +117,7 @@
   (if-let [sk (:uuid image-map)] sk
                                  (try
                                    (do
-                                     (log/info (str "sk path - "(fully-qualified-original-path image-map)) {:image_map (stringify-keys image-map)})
+                                     (log/info (str "sk path - " (fully-qualified-original-path image-map)) {:image_map (stringify-keys image-map)})
                                      (digest/sha1 (fully-qualified-original-path image-map)))
                                    (catch Exception e
                                      (str "vignette-" (:original image-map))))))
@@ -130,6 +130,8 @@
         (contains? image-map :requested-format)             ;; legacy routes - don't emit Vary if :requested-format is not set
         (nil? (:requested-format image-map))
         (webp-or-compatible-mime-type? image-mime-type))
-    (-> response-map
-        (header "Vary" "Accept"))
+    (do
+      (log/info (str " requested format = " (:requested-format image-map)) {})
+      (-> response-map
+          (header "Vary" "Accept")))
     response-map))
