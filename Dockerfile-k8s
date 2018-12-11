@@ -9,7 +9,7 @@ RUN echo "deb [arch=amd64] http://repo.prod.wikia.net/ubuntu trusty main restric
     apt-get update && \
     echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
     echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections && \
-    apt-get install -y --force-yes libgraphviz-dev libfftw3-3 libopenexr6 libdjvulibre21 libautotrace3 imagemagick-7.0.5 libwebp libwmf-dev librsvg2-dev oracle-java8-installer bc && \
+    apt-get install -y --force-yes libgraphviz-dev libfftw3-3 libopenexr6 libdjvulibre21 libautotrace3 imagemagick-7.0.5 libwebp libwmf-dev librsvg2-dev oracle-java8-installer bc libgif4 && \
     rm -rf /var/lib/apt/lists/*
 
 RUN adduser --home /nonexistent --gecos '' --disabled-password service_user
