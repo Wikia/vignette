@@ -1,5 +1,6 @@
 (ns vignette.perfmonitoring.core
-  (:require [vignette.common.logger :as log]
+  (:require [clojure.string :as string]
+            [vignette.common.logger :as log]
             [environ.core :refer [env]]
             [prometheus.core :as prometheus]))
 
