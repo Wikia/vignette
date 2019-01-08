@@ -1,9 +1,7 @@
 (ns vignette.perfmonitoring.core
   (:require [vignette.common.logger :as log]
             [environ.core :refer [env]]
-            [prometheus.core :as prometheus])
-  (:import)
-    (io.prometheus.client CollectorRegistry))
+            [prometheus.core :as prometheus]))
 
 (def extended-histogram-buckets (atom [0.001, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0, 2.0, 3.0, 5.0, 10.0, 20.0, 30.0]))
 
@@ -63,7 +61,7 @@
 
 (defn instrument-handler
   "Ring middleware to record request metrics"
-  [handler ^String app-name ^CollectorRegistry registry]
+  [handler app-name registry]
   (let [metrics-store {:registry registry}
         metrics-store (prometheus/register-counter metrics-store
                                         app-name
