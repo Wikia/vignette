@@ -58,6 +58,12 @@
             (catch Exception e#
               (log/warn "prometheus timer failed" {:exception (str e#) :counter ~metric})))))))
 
+(defn record-request-metric [metrics-store app-name request-method response-status request-time response-path]
+  (let [status-class (str (int (/ response-status 100)) "XX")
+        method-label (string/upper-case (name request-method))
+        labels [method-label (str response-status) status-class response-path]]
+    (prometheus/track-observation metrics-store app-name "http_request_latency_seconds" request-time labels)
+    (prometheus/increase-counter metrics-store app-name "http_requests_total" labels)))
 
 (defn instrument-handler
   "Ring middleware to record request metrics"
@@ -84,10 +90,3 @@
             request-time (/ (double (- finish-time start-time)) 1000.0)]
         (record-request-metric metrics-store app-name request-method response-status request-time response-path)
         response))))
-
-(defn record-request-metric [metrics-store app-name request-method response-status request-time response-path]
-  (let [status-class (str (int (/ response-status 100)) "XX")
-        method-label (string/upper-case (name request-method))
-        labels [method-label (str response-status) status-class response-path]]
-    (prometheus/track-observation metrics-store app-name "http_request_latency_seconds" request-time labels)
-    (prometheus/increase-counter metrics-store app-name "http_requests_total" labels)))
