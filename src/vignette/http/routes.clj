@@ -10,7 +10,7 @@
             [vignette.http.middleware :refer :all]
             [prometheus.core :as prometheus]
             [vignette.perfmonitoring.core :refer [metrics-registry, app]]
-            [vignette.perfmonitoring.core :as perf])
+            [vignette.perfmonitoring.core :as perf]))
 
 (defn create-routes
   [image-serving-routes]
@@ -27,4 +27,3 @@
       (add-headers)
       (add-meta)
       (perf/instrument-handler app (:registry @metrics-registry))))
-)
