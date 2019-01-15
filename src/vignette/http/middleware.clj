@@ -42,6 +42,14 @@
 (declare add-cache-control-header
          hours-to-seconds)
 
+(defn log-path
+  [handler]
+  (fn [request]
+    (log/info (str "path-requested" (:uri request)))
+    (handler request)
+  )
+)
+
 (defn add-meta
   [handler]
   (fn [request]
