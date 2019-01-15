@@ -9,7 +9,8 @@
             [slingshot.slingshot :refer [try+ throw+]]
             [vignette.http.middleware :refer :all]
             [prometheus.core :as prometheus]
-            [vignette.perfmonitoring.core :refer [metrics-registry, app]]))
+            [vignette.perfmonitoring.core :refer [metrics-registry, app]]
+            [vignette.perfmonitoring.core :as perf]))
 
 (defn create-routes
   [image-serving-routes]
@@ -26,4 +27,4 @@
       (request-timer)
       (add-headers)
       (add-meta)
-      (prometheus/instrument-handler app (:registry @metrics-registry))))
+      (perf/instrument-handler app (:registry @metrics-registry))))
