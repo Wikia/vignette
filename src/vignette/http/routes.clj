@@ -21,6 +21,7 @@
                         (files "/static/")
                         (bad-request-path))))
       (wrap-params)
+      (log-path)
       (exception-catcher)
       (multiple-slash->single-slash)
       (request-timer)
