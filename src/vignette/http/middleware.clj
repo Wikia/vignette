@@ -45,7 +45,7 @@
 (defn log-path
   [handler]
   (fn [request]
-    (log/info (str "path-requested" (:uri request)))
+    (log/info (str "path-requested" (:uri request)) {})
     (handler request)
   )
 )
