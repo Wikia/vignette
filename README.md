@@ -1,3 +1,7 @@
+
+Vignette has been sunset 🌅 and replaced by [Thumblr](https://github.com/Wikia/thumblr)! 🌅
+---
+
 [![Build Status](https://travis-ci.org/Wikia/vignette.svg?branch=master)](https://travis-ci.org/Wikia/vignette)
 
 # Vignette
